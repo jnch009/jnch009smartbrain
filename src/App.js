@@ -14,8 +14,8 @@ const particleOptions = {
       value: 100,
       density: {
         enable: true,
-        area: 800
-      }
+        area: 800,
+      },
     },
   },
   interactivity: {
@@ -29,6 +29,24 @@ const particleOptions = {
 };
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      input: '',
+    };
+  }
+
+  onInputChange = (event) => {
+    this.setState(
+      {
+        input: event.target.value,
+      },
+      () => {
+        console.log(this.state.input);
+      },
+    );
+  };
+
   render() {
     return (
       <div className='App'>
@@ -36,7 +54,7 @@ class App extends Component {
         <Navigation />
         <Logo />
         <Rank />
-        <ImageLinkForm />
+        <ImageLinkForm onInputChange={this.onInputChange} />
         {/* <FaceRecognition /> */}
       </div>
     );
