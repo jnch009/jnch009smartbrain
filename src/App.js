@@ -40,7 +40,7 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
-      box: {},
+      box: [],
     };
   }
 
@@ -51,24 +51,28 @@ class App extends Component {
   };
 
   calculateBox = (data) => {
-    const clarifyFace =
-      data.outputs[0].data.regions[0].region_info.bounding_box;
+    const clarifyArray = data.outputs[0].data.regions.map(region => region.region_info.bounding_box);
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
-    console.log(width, height);
-    return {
-      leftCol: clarifyFace.left_col * width,
-      rightCol: width - (clarifyFace.right_col * width),
-      topRow: clarifyFace.top_row * height,
-      bottomRow: height - (clarifyFace.bottom_row * height),
-    };
+    
+    let boundingBoxes = clarifyArray.map(box => {
+      return ({
+        topRow: box.top_row * height,
+        leftCol: box.left_col * width,
+        bottomRow: height - (box.bottom_row * height),
+        rightCol: width - (box.right_col * width)
+      })
+    });
+    return boundingBoxes;
   };
 
-  displayBox = (box) => {
-    console.log(box);
+  displayBox = (boxes) => {
+    console.log(boxes);
     this.setState({
-      box: box,
+      box: [...this.state.box,...boxes],
+    }, () => {
+        console.log(this.state.box);
     });
   };
 
