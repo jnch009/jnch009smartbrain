@@ -13,7 +13,7 @@ import SignIn from './Components/SignIn/SignIn';
 import './App.css';
 
 const app = new Clarifai.App({
-  apiKey: '9b014e8445eb40d38ff90555f7921d23',
+  apiKey: process.env.REACT_APP_CLARIFAI_API,
 });
 
 const particleOptions = {
@@ -55,7 +55,6 @@ class App extends Component {
   };
 
   calculateBox = data => {
-    console.log(data.outputs[0].data.regions);
     const clarifyArray = data.outputs[0].data.regions.map(
       region => region.region_info.bounding_box,
     );
@@ -75,15 +74,9 @@ class App extends Component {
   };
 
   displayBox = boxes => {
-    console.log(boxes);
-    this.setState(
-      {
-        box: [...this.state.box, ...boxes],
-      },
-      () => {
-        console.log(this.state.box);
-      },
-    );
+    this.setState({
+      box: [...this.state.box, ...boxes],
+    });
   };
 
   onButtonSubmit = () => {
@@ -113,15 +106,16 @@ class App extends Component {
   };
 
   render() {
+    const { isSignedIn, imageUrl, route, box } = this.state;
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
         <Navigation
           onRouteChange={this.onRouteChange}
-          isSignedIn={this.state.isSignedIn}
+          isSignedIn={isSignedIn}
         />
 
-        {this.state.route === 'home' ? (
+        {route === 'home' ? (
           <>
             <Logo />
             <Rank />
@@ -129,12 +123,9 @@ class App extends Component {
               onInputChange={this.onInputChange}
               onButtonSubmit={this.onButtonSubmit}
             />
-            <FaceRecognition
-              imageUrl={this.state.imageUrl}
-              boundingBox={this.state.box}
-            />
+            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
           </>
-        ) : this.state.route === 'SignIn' ? (
+        ) : route === 'SignIn' ? (
           <SignIn onRouteChange={this.onRouteChange} />
         ) : (
           <Register onRouteChange={this.onRouteChange} />
