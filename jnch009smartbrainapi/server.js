@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const app = express();
 
 const saltRounds = 10;
@@ -39,8 +40,10 @@ const filterUserById = userId => db.users.filter(user => user.id === userId);
 const filterUserByCredentials = (email, password) =>
   db.users.filter(user => user.email === email && user.password === password);
 
+//Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send(db.users);
