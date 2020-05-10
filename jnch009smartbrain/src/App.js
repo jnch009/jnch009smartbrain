@@ -48,6 +48,12 @@ class App extends Component {
     };
   }
 
+  componentDidMount() {
+    fetch('http://localhost:3000')
+      .then(resp => resp.json())
+      .then(console.log);
+  }
+
   onInputChange = event => {
     this.setState({
       input: event.target.value,
