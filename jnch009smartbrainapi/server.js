@@ -1,5 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const app = express();
+
+const saltRounds = 10;
+const myPlaintextPassword = 's0//P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
 
 const db = {
   users: [
@@ -20,6 +25,13 @@ const db = {
       joined: new Date(),
     },
   ],
+  login: [
+    {
+      id: 987,
+      hash: '',
+      email: 'john@gmail.com',
+    },
+  ],
 };
 
 //Helpers
@@ -35,6 +47,23 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
+  // Load hash from your password DB.
+  // bcrypt.compare(
+  //   'jeremypassword12356',
+  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
+  //   function (err, result) {
+  //     console.log('first guess ',result);
+  //   },
+  // );
+  
+  // bcrypt.compare(
+  //   'jer',
+  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
+  //   function (err, result) {
+  //     console.log('second guess ', result);
+  //   },
+  // );
+
   let { email, password } = req.body;
   let signin = filterUserByCredentials(email, password);
   signin.length === 1
@@ -44,6 +73,15 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, name, password } = req.body;
+  // bcrypt.hash(password, saltRounds, function (err, hash) {
+  //   // Store hash in your password DB.
+  //   if (err) {
+  //     console.log(err);
+  //   }
+
+  //   console.log(hash);
+  // });
+
   db.users.push({
     // be very careful about maintaining type coercion
     id: String(Number(db.users[db.users.length - 1].id) + 1),
