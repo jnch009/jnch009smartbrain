@@ -1,0 +1,1 @@
+Backend for the Smartbrain application written in NodeJS
