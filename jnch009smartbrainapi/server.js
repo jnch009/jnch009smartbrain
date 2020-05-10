@@ -23,7 +23,9 @@ const db = {
 };
 
 //Helpers
-const filterUser = (userId) => db.users.filter(user => user.id === userId);
+const filterUserById = userId => db.users.filter(user => user.id === userId);
+const filterUserByCredentials = (email, password) =>
+  db.users.filter(user => user.email === email && user.password === password);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -33,14 +35,11 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  if (
-    req.body.email === db.users[0].email &&
-    req.body.password === db.users[0].password
-  ) {
-    res.json('success');
-  } else {
-    res.status(401).json('Unauthorized');
-  }
+  let { email, password } = req.body;
+  let signin = filterUserByCredentials(email, password);
+  signin.length === 1
+    ? res.json('success')
+    : res.status(401).json('Unauthorized');
 });
 
 app.post('/register', (req, res) => {
@@ -60,14 +59,14 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
-  let user = filterUser(userId);
+  let user = filterUserById(userId);
   user.length === 1 ? res.json(user) : res.status(404).json('not found');
 });
 
 app.put('/image', (req, res) => {
   const { userId } = req.body;
-  let user = filterUser(userId);
-  
+  let user = filterUserById(userId);
+
   if (user.length === 1) {
     user[0].score += 1;
     res.json(user);
