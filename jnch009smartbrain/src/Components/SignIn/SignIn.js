@@ -29,10 +29,9 @@ class SignIn extends Component {
     })
       .then(resp => resp.json())
       .then(data => {
-        if (data === 'success') {
+        if (data.id) {
+          this.props.loadUser(data);
           this.props.onRouteChange('home');
-        } else {
-          return <h1>Login Failed</h1>;
         }
       });
   };
