@@ -45,8 +45,25 @@ class App extends Component {
       box: [],
       route: 'SignIn',
       isSignedIn: false,
+      userProfile: {
+        id: '',
+        name: '',
+        email: '',
+        score: 0,
+        joined: '',
+      },
     };
   }
+
+  loadUser = user => {
+    this.setState({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      score: user.score,
+      joined: user.joined,
+    });
+  };
 
   onInputChange = event => {
     this.setState({
@@ -128,7 +145,10 @@ class App extends Component {
         ) : route === 'SignIn' ? (
           <SignIn onRouteChange={this.onRouteChange} />
         ) : (
-          <Register onRouteChange={this.onRouteChange} />
+          <Register
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+          />
         )}
       </div>
     );
