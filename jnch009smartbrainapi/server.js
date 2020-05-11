@@ -4,8 +4,6 @@ const cors = require('cors');
 const app = express();
 
 const saltRounds = 10;
-const myPlaintextPassword = 's0//P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
 
 const db = {
   users: [
@@ -58,7 +56,7 @@ app.post('/signin', (req, res) => {
   //     console.log('first guess ',result);
   //   },
   // );
-  
+
   // bcrypt.compare(
   //   'jer',
   //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
