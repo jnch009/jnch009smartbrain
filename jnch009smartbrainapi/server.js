@@ -68,7 +68,7 @@ app.post('/signin', (req, res) => {
   let { email, password } = req.body;
   let signin = filterUserByCredentials(email, password);
   signin.length === 1
-    ? res.json('success')
+    ? res.json(signin[0])
     : res.status(401).json('Unauthorized');
 });
 
@@ -107,7 +107,7 @@ app.put('/image', (req, res) => {
 
   if (user.length === 1) {
     user[0].score += 1;
-    res.json(user);
+    res.json(user[0]);
   } else {
     res.status(404).json('cannot find user to update');
   }
