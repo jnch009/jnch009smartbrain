@@ -1,0 +1,1 @@
+Front end for the Smartbrain application written in ReactJS
