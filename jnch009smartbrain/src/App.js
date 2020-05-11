@@ -56,13 +56,20 @@ class App extends Component {
   }
 
   loadUser = user => {
-    this.setState({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      score: user.score,
-      joined: user.joined,
-    });
+    this.setState(
+      {
+        userProfile: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          score: user.score,
+          joined: user.joined,
+        },
+      },
+      () => {
+        console.log(this.state.userProfile.name);
+      },
+    );
   };
 
   onInputChange = event => {
@@ -102,7 +109,24 @@ class App extends Component {
     });
     app.models
       .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-      .then(response => this.displayBox(this.calculateBox(response)))
+      .then(response => {
+        if (response) {
+          fetch('http://localhost:3000/image', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: this.state.userProfile.id,
+            }),
+          })
+            .then(resp => resp.json())
+            .then(data => {
+              this.setState({
+                userProfile: { ...this.state.userProfile, score: data.score },
+              });
+            });
+        }
+        this.displayBox(this.calculateBox(response));
+      })
       .catch(err => console.log(err));
   };
 
@@ -123,7 +147,7 @@ class App extends Component {
   };
 
   render() {
-    const { isSignedIn, imageUrl, route, box } = this.state;
+    const { isSignedIn, imageUrl, route, box, userProfile } = this.state;
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
@@ -135,7 +159,7 @@ class App extends Component {
         {route === 'home' ? (
           <>
             <Logo />
-            <Rank />
+            <Rank name={userProfile.name} score={userProfile.score} />
             <ImageLinkForm
               onInputChange={this.onInputChange}
               onButtonSubmit={this.onButtonSubmit}
@@ -143,7 +167,7 @@ class App extends Component {
             <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
           </>
         ) : route === 'SignIn' ? (
-          <SignIn onRouteChange={this.onRouteChange} />
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
