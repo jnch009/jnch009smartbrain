@@ -73,7 +73,7 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const { email, name, password } = req.body;
+  const { email, name } = req.body;
   // bcrypt.hash(password, saltRounds, function (err, hash) {
   //   // Store hash in your password DB.
   //   if (err) {
@@ -88,7 +88,6 @@ app.post('/register', (req, res) => {
     id: String(Number(db.users[db.users.length - 1].id) + 1),
     name: name,
     email: email,
-    password: password,
     score: 0,
     joined: new Date(),
   });
