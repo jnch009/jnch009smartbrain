@@ -25,5 +25,6 @@ module.exports = {
       },
     ],
     'max-len': 'off',
+    'require-jsdoc': 'off',
   },
 };
