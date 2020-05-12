@@ -6,6 +6,7 @@ const knex = require('knex');
 require('dotenv').config();
 
 const saltRounds = 10;
+const apiError = 'Internal Server error, please try again later';
 
 const db = knex({
   client: 'pg',
@@ -18,9 +19,9 @@ const db = knex({
 });
 
 // no need to do .json since we're not sending by HTTP
-db.select('*')
-  .from('users')
-  .then(data => console.log(data));
+// db.select('*')
+//   .from('users')
+//   .then(data => console.log(data));
 
 //Helpers
 const filterUserById = userId => db.users.filter(user => user.id === userId);
@@ -35,7 +36,8 @@ app.use(cors());
 app.get('/', (req, res) => {
   db.select('*')
     .from('users')
-    .then(data => res.send(data));
+    .then(users => res.send(users))
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.post('/signin', (req, res) => {
@@ -79,13 +81,19 @@ app.post('/register', (req, res) => {
     .returning('*')
     .insert({ name: name, email: email, joined: new Date() })
     .then(user => res.json(user[0]))
-    .catch(err => res.status(400).json('unable to register'));
+    .catch(() => res.status(400).json('User not registered'));
 });
 
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
-  let user = filterUserById(userId);
-  user.length === 1 ? res.json(user) : res.status(404).json('not found');
+  db('users')
+    .where('id', userId)
+    .then(user => {
+      user.length > 0
+        ? res.json(user[0])
+        : res.status(404).json('User not found');
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.put('/image', (req, res) => {
