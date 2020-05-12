@@ -96,6 +96,19 @@ app.get('/profile/:userId', (req, res) => {
     .catch(() => res.status(500).json(apiError));
 });
 
+app.delete('/profile/:userId', (req, res) => {
+  const { userId } = req.params;
+  db('users')
+    .where('id', userId)
+    .del()
+    .then(row => {
+      row > 0
+        ? res.json(`User successfully deleted`)
+        : res.status(404).json('User not found');
+    })
+    .catch(() => res.status(500).json(apiError));
+});
+
 app.put('/image', (req, res) => {
   const { userId } = req.body;
   let user = filterUserById(userId);
