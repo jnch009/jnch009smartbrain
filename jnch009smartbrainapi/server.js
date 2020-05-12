@@ -33,7 +33,9 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send(db.users);
+  db.select('*')
+    .from('users')
+    .then(data => res.send(data));
 });
 
 app.post('/signin', (req, res) => {
@@ -73,8 +75,11 @@ app.post('/register', (req, res) => {
   // });
 
   db('users')
+    // returning everything
+    .returning('*')
     .insert({ name: name, email: email, joined: new Date() })
-    .then(data => res.json(data));
+    .then(user => res.json(user[0]))
+    .catch(err => res.status(400).json('unable to register'));
 });
 
 app.get('/profile/:userId', (req, res) => {
