@@ -24,7 +24,6 @@ const db = knex({
 //   .then(data => console.log(data));
 
 //Helpers
-const filterUserById = userId => db.users.filter(user => user.id === userId);
 const filterUserByCredentials = (email, password) =>
   db.users.filter(user => user.email === email && user.password === password);
 
@@ -110,15 +109,19 @@ app.delete('/profile/:userId', (req, res) => {
 });
 
 app.put('/image', (req, res) => {
-  const { userId } = req.body;
-  let user = filterUserById(userId);
-
-  if (user.length === 1) {
-    user[0].score += 1;
-    res.json(user[0]);
-  } else {
-    res.status(404).json('cannot find user to update');
-  }
+  const { id } = req.body;
+  db('users')
+    .where({ id })
+    .increment({
+      score: 1,
+    })
+    .returning('score')
+    .then(score => {
+      score.length > 0
+        ? res.json(score[0])
+        : res.status(404).json('Cannot increment score on invalid user');
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.listen(3000, () => {
