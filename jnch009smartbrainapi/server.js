@@ -3,19 +3,24 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
 const knex = require('knex');
+require('dotenv').config();
+
 const saltRounds = 10;
 
-const pg = knex({
+const db = knex({
   client: 'pg',
   connection: {
     host: '127.0.0.1',
     user: 'jnch009',
-    password: '',
+    password: process.env.DB_PASS,
     database: 'jnch009smartbrain',
   },
 });
 
-console.log(pg.select('*').from('users'));
+// no need to do .json since we're not sending by HTTP
+db.select('*')
+  .from('users')
+  .then(data => console.log(data));
 
 //Helpers
 const filterUserById = userId => db.users.filter(user => user.id === userId);
@@ -67,16 +72,9 @@ app.post('/register', (req, res) => {
   //   console.log(hash);
   // });
 
-  db.users.push({
-    // be very careful about maintaining type coercion
-    id: String(Number(db.users[db.users.length - 1].id) + 1),
-    name: name,
-    email: email,
-    score: 0,
-    joined: new Date(),
-  });
-
-  res.json(db.users[db.users.length - 1]);
+  db('users')
+    .insert({ name: name, email: email, joined: new Date() })
+    .then(data => res.json(data));
 });
 
 app.get('/profile/:userId', (req, res) => {
