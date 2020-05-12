@@ -2,36 +2,20 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
-
+const knex = require('knex');
 const saltRounds = 10;
 
-const db = {
-  users: [
-    {
-      id: '123',
-      name: 'John',
-      email: 'john@gmail.com',
-      password: 'test123',
-      score: 0,
-      joined: new Date(),
-    },
-    {
-      id: '124',
-      name: 'Jeremy',
-      email: 'jeremy@gmail.com',
-      password: 'jeremypassword',
-      score: 0,
-      joined: new Date(),
-    },
-  ],
-  login: [
-    {
-      id: 987,
-      hash: '',
-      email: 'john@gmail.com',
-    },
-  ],
-};
+const pg = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'jnch009',
+    password: '',
+    database: 'jnch009smartbrain',
+  },
+});
+
+console.log(pg.select('*').from('users'));
 
 //Helpers
 const filterUserById = userId => db.users.filter(user => user.id === userId);
