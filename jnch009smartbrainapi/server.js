@@ -2,41 +2,21 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
+const knex = require('knex');
+require('dotenv').config();
 
 const saltRounds = 10;
+const apiError = 'Internal Server error, please try again later';
 
-const db = {
-  users: [
-    {
-      id: '123',
-      name: 'John',
-      email: 'john@gmail.com',
-      password: 'test123',
-      score: 0,
-      joined: new Date(),
-    },
-    {
-      id: '124',
-      name: 'Jeremy',
-      email: 'jeremy@gmail.com',
-      password: 'jeremypassword',
-      score: 0,
-      joined: new Date(),
-    },
-  ],
-  login: [
-    {
-      id: 987,
-      hash: '',
-      email: 'john@gmail.com',
-    },
-  ],
-};
-
-//Helpers
-const filterUserById = userId => db.users.filter(user => user.id === userId);
-const filterUserByCredentials = (email, password) =>
-  db.users.filter(user => user.email === email && user.password === password);
+const db = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'jnch009',
+    password: process.env.DB_PASS,
+    database: 'jnch009smartbrain',
+  },
+});
 
 //Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -44,73 +24,106 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send(db.users);
+  db.select('*')
+    .from('users')
+    .then(users => res.send(users))
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.post('/signin', (req, res) => {
-  // Load hash from your password DB.
-  // bcrypt.compare(
-  //   'jeremypassword12356',
-  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
-  //   function (err, result) {
-  //     console.log('first guess ',result);
-  //   },
-  // );
+  const { email, password } = req.body;
 
-  // bcrypt.compare(
-  //   'jer',
-  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
-  //   function (err, result) {
-  //     console.log('second guess ', result);
-  //   },
-  // );
+  //Transaction is NOT required here, because you are retrieving items
+  //You are NOT modifying the database directly
+  db('login')
+    .select('hash')
+    .where({ email: email })
+    .then(dbPass => {
+      bcrypt.compare(password, dbPass[0].hash, (err, result) => {
+        if (err) {
+          console.log(err);
+        }
 
-  let { email, password } = req.body;
-  let signin = filterUserByCredentials(email, password);
-  signin.length === 1
-    ? res.json(signin[0])
-    : res.status(401).json('Unauthorized');
+        if (result) {
+          return db('users')
+            .select('*')
+            .where({ email })
+            .then(user => res.json(user[0]))
+            .catch(() => res.status(400).json('User not found'));
+        }
+        return res.status(401).json('access denied');
+      });
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.post('/register', (req, res) => {
-  const { email, name } = req.body;
-  // bcrypt.hash(password, saltRounds, function (err, hash) {
-  //   // Store hash in your password DB.
-  //   if (err) {
-  //     console.log(err);
-  //   }
+  const { email, name, password } = req.body;
+  bcrypt.hash(password, saltRounds, function (err, hash) {
+    if (err) {
+      console.log(err);
+    }
 
-  //   console.log(hash);
-  // });
-
-  db.users.push({
-    // be very careful about maintaining type coercion
-    id: String(Number(db.users[db.users.length - 1].id) + 1),
-    name: name,
-    email: email,
-    score: 0,
-    joined: new Date(),
+    db.transaction(trx => {
+      trx
+        .insert({
+          hash: hash,
+          email: email,
+        })
+        .into('login')
+        .returning('email')
+        .then(loginEmail => {
+          return trx('users')
+            .returning('*')
+            .insert({ name: name, email: loginEmail[0], joined: new Date() })
+            .then(user => res.json(user[0]))
+            .catch(() => res.status(400).json('User not registered'));
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
+    }).catch(() => res.status(500).json(apiError));
   });
-
-  res.json(db.users[db.users.length - 1]);
 });
 
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
-  let user = filterUserById(userId);
-  user.length === 1 ? res.json(user) : res.status(404).json('not found');
+  db('users')
+    .where('id', userId)
+    .then(user => {
+      user.length > 0
+        ? res.json(user[0])
+        : res.status(404).json('User not found');
+    })
+    .catch(() => res.status(500).json(apiError));
+});
+
+app.delete('/profile/:userId', (req, res) => {
+  const { userId } = req.params;
+  db('users')
+    .where('id', userId)
+    .del()
+    .then(row => {
+      row > 0
+        ? res.json(`User successfully deleted`)
+        : res.status(404).json('User not found');
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.put('/image', (req, res) => {
-  const { userId } = req.body;
-  let user = filterUserById(userId);
-
-  if (user.length === 1) {
-    user[0].score += 1;
-    res.json(user[0]);
-  } else {
-    res.status(404).json('cannot find user to update');
-  }
+  const { id } = req.body;
+  db('users')
+    .where({ id })
+    .increment({
+      score: 1,
+    })
+    .returning('score')
+    .then(score => {
+      score.length > 0
+        ? res.json(score[0])
+        : res.status(404).json('Cannot increment score on invalid user');
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.listen(3000, () => {
