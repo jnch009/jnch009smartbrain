@@ -18,15 +18,6 @@ const db = knex({
   },
 });
 
-// no need to do .json since we're not sending by HTTP
-// db.select('*')
-//   .from('users')
-//   .then(data => console.log(data));
-
-//Helpers
-const filterUserByCredentials = (email, password) =>
-  db.users.filter(user => user.email === email && user.password === password);
-
 //Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -40,47 +31,58 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  // Load hash from your password DB.
-  // bcrypt.compare(
-  //   'jeremypassword12356',
-  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
-  //   function (err, result) {
-  //     console.log('first guess ',result);
-  //   },
-  // );
+  const { email, password } = req.body;
 
-  // bcrypt.compare(
-  //   'jer',
-  //   '$2b$10$TgAkMDWlnrWaazqMehN.y.8ANsr2JczYXGFECvYiJxClIXwMuNjda',
-  //   function (err, result) {
-  //     console.log('second guess ', result);
-  //   },
-  // );
+  //Transaction is NOT required here, because you are retrieving items
+  //You are NOT modifying the database directly
+  db('login')
+    .select('hash')
+    .where({ email: email })
+    .then(dbPass => {
+      bcrypt.compare(password, dbPass[0].hash, (err, result) => {
+        if (err) {
+          console.log(err);
+        }
 
-  let { email, password } = req.body;
-  let signin = filterUserByCredentials(email, password);
-  signin.length === 1
-    ? res.json(signin[0])
-    : res.status(401).json('Unauthorized');
+        if (result) {
+          return db('users')
+            .select('*')
+            .where({ email })
+            .then(user => res.json(user[0]))
+            .catch(() => res.status(400).json('User not found'));
+        }
+        return res.status(401).json('access denied');
+      });
+    })
+    .catch(() => res.status(500).json(apiError));
 });
 
 app.post('/register', (req, res) => {
-  const { email, name } = req.body;
-  // bcrypt.hash(password, saltRounds, function (err, hash) {
-  //   // Store hash in your password DB.
-  //   if (err) {
-  //     console.log(err);
-  //   }
+  const { email, name, password } = req.body;
+  bcrypt.hash(password, saltRounds, function (err, hash) {
+    if (err) {
+      console.log(err);
+    }
 
-  //   console.log(hash);
-  // });
-
-  db('users')
-    // returning everything
-    .returning('*')
-    .insert({ name: name, email: email, joined: new Date() })
-    .then(user => res.json(user[0]))
-    .catch(() => res.status(400).json('User not registered'));
+    db.transaction(trx => {
+      trx
+        .insert({
+          hash: hash,
+          email: email,
+        })
+        .into('login')
+        .returning('email')
+        .then(loginEmail => {
+          return trx('users')
+            .returning('*')
+            .insert({ name: name, email: loginEmail[0], joined: new Date() })
+            .then(user => res.json(user[0]))
+            .catch(() => res.status(400).json('User not registered'));
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
+    }).catch(() => res.status(500).json(apiError));
+  });
 });
 
 app.get('/profile/:userId', (req, res) => {

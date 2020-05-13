@@ -56,20 +56,15 @@ class App extends Component {
   }
 
   loadUser = user => {
-    this.setState(
-      {
-        userProfile: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          score: user.score,
-          joined: user.joined,
-        },
+    this.setState({
+      userProfile: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        score: user.score,
+        joined: user.joined,
       },
-      () => {
-        console.log(this.state.userProfile.name);
-      },
-    );
+    });
   };
 
   onInputChange = event => {
