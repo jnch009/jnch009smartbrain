@@ -17,6 +17,12 @@ class SignIn extends Component {
     this.setState({ signInPassword: e.target.value });
   };
 
+  onKeyPress = e => {
+    if (e.key === 'Enter') {
+      this.onSubmitSignIn();
+    }
+  };
+
   onSubmitSignIn = () => {
     // POST Request
     fetch('http://localhost:3000/signin', {
@@ -65,6 +71,7 @@ class SignIn extends Component {
                   name='email-address'
                   id='email-address'
                   onInput={this.onEmailChange}
+                  onKeyPress={this.onKeyPress}
                 />
               </div>
               <div className='mv3'>
@@ -77,6 +84,7 @@ class SignIn extends Component {
                   name='password'
                   id='password'
                   onInput={this.onPasswordChange}
+                  onKeyPress={this.onKeyPress}
                 />
               </div>
             </fieldset>
