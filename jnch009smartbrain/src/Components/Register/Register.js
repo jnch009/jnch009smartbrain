@@ -41,6 +41,13 @@ class Register extends Component {
       .then(resp => resp.json())
       .then(data => {
         if (data) {
+          localStorage.setItem(
+            'currentSession',
+            JSON.stringify({
+              data,
+              ...this.props.sessionExp(),
+            }),
+          );
           this.props.loadUser(data);
           this.props.onRouteChange('home');
         }
