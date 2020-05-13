@@ -117,7 +117,7 @@ app.put('/image', (req, res) => {
     .increment({
       score: 1,
     })
-    .returning('score')
+    .returning('*')
     .then(score => {
       score.length > 0
         ? res.json(score[0])

@@ -115,9 +115,9 @@ class App extends Component {
             }),
           })
             .then(resp => resp.json())
-            .then(data => {
+            .then(newProfile => {
               this.setState({
-                userProfile: { ...this.state.userProfile, score: data.score },
+                userProfile: newProfile,
               });
             });
         }
