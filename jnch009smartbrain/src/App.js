@@ -78,8 +78,6 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.input !== this.state.input) {
-      let test = JSON.parse(localStorage.getItem(currentSession));
-
       if (this.compareExpDate()) {
         this.setState({
           isSignedIn: true,
@@ -198,7 +196,7 @@ class App extends Component {
       });
     } else {
       localStorage.removeItem(currentSession);
-      this.setState(initialState);
+      this.setState({ ...initialState, route: route });
     }
   };
 
