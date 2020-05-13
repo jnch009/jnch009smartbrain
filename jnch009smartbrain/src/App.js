@@ -78,11 +78,13 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.input !== this.state.input) {
+      let test = JSON.parse(localStorage.getItem(currentSession));
+
       if (this.compareExpDate()) {
         this.setState({
           isSignedIn: true,
           route: 'home',
-          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+          //userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
         });
       } else {
         localStorage.removeItem(currentSession);
@@ -164,9 +166,21 @@ class App extends Component {
               })
                 .then(resp => resp.json())
                 .then(newProfile => {
-                  this.setState({
-                    userProfile: newProfile,
-                  });
+                  this.setState(
+                    {
+                      userProfile: newProfile,
+                    },
+                    () => {
+                      let curr = JSON.parse(
+                        localStorage.getItem(currentSession),
+                      );
+                      curr.data = this.state.userProfile;
+                      localStorage.setItem(
+                        currentSession,
+                        JSON.stringify(curr),
+                      );
+                    },
+                  );
                 });
             }
             this.displayBox(this.calculateBox(response));
