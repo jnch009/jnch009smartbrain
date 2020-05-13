@@ -84,7 +84,7 @@ class App extends Component {
         this.setState({
           isSignedIn: true,
           route: 'home',
-          //userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
         });
       } else {
         localStorage.removeItem(currentSession);
