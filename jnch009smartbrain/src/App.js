@@ -12,6 +12,8 @@ import SignIn from './Components/SignIn/SignIn';
 
 import './App.css';
 
+//20 minutes
+const expiry = 20;
 const app = new Clarifai.App({
   apiKey: process.env.REACT_APP_CLARIFAI_API,
 });
@@ -37,24 +39,25 @@ const particleOptions = {
 };
 
 const currentSession = 'currentSession';
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: [],
+  route: 'SignIn',
+  isSignedIn: false,
+  userProfile: {
+    id: '',
+    name: '',
+    email: '',
+    score: 0,
+    joined: '',
+  },
+};
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: [],
-      route: 'SignIn',
-      isSignedIn: false,
-      userProfile: {
-        id: '',
-        name: '',
-        email: '',
-        score: 0,
-        joined: '',
-      },
-    };
+    this.state = initialState;
   }
 
   componentDidMount() {
@@ -75,7 +78,6 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.input !== this.state.input) {
-      console.log('updated');
       if (this.compareExpDate()) {
         this.setState({
           isSignedIn: true,
@@ -175,26 +177,21 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    this.setState(
-      {
-        imageUrl: '',
-        box: [],
-      },
-      () => {
-        if (route === 'home') {
-          this.setState({
-            isSignedIn: true,
-            route: route,
-          });
-        } else {
-          localStorage.removeItem(currentSession);
-          this.setState({
-            isSignedIn: false,
-            route: route,
-          });
-        }
-      },
-    );
+    if (route === 'home') {
+      this.setState({
+        isSignedIn: true,
+        route: route,
+      });
+    } else {
+      localStorage.removeItem(currentSession);
+      this.setState(initialState);
+    }
+  };
+
+  setSessionExpiry = () => {
+    let timestamp = new Date();
+    timestamp.setMinutes(timestamp.getMinutes() + expiry);
+    return { curr: new Date(), exp: timestamp };
   };
 
   render() {
@@ -219,11 +216,16 @@ class App extends Component {
             <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
           </>
         ) : route === 'SignIn' ? (
-          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
+          <SignIn
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+            sessionExp={this.setSessionExpiry}
+          />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
+            sessionExp={this.setSessionExpiry}
           />
         )}
       </div>
