@@ -58,17 +58,46 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (
-      Date.now() <
-      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
-    ) {
+    if (this.compareExpDate()) {
       this.setState({
         isSignedIn: true,
         route: 'home',
         userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
       });
+    } else {
+      localStorage.removeItem(currentSession);
+      this.setState({
+        isSignedIn: false,
+        route: 'SignIn',
+      });
     }
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.input !== this.state.input) {
+      console.log('updated');
+      if (this.compareExpDate()) {
+        this.setState({
+          isSignedIn: true,
+          route: 'home',
+          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+        });
+      } else {
+        localStorage.removeItem(currentSession);
+        this.setState({
+          isSignedIn: false,
+          route: 'SignIn',
+        });
+      }
+    }
+  }
+
+  compareExpDate = () => {
+    return (
+      Date.now() <
+      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
+    );
+  };
 
   loadUser = user => {
     this.setState({
