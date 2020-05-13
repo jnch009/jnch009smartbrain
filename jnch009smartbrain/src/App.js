@@ -36,6 +36,8 @@ const particleOptions = {
   },
 };
 
+const currentSession = 'currentSession';
+
 class App extends Component {
   constructor() {
     super();
@@ -53,6 +55,19 @@ class App extends Component {
         joined: '',
       },
     };
+  }
+
+  componentDidMount() {
+    if (
+      Date.now() <
+      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
+    ) {
+      this.setState({
+        isSignedIn: true,
+        route: 'home',
+        userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+      });
+    }
   }
 
   loadUser = user => {
@@ -143,6 +158,7 @@ class App extends Component {
             route: route,
           });
         } else {
+          localStorage.removeItem(currentSession);
           this.setState({
             isSignedIn: false,
             route: route,
@@ -154,6 +170,7 @@ class App extends Component {
 
   render() {
     const { isSignedIn, imageUrl, route, box, userProfile } = this.state;
+
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />

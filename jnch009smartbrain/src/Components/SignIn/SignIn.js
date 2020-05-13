@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+//20 minutes
+const expiry = 20;
+
 class SignIn extends Component {
   constructor(props) {
     super(props);
@@ -8,6 +11,12 @@ class SignIn extends Component {
       signInPassword: '',
     };
   }
+
+  setSessionExpiry = () => {
+    let timestamp = new Date();
+    timestamp.setMinutes(timestamp.getMinutes() + expiry);
+    return { curr: new Date(), exp: timestamp };
+  };
 
   onEmailChange = e => {
     this.setState({ signInEmail: e.target.value });
@@ -34,6 +43,13 @@ class SignIn extends Component {
       })
       .then(data => {
         if (data?.id) {
+          localStorage.setItem(
+            'currentSession',
+            JSON.stringify({
+              data,
+              ...this.setSessionExpiry(),
+            }),
+          );
           this.props.loadUser(data);
           this.props.onRouteChange('home');
         }
