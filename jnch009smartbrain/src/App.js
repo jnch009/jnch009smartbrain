@@ -99,47 +99,57 @@ class App extends Component {
   };
 
   onButtonSubmit = () => {
-    this.setState({
-      imageUrl: this.state.input,
-      box: [],
-    });
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-      .then(response => {
-        if (response) {
-          fetch('http://localhost:3000/image', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: this.state.userProfile.id,
-            }),
+    this.setState(
+      {
+        imageUrl: this.state.input,
+        box: [],
+      },
+      () => {
+        app.models
+          .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+          .then(response => {
+            if (response) {
+              fetch('http://localhost:3000/image', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: this.state.userProfile.id,
+                }),
+              })
+                .then(resp => resp.json())
+                .then(newProfile => {
+                  this.setState({
+                    userProfile: newProfile,
+                  });
+                });
+            }
+            this.displayBox(this.calculateBox(response));
           })
-            .then(resp => resp.json())
-            .then(newProfile => {
-              this.setState({
-                userProfile: newProfile,
-              });
-            });
-        }
-        this.displayBox(this.calculateBox(response));
-      })
-      .catch(err => console.log(err));
+          .catch(err => console.log(err));
+      },
+    );
   };
 
   onRouteChange = route => {
-    if (route === 'home') {
-      this.setState({
-        isSignedIn: true,
-      });
-    } else {
-      this.setState({
-        isSignedIn: false,
-      });
-    }
-
-    this.setState({
-      route: route,
-    });
+    this.setState(
+      {
+        imageUrl: '',
+        box: [],
+      },
+      () => {
+        if (route === 'home') {
+          this.setState({
+            isSignedIn: true,
+            route: route,
+          });
+        } else {
+          this.setState({
+            isSignedIn: false,
+            route: route,
+          });
+        }
+      },
+    );
   };
 
   render() {
