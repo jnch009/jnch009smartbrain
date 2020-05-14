@@ -147,7 +147,7 @@ class App extends Component {
         box: [],
       },
       () => {
-        fetch('http://localhost:3000/imageURL', {
+        fetch('https://whispering-crag-84898.herokuapp.com/imageURL', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -158,7 +158,7 @@ class App extends Component {
           .then(response => {
             console.log(response);
             if (response) {
-              fetch('http://localhost:3000/image', {
+              fetch('https://whispering-crag-84898.herokuapp.com/image', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
