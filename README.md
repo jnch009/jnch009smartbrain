@@ -2,7 +2,7 @@ Smartbrain Application Final Project in the Complete Web Developer 2020 ZTM taug
 The main attraction of this application is utilizing Clarifai's API for facial recognition and incrementing a 
 score counter for logged in users.
 
-I have already made some tweaks to the original repo found here (https://github.com/aneagoie/smart-brain), by converting bcrypt hashing and comparing into an asynchronous function rather than synchronous like he shows in the video, updating the UX with the ability to hit enter on the password field to submit instead of always having to click the submit button, and adding some backend endpoints for the profile page in the future.
+I have already made some tweaks to the original repo found here (https://github.com/aneagoie/smart-brain), by converting bcrypt hashing and comparing into an asynchronous function rather than synchronous like he shows in the video, updating the UX with the ability to hit enter on the password field to submit instead of always having to click the submit button, the ability to persist a logged in session and adding some backend endpoints for the profile page in the future.
 
 I have plans to improve this app by:
 1) More descriptive error handling shown in the app rather than console.log
