@@ -12,6 +12,8 @@ import SignIn from './Components/SignIn/SignIn';
 
 import './App.css';
 
+//20 minutes
+const expiry = 20;
 const app = new Clarifai.App({
   apiKey: process.env.REACT_APP_CLARIFAI_API,
 });
@@ -36,24 +38,68 @@ const particleOptions = {
   },
 };
 
+const currentSession = 'currentSession';
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: [],
+  route: 'SignIn',
+  isSignedIn: false,
+  userProfile: {
+    id: '',
+    name: '',
+    email: '',
+    score: 0,
+    joined: '',
+  },
+};
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: [],
-      route: 'SignIn',
-      isSignedIn: false,
-      userProfile: {
-        id: '',
-        name: '',
-        email: '',
-        score: 0,
-        joined: '',
-      },
-    };
+    this.state = initialState;
   }
+
+  componentDidMount() {
+    if (this.compareExpDate()) {
+      this.setState({
+        isSignedIn: true,
+        route: 'home',
+        userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+      });
+    } else {
+      localStorage.removeItem(currentSession);
+      this.setState({
+        isSignedIn: false,
+        route: 'SignIn',
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.input !== this.state.input) {
+      if (this.compareExpDate()) {
+        this.setState({
+          isSignedIn: true,
+          route: 'home',
+          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+        });
+      } else {
+        localStorage.removeItem(currentSession);
+        this.setState({
+          isSignedIn: false,
+          route: 'SignIn',
+        });
+      }
+    }
+  }
+
+  compareExpDate = () => {
+    return (
+      Date.now() <
+      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
+    );
+  };
 
   loadUser = user => {
     this.setState({
@@ -118,9 +164,21 @@ class App extends Component {
               })
                 .then(resp => resp.json())
                 .then(newProfile => {
-                  this.setState({
-                    userProfile: newProfile,
-                  });
+                  this.setState(
+                    {
+                      userProfile: newProfile,
+                    },
+                    () => {
+                      let curr = JSON.parse(
+                        localStorage.getItem(currentSession),
+                      );
+                      curr.data = this.state.userProfile;
+                      localStorage.setItem(
+                        currentSession,
+                        JSON.stringify(curr),
+                      );
+                    },
+                  );
                 });
             }
             this.displayBox(this.calculateBox(response));
@@ -131,29 +189,26 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    this.setState(
-      {
-        imageUrl: '',
-        box: [],
-      },
-      () => {
-        if (route === 'home') {
-          this.setState({
-            isSignedIn: true,
-            route: route,
-          });
-        } else {
-          this.setState({
-            isSignedIn: false,
-            route: route,
-          });
-        }
-      },
-    );
+    if (route === 'home') {
+      this.setState({
+        isSignedIn: true,
+        route: route,
+      });
+    } else {
+      localStorage.removeItem(currentSession);
+      this.setState({ ...initialState, route: route });
+    }
+  };
+
+  setSessionExpiry = () => {
+    let timestamp = new Date();
+    timestamp.setMinutes(timestamp.getMinutes() + expiry);
+    return { curr: new Date(), exp: timestamp };
   };
 
   render() {
     const { isSignedIn, imageUrl, route, box, userProfile } = this.state;
+
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
@@ -173,11 +228,16 @@ class App extends Component {
             <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
           </>
         ) : route === 'SignIn' ? (
-          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
+          <SignIn
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+            sessionExp={this.setSessionExpiry}
+          />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
+            sessionExp={this.setSessionExpiry}
           />
         )}
       </div>
