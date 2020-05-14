@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Navigation = ({onRouteChange, isSignedIn}) => {
+const Navigation = ({ onRouteChange, isSignedIn }) => {
   return (
     <>
       {isSignedIn === true ? (
         <>
-          <nav style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
@@ -17,7 +17,7 @@ const Navigation = ({onRouteChange, isSignedIn}) => {
         </>
       ) : (
         <>
-          <nav style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
