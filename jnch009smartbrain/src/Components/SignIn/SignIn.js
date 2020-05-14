@@ -33,11 +33,7 @@ class SignIn extends Component {
         password: this.state.signInPassword,
       }),
     })
-      .then(resp => {
-        if (resp.status === 200) {
-          return resp.json();
-        }
-      })
+      .then(resp => resp.json())
       .then(data => {
         if (data?.id) {
           localStorage.setItem(
@@ -49,6 +45,8 @@ class SignIn extends Component {
           );
           this.props.loadUser(data);
           this.props.onRouteChange('home');
+        } else {
+          this.props.setError(data);
         }
       });
   };
