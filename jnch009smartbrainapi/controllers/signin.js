@@ -22,7 +22,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError) => {
         return res.status(401).json('access denied');
       });
     })
-    .catch(() => res.status(500).json(apiError));
+    .catch(() => res.status(404).json(apiError));
 };
 
 module.exports = {
