@@ -17,10 +17,10 @@ const apiError = 'Internal Server error, please try again later';
 const db = knex({
   client: 'pg',
   connection: {
-    host: '127.0.0.1',
-    user: 'jnch009',
-    password: process.env.DB_PASS,
-    database: 'jnch009smartbrain',
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
 });
 
@@ -50,6 +50,10 @@ app.put('/image', (req, res) =>
   image.handleImageUpdate(req, res, db, apiError),
 );
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000');
+app.post('/imageURL', (req, res) =>
+  image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
+);
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Listening on port ${process.env.PORT || 3000}`);
 });

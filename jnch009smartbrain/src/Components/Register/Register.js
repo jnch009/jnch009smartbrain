@@ -29,7 +29,7 @@ class Register extends Component {
   };
 
   onSubmit = () => {
-    fetch('http://localhost:3000/register', {
+    fetch('https://whispering-crag-84898.herokuapp.com/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -40,7 +40,7 @@ class Register extends Component {
     })
       .then(resp => resp.json())
       .then(data => {
-        if (data) {
+        if (data?.id) {
           localStorage.setItem(
             'currentSession',
             JSON.stringify({
