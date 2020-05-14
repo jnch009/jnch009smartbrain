@@ -1,4 +1,3 @@
-import Clarifai from 'clarifai';
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
 
@@ -14,9 +13,6 @@ import './App.css';
 
 //20 minutes
 const expiry = 20;
-const app = new Clarifai.App({
-  apiKey: process.env.REACT_APP_CLARIFAI_API,
-});
 
 const particleOptions = {
   particles: {
@@ -151,9 +147,16 @@ class App extends Component {
         box: [],
       },
       () => {
-        app.models
-          .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+        fetch('http://localhost:3000/imageURL', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            input: this.state.input,
+          }),
+        })
+          .then(response => response.json())
           .then(response => {
+            console.log(response);
             if (response) {
               fetch('http://localhost:3000/image', {
                 method: 'PUT',

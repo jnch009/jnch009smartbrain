@@ -1,3 +1,18 @@
+const Clarifai = require('clarifai');
+
+const handleAPICall = (req, res, apiKey) => {
+  const app = new Clarifai.App({
+    apiKey: apiKey,
+  });
+
+  app.models
+    .predict(Clarifai.FACE_DETECT_MODEL, req.body.input)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(() => res.status(400).json('External API error'));
+};
+
 const handleImageUpdate = (req, res, db, apiError) => {
   const { id } = req.body;
   db('users')
@@ -14,4 +29,4 @@ const handleImageUpdate = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
-module.exports = { handleImageUpdate };
+module.exports = { handleImageUpdate, handleAPICall };
