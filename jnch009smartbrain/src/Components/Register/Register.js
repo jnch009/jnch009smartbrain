@@ -40,7 +40,7 @@ class Register extends Component {
     })
       .then(resp => resp.json())
       .then(data => {
-        if (data) {
+        if (data?.id) {
           localStorage.setItem(
             'currentSession',
             JSON.stringify({
