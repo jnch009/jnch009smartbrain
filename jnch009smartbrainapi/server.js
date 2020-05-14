@@ -15,9 +15,12 @@ const saltRounds = 10;
 const apiError = 'Internal Server error, please try again later';
 
 const db = knex({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
+  client: 'pg',
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
 });
 
