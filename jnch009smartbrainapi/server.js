@@ -29,7 +29,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => root.handleRoot(res, db, apiError));
+//app.get('/', (req, res) => root.handleRoot(res, db, apiError));
+app.get('/', (req, res) => res.json('hooray!'));
 app.post('/signin', (req, res) =>
   signin.handleSignIn(req, res, db, bcrypt, apiError),
 );
