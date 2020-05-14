@@ -1,5 +1,10 @@
 const handleRegister = (req, res, db, bcrypt, saltRounds, apiError) => {
   const { email, name, password } = req.body;
+
+  if (!email || !password || !name) {
+    return res.status(400).json('Cannot leave fields empty');
+  }
+
   bcrypt.hash(password, saltRounds, function (err, hash) {
     if (err) {
       console.log(err);
