@@ -8,6 +8,7 @@ import Navigation from './Components/Navigation/Navigation';
 import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
+import Error from './Components/Error/Error';
 
 import './App.css';
 
@@ -48,6 +49,7 @@ const initialState = {
     score: 0,
     joined: '',
   },
+  showError: false,
 };
 
 class App extends Component {
@@ -210,11 +212,21 @@ class App extends Component {
   };
 
   render() {
-    const { isSignedIn, imageUrl, route, box, userProfile } = this.state;
+    const {
+      isSignedIn,
+      imageUrl,
+      route,
+      box,
+      userProfile,
+      showError,
+    } = this.state;
 
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
+        {showError ? (
+          <Error>Jeremy is the best developer in the whole wide world!</Error>
+        ) : null}
         <Navigation
           onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
