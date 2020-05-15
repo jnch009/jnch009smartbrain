@@ -9,6 +9,7 @@ import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
+import { CSSTransition } from 'react-transition-group';
 
 import './App.css';
 
@@ -49,7 +50,7 @@ const initialState = {
     score: 0,
     joined: '',
   },
-  showError: false,
+  errorMsg: '',
 };
 
 class App extends Component {
@@ -211,6 +212,17 @@ class App extends Component {
     return { curr: new Date(), exp: timestamp };
   };
 
+  setError = msg => {
+    this.setState(
+      {
+        errorMsg: msg,
+      },
+      () => {
+        setTimeout(() => this.setState({ errorMsg: '' }), 2000);
+      },
+    );
+  };
+
   render() {
     const {
       isSignedIn,
@@ -218,15 +230,21 @@ class App extends Component {
       route,
       box,
       userProfile,
-      showError,
+      errorMsg,
     } = this.state;
 
     return (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
-        {showError ? (
-          <Error>Jeremy is the best developer in the whole wide world!</Error>
-        ) : null}
+        <CSSTransition
+          in={errorMsg !== ''}
+          timeout={300}
+          classNames='error'
+          unmountOnExit
+        >
+          <Error>{errorMsg}</Error>
+        </CSSTransition>
+
         <Navigation
           onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
@@ -247,6 +265,7 @@ class App extends Component {
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
             sessionExp={this.setSessionExpiry}
+            setError={this.setError}
           />
         ) : (
           <Register
