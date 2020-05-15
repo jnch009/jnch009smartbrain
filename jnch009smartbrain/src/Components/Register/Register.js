@@ -28,32 +28,57 @@ class Register extends Component {
     });
   };
 
+  validateEmail = () => {
+    let reEmail = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    return reEmail.test(this.state.email);
+  };
+
+  validatePassword = () => {
+    let rePassword = /.{8,}/;
+    return rePassword.test(this.state.password);
+  };
+
+  validateForm = () => {
+    if (!this.validateEmail() || !this.validatePassword()) {
+      if (!this.validateEmail()) {
+        this.props.setError('Email format is not correct');
+      } else if (!this.validatePassword()) {
+        this.props.setError('Password must be at least 8 characters');
+      }
+      return false;
+    }
+
+    return true;
+  };
+
   onSubmit = () => {
-    fetch('https://whispering-crag-84898.herokuapp.com/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: this.state.name,
-        email: this.state.email,
-        password: this.state.password,
-      }),
-    })
-      .then(resp => resp.json())
-      .then(data => {
-        if (data?.id) {
-          localStorage.setItem(
-            'currentSession',
-            JSON.stringify({
-              data,
-              ...this.props.sessionExp(),
-            }),
-          );
-          this.props.loadUser(data);
-          this.props.onRouteChange('home');
-        } else {
-          this.props.setError(data);
-        }
-      });
+    if (this.validateForm()) {
+      fetch('https://whispering-crag-84898.herokuapp.com/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.state.name,
+          email: this.state.email,
+          password: this.state.password,
+        }),
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data?.id) {
+            localStorage.setItem(
+              'currentSession',
+              JSON.stringify({
+                data,
+                ...this.props.sessionExp(),
+              }),
+            );
+            this.props.loadUser(data);
+            this.props.onRouteChange('home');
+          } else {
+            this.props.setError(data);
+          }
+        });
+    }
   };
 
   render() {
@@ -96,6 +121,8 @@ class Register extends Component {
                   type='password'
                   name='password'
                   id='password'
+                  pattern='.{16,}'
+                  required
                   onInput={this.onPasswordChange}
                 />
               </div>

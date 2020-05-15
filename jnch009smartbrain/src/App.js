@@ -159,7 +159,6 @@ class App extends Component {
         })
           .then(response => response.json())
           .then(response => {
-            console.log(response);
             if (response.outputs) {
               fetch('https://whispering-crag-84898.herokuapp.com/image', {
                 method: 'PUT',
@@ -186,8 +185,10 @@ class App extends Component {
                     },
                   );
                 });
+              this.displayBox(this.calculateBox(response));
+            } else {
+              this.setError(response);
             }
-            this.displayBox(this.calculateBox(response));
           })
           .catch(err => console.log(err));
       },
