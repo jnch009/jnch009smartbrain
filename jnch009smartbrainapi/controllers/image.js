@@ -10,7 +10,9 @@ const handleAPICall = (req, res, apiKey) => {
     .then(data => {
       res.json(data);
     })
-    .catch(() => res.status(400).json('External API error'));
+    .catch(() =>
+      res.status(400).json('Please review your input or use another image'),
+    );
 };
 
 const handleImageUpdate = (req, res, db, apiError) => {
