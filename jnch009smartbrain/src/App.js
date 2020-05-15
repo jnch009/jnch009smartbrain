@@ -160,7 +160,7 @@ class App extends Component {
           .then(response => response.json())
           .then(response => {
             console.log(response);
-            if (response) {
+            if (response.outputs) {
               fetch('https://whispering-crag-84898.herokuapp.com/image', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -272,6 +272,7 @@ class App extends Component {
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
             sessionExp={this.setSessionExpiry}
+            setError={this.setError}
           />
         )}
       </div>
