@@ -23,3 +23,19 @@
     height: 100vh;
   }
 }
+
+.error-enter {
+  transform: translateX(-100vw);
+}
+.error-enter-active {
+  transform: translateX(0);
+  transition: transform 200ms;
+}
+
+.error-exit {
+  transform: translateY(0);
+}
+.error-exit-active {
+  transform: translateY(-100vh);
+  transition: transform 200ms;
+}
