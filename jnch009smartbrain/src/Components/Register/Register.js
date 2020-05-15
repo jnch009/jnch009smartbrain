@@ -50,6 +50,8 @@ class Register extends Component {
           );
           this.props.loadUser(data);
           this.props.onRouteChange('home');
+        } else {
+          this.props.setError(data);
         }
       });
   };
