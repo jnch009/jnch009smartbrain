@@ -219,7 +219,7 @@ class App extends Component {
         errorMsg: msg,
       },
       () => {
-        setTimeout(() => this.setState({ errorMsg: '' }), 2000);
+        // setTimeout(() => this.setState({ errorMsg: '' }), 2000);
       },
     );
   };
