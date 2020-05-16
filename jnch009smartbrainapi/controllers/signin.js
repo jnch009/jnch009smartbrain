@@ -33,6 +33,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
                   httpOnly: true,
                   sameSite: 'None',
                   secure: true,
+                  expires: new Date(Date.now() + 3.6e6),
                 })
                 .json(user[0]);
             })
