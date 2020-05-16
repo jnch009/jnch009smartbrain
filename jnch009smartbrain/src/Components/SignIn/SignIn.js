@@ -28,6 +28,7 @@ class SignIn extends Component {
     fetch('https://whispering-crag-84898.herokuapp.com/signin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         email: this.state.signInEmail,
         password: this.state.signInPassword,
