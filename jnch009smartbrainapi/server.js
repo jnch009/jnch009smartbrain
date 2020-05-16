@@ -46,7 +46,8 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
 const verifyJWT = (req, res, next) => {
-  console.log(req);
+  console.log(req.headers);
+  console.log(res);
   jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
     if (decoded) {
       req.user = decoded.user;
