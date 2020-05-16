@@ -1,4 +1,4 @@
-const handleSignIn = (req, res, db, bcrypt, apiError) => {
+const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -20,7 +20,23 @@ const handleSignIn = (req, res, db, bcrypt, apiError) => {
           return db('users')
             .select('*')
             .where({ email })
-            .then(user => res.json(user[0]))
+            .then(user => {
+              const token = jwt.sign(
+                { user: user[0] },
+                process.env.JWT_SECRET,
+                {
+                  expiresIn: '1h',
+                },
+              );
+              res
+                .cookie('jwt', token, {
+                  httpOnly: true,
+                  sameSite: 'None',
+                  secure: true,
+                  expires: new Date(Date.now() + 3.6e6),
+                })
+                .json(user[0]);
+            })
             .catch(() => res.status(400).json('User not found'));
         }
         return res.status(401).json('access denied');

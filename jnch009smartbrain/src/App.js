@@ -9,12 +9,11 @@ import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
+import { LoadingSpinner } from './Components/LoadingSpinner/LoadingSpinner';
+import { trackPromise } from 'react-promise-tracker';
 import { CSSTransition } from 'react-transition-group';
 
 import './App.css';
-
-//20 minutes
-const expiry = 20;
 
 const particleOptions = {
   particles: {
@@ -36,12 +35,11 @@ const particleOptions = {
   },
 };
 
-const currentSession = 'currentSession';
 const initialState = {
   input: '',
   imageUrl: '',
   box: [],
-  route: 'SignIn',
+  route: '',
   isSignedIn: false,
   userProfile: {
     id: '',
@@ -60,45 +58,44 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (this.compareExpDate()) {
-      this.setState({
-        isSignedIn: true,
-        route: 'home',
-        userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
-      });
-    } else {
-      localStorage.removeItem(currentSession);
-      this.setState({
-        isSignedIn: false,
-        route: 'SignIn',
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.input !== this.state.input) {
-      if (this.compareExpDate()) {
-        this.setState({
-          isSignedIn: true,
-          route: 'home',
-          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
-        });
-      } else {
-        localStorage.removeItem(currentSession);
-        this.setState({
-          isSignedIn: false,
-          route: 'SignIn',
-        });
-      }
-    }
-  }
-
-  compareExpDate = () => {
-    return (
-      Date.now() <
-      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
+    trackPromise(
+      fetch(`${process.env.REACT_APP_FETCH_API}/`, {
+        credentials: 'include',
+      })
+        .then(resp => resp.json())
+        .then(user => {
+          if (user.id) {
+            this.setState({
+              isSignedIn: true,
+              route: 'home',
+              userProfile: user,
+            });
+          } else {
+            this.setState({
+              route: 'SignIn',
+            });
+          }
+        }),
     );
-  };
+  }
+
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   if (prevState.input !== this.state.input) {
+  //     if (this.compareExpDate()) {
+  //       this.setState({
+  //         isSignedIn: true,
+  //         route: 'home',
+  //         userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+  //       });
+  //     } else {
+  //       localStorage.removeItem(currentSession);
+  //       this.setState({
+  //         isSignedIn: false,
+  //         route: 'SignIn',
+  //       });
+  //     }
+  //   }
+  // }
 
   loadUser = user => {
     this.setState({
@@ -150,47 +147,37 @@ class App extends Component {
         box: [],
       },
       () => {
-        fetch('https://whispering-crag-84898.herokuapp.com/imageURL', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            input: this.state.input,
-          }),
-        })
-          .then(response => response.json())
-          .then(response => {
-            if (response.outputs) {
-              fetch('https://whispering-crag-84898.herokuapp.com/image', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  id: this.state.userProfile.id,
-                }),
-              })
-                .then(resp => resp.json())
-                .then(newProfile => {
-                  this.setState(
-                    {
-                      userProfile: newProfile,
-                    },
-                    () => {
-                      let curr = JSON.parse(
-                        localStorage.getItem(currentSession),
-                      );
-                      curr.data = this.state.userProfile;
-                      localStorage.setItem(
-                        currentSession,
-                        JSON.stringify(curr),
-                      );
-                    },
-                  );
-                });
-              this.displayBox(this.calculateBox(response));
-            } else {
-              this.setError(response);
-            }
+        trackPromise(
+          fetch(`${process.env.REACT_APP_FETCH_API}/imageURL`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              input: this.state.input,
+            }),
           })
-          .catch(err => console.log(err));
+            .then(response => response.json())
+            .then(response => {
+              if (response.outputs) {
+                fetch(`${process.env.REACT_APP_FETCH_API}/image`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    id: this.state.userProfile.id,
+                  }),
+                })
+                  .then(resp => resp.json())
+                  .then(newProfile => {
+                    this.setState({
+                      userProfile: newProfile,
+                    });
+                  });
+                this.displayBox(this.calculateBox(response));
+              } else {
+                this.setError(response);
+              }
+            })
+            .catch(err => console.log(err)),
+        );
       },
     );
   };
@@ -202,15 +189,8 @@ class App extends Component {
         route: route,
       });
     } else {
-      localStorage.removeItem(currentSession);
       this.setState({ ...initialState, route: route });
     }
-  };
-
-  setSessionExpiry = () => {
-    let timestamp = new Date();
-    timestamp.setMinutes(timestamp.getMinutes() + expiry);
-    return { curr: new Date(), exp: timestamp };
   };
 
   setError = msg => {
@@ -234,8 +214,11 @@ class App extends Component {
       errorMsg,
     } = this.state;
 
-    return (
+    return route === '' ? (
+      <LoadingSpinner route={route} />
+    ) : (
       <div className='App'>
+        <LoadingSpinner />
         <Particles className='particles' params={particleOptions} />
         <CSSTransition
           in={errorMsg !== ''}
@@ -265,14 +248,12 @@ class App extends Component {
           <SignIn
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
-            sessionExp={this.setSessionExpiry}
             setError={this.setError}
           />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
-            sessionExp={this.setSessionExpiry}
             setError={this.setError}
           />
         )}
