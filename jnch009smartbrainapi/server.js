@@ -45,19 +45,16 @@ app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
-const verifyJWT = (req, res, next) => {
-  jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
+const verifyJWT = async (req, res, next) => {
+  await jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
     if (decoded) {
       req.user = decoded.user;
     }
-
-    next();
   });
+  next();
 };
 
-app.use(verifyJWT);
-
-app.get('/', (req, res) => {
+app.get('/', verifyJWT, (req, res) => {
   root.handleRoot(req, res, apiError);
 });
 
@@ -69,19 +66,19 @@ app.post('/register', (req, res) =>
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError),
 );
 
-app.get('/profile/:email', (req, res) =>
+app.get('/profile/:email', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
-app.delete('/profile/:email', (req, res) =>
+app.delete('/profile/:email', verifyJWT, (req, res) =>
   profile.handleDeleteProfile(req, res, db, apiError),
 );
 
-app.put('/image', (req, res) =>
+app.put('/image', verifyJWT, (req, res) =>
   image.handleImageUpdate(req, res, db, apiError),
 );
 
-app.post('/imageURL', (req, res) =>
+app.post('/imageURL', verifyJWT, (req, res) =>
   image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
 );
 
