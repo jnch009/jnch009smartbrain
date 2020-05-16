@@ -60,38 +60,37 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (this.compareExpDate()) {
-      this.setState({
-        isSignedIn: true,
-        route: 'home',
-        userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+    fetch('https://whispering-crag-84898.herokuapp.com/')
+      .then(resp => resp.json())
+      .then(user => {
+        console.log(user);
+        if (user.id) {
+          this.setState({
+            isSignedIn: true,
+            route: 'home',
+            userProfile: user,
+          });
+        }
       });
-    } else {
-      localStorage.removeItem(currentSession);
-      this.setState({
-        isSignedIn: false,
-        route: 'SignIn',
-      });
-    }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.input !== this.state.input) {
-      if (this.compareExpDate()) {
-        this.setState({
-          isSignedIn: true,
-          route: 'home',
-          userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
-        });
-      } else {
-        localStorage.removeItem(currentSession);
-        this.setState({
-          isSignedIn: false,
-          route: 'SignIn',
-        });
-      }
-    }
-  }
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   if (prevState.input !== this.state.input) {
+  //     if (this.compareExpDate()) {
+  //       this.setState({
+  //         isSignedIn: true,
+  //         route: 'home',
+  //         userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
+  //       });
+  //     } else {
+  //       localStorage.removeItem(currentSession);
+  //       this.setState({
+  //         isSignedIn: false,
+  //         route: 'SignIn',
+  //       });
+  //     }
+  //   }
+  // }
 
   compareExpDate = () => {
     return (
