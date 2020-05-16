@@ -23,7 +23,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
             .then(user => {
               const token = jwt.sign(
                 { user: user[0] },
-                process.env.TEST_SECRET,
+                process.env.JWT_SECRET,
                 {
                   expiresIn: '1h',
                 },
