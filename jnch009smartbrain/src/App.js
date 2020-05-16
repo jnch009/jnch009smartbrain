@@ -41,7 +41,7 @@ const initialState = {
   input: '',
   imageUrl: '',
   box: [],
-  route: 'SignIn',
+  route: '',
   isSignedIn: false,
   userProfile: {
     id: '',
@@ -51,6 +51,7 @@ const initialState = {
     joined: '',
   },
   errorMsg: '',
+  loading: true,
 };
 
 class App extends Component {
@@ -60,17 +61,23 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('https://whispering-crag-84898.herokuapp.com/', {
+    console.log(process.env.REACT_APP_FETCH_API);
+    fetch(`${process.env.REACT_APP_FETCH_API}/`, {
       credentials: 'include',
     })
       .then(resp => resp.json())
       .then(user => {
-        console.log(user);
         if (user.id) {
           this.setState({
             isSignedIn: true,
             route: 'home',
             userProfile: user,
+            loading: false,
+          });
+        } else {
+          this.setState({
+            route: 'SignIn',
+            loading: false,
           });
         }
       });
@@ -151,7 +158,7 @@ class App extends Component {
         box: [],
       },
       () => {
-        fetch('https://whispering-crag-84898.herokuapp.com/imageURL', {
+        fetch(`${process.env.REACT_APP_FETCH_API}/imageURL`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -161,7 +168,7 @@ class App extends Component {
           .then(response => response.json())
           .then(response => {
             if (response.outputs) {
-              fetch('https://whispering-crag-84898.herokuapp.com/image', {
+              fetch(`${process.env.REACT_APP_FETCH_API}/image`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -233,9 +240,14 @@ class App extends Component {
       box,
       userProfile,
       errorMsg,
+      loading,
     } = this.state;
 
-    return (
+    return loading ? (
+      <span className='centeringUnknown'>
+        <h1>LOADING</h1>
+      </span>
+    ) : (
       <div className='App'>
         <Particles className='particles' params={particleOptions} />
         <CSSTransition

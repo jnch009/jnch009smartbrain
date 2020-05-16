@@ -25,7 +25,7 @@ class SignIn extends Component {
 
   onSubmitSignIn = () => {
     // POST Request
-    fetch('https://whispering-crag-84898.herokuapp.com/signin', {
+    fetch(`${process.env.FETCH_API}/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
