@@ -60,7 +60,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('https://whispering-crag-84898.herokuapp.com/')
+    fetch('https://whispering-crag-84898.herokuapp.com/', {
+      credentials: 'include',
+    })
       .then(resp => resp.json())
       .then(user => {
         console.log(user);
