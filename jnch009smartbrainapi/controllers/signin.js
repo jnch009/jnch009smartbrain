@@ -31,7 +31,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: 'Lax',
+                  sameSite: 'None',
                   secure: true,
                 })
                 .json(user[0]);
