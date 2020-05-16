@@ -53,7 +53,7 @@ class Register extends Component {
 
   onSubmit = () => {
     if (this.validateForm()) {
-      fetch('https://whispering-crag-84898.herokuapp.com/register', {
+      fetch(`${process.env.FETCH_API}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
