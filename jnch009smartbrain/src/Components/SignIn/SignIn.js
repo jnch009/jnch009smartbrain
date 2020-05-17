@@ -25,7 +25,7 @@ class SignIn extends Component {
 
   onSubmitSignIn = () => {
     // POST Request
-    fetch(`${process.env.FETCH_API}/signin`, {
+    fetch(`${process.env.REACT_APP_FETCH_API}/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
