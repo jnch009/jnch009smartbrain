@@ -53,7 +53,7 @@ class Register extends Component {
 
   onSubmit = () => {
     if (this.validateForm()) {
-      fetch(`${process.env.FETCH_API}/register`, {
+      fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -13,9 +13,6 @@ import { CSSTransition } from 'react-transition-group';
 
 import './App.css';
 
-//20 minutes
-const expiry = 20;
-
 const particleOptions = {
   particles: {
     number: {
@@ -101,13 +98,6 @@ class App extends Component {
   //   }
   // }
 
-  compareExpDate = () => {
-    return (
-      Date.now() <
-      Date.parse(JSON.parse(localStorage.getItem(currentSession))?.exp)
-    );
-  };
-
   loadUser = user => {
     this.setState({
       userProfile: {
@@ -177,21 +167,9 @@ class App extends Component {
               })
                 .then(resp => resp.json())
                 .then(newProfile => {
-                  this.setState(
-                    {
-                      userProfile: newProfile,
-                    },
-                    () => {
-                      let curr = JSON.parse(
-                        localStorage.getItem(currentSession),
-                      );
-                      curr.data = this.state.userProfile;
-                      localStorage.setItem(
-                        currentSession,
-                        JSON.stringify(curr),
-                      );
-                    },
-                  );
+                  this.setState({
+                    userProfile: newProfile,
+                  });
                 });
               this.displayBox(this.calculateBox(response));
             } else {
@@ -210,15 +188,8 @@ class App extends Component {
         route: route,
       });
     } else {
-      localStorage.removeItem(currentSession);
-      this.setState({ ...initialState, route: route });
+      this.setState({ ...initialState, loading: false, route: route });
     }
-  };
-
-  setSessionExpiry = () => {
-    let timestamp = new Date();
-    timestamp.setMinutes(timestamp.getMinutes() + expiry);
-    return { curr: new Date(), exp: timestamp };
   };
 
   setError = msg => {
@@ -278,14 +249,12 @@ class App extends Component {
           <SignIn
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
-            sessionExp={this.setSessionExpiry}
             setError={this.setError}
           />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
-            sessionExp={this.setSessionExpiry}
             setError={this.setError}
           />
         )}
