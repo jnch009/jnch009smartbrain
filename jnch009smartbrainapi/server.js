@@ -69,7 +69,7 @@ app.post('/signout', verifyJWT, (req, res) => signout.handleSignOut(req, res));
 
 app.post('/register', (req, res) =>
   //dependency injection
-  register.handleRegister(req, res, db, bcrypt, saltRounds, apiError),
+  register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
 );
 
 app.get('/profile', verifyJWT, (req, res) =>
