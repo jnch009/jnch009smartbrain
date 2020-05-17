@@ -50,13 +50,12 @@ const verifyJWT = (req, res, next) => {
   jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
     if (decoded) {
       req.user = decoded.user;
+      next();
+    } else {
+      res.status(401).json("Unauthorized, please log in");
     }
-
-    next();
   });
 };
-
-app.use(verifyJWT);
 
 app.get('/', (req, res) => {
   root.handleRoot(req, res, apiError);
@@ -66,26 +65,26 @@ app.post('/signin', (req, res) =>
   signin.handleSignIn(req, res, db, bcrypt, apiError, jwt),
 );
 
-app.post('/signout', (req,res) => signout.handleSignOut(req,res))
+app.post('/signout', verifyJWT, (req, res) => signout.handleSignOut(req, res));
 
 app.post('/register', (req, res) =>
   //dependency injection
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError),
 );
 
-app.get('/profile/:email', (req, res) =>
+app.get('/profile', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
-app.delete('/profile/:email', (req, res) =>
+app.delete('/profile/:email', verifyJWT, (req, res) =>
   profile.handleDeleteProfile(req, res, db, apiError),
 );
 
-app.put('/image', (req, res) =>
+app.put('/image', verifyJWT, (req, res) =>
   image.handleImageUpdate(req, res, db, apiError),
 );
 
-app.post('/imageURL', (req, res) =>
+app.post('/imageURL', verifyJWT, (req, res) =>
   image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
 );
 
