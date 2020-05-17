@@ -1,6 +1,6 @@
 Things to do:
 **Register is not redirecting to home (FIXED)
-**Register is not generating a jwt (In progress)
+**Register is not generating a jwt (FIXED)
 **Score is not persisting on refresh (FIXED but perhaps a better solution exists?)
     - one solution is to store the email of the user and get the profile based on that (APPLIED)
 
