@@ -9,6 +9,8 @@ import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
+import { LoadingSpinner } from './Components/LoadingSpinner/LoadingSpinner';
+import { trackPromise } from 'react-promise-tracker';
 import { CSSTransition } from 'react-transition-group';
 
 import './App.css';
@@ -33,7 +35,6 @@ const particleOptions = {
   },
 };
 
-const currentSession = 'currentSession';
 const initialState = {
   input: '',
   imageUrl: '',
@@ -48,7 +49,6 @@ const initialState = {
     joined: '',
   },
   errorMsg: '',
-  loading: true,
 };
 
 class App extends Component {
@@ -58,26 +58,25 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log(process.env.REACT_APP_FETCH_API);
-    fetch(`${process.env.REACT_APP_FETCH_API}/`, {
-      credentials: 'include',
-    })
-      .then(resp => resp.json())
-      .then(user => {
-        if (user.id) {
-          this.setState({
-            isSignedIn: true,
-            route: 'home',
-            userProfile: user,
-            loading: false,
-          });
-        } else {
-          this.setState({
-            route: 'SignIn',
-            loading: false,
-          });
-        }
-      });
+    trackPromise(
+      fetch(`${process.env.REACT_APP_FETCH_API}/`, {
+        credentials: 'include',
+      })
+        .then(resp => resp.json())
+        .then(user => {
+          if (user.id) {
+            this.setState({
+              isSignedIn: true,
+              route: 'home',
+              userProfile: user,
+            });
+          } else {
+            this.setState({
+              route: 'SignIn',
+            });
+          }
+        }),
+    );
   }
 
   // componentDidUpdate(prevProps, prevState, snapshot) {
@@ -148,35 +147,37 @@ class App extends Component {
         box: [],
       },
       () => {
-        fetch(`${process.env.REACT_APP_FETCH_API}/imageURL`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            input: this.state.input,
-          }),
-        })
-          .then(response => response.json())
-          .then(response => {
-            if (response.outputs) {
-              fetch(`${process.env.REACT_APP_FETCH_API}/image`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  id: this.state.userProfile.id,
-                }),
-              })
-                .then(resp => resp.json())
-                .then(newProfile => {
-                  this.setState({
-                    userProfile: newProfile,
-                  });
-                });
-              this.displayBox(this.calculateBox(response));
-            } else {
-              this.setError(response);
-            }
+        trackPromise(
+          fetch(`${process.env.REACT_APP_FETCH_API}/imageURL`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              input: this.state.input,
+            }),
           })
-          .catch(err => console.log(err));
+            .then(response => response.json())
+            .then(response => {
+              if (response.outputs) {
+                fetch(`${process.env.REACT_APP_FETCH_API}/image`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    id: this.state.userProfile.id,
+                  }),
+                })
+                  .then(resp => resp.json())
+                  .then(newProfile => {
+                    this.setState({
+                      userProfile: newProfile,
+                    });
+                  });
+                this.displayBox(this.calculateBox(response));
+              } else {
+                this.setError(response);
+              }
+            })
+            .catch(err => console.log(err)),
+        );
       },
     );
   };
@@ -188,7 +189,7 @@ class App extends Component {
         route: route,
       });
     } else {
-      this.setState({ ...initialState, loading: false, route: route });
+      this.setState({ ...initialState, route: route });
     }
   };
 
@@ -211,15 +212,13 @@ class App extends Component {
       box,
       userProfile,
       errorMsg,
-      loading,
     } = this.state;
 
-    return loading ? (
-      <span className='centeringUnknown'>
-        <h1>LOADING</h1>
-      </span>
+    return route === '' ? (
+      <LoadingSpinner route={route} />
     ) : (
       <div className='App'>
+        <LoadingSpinner />
         <Particles className='particles' params={particleOptions} />
         <CSSTransition
           in={errorMsg !== ''}

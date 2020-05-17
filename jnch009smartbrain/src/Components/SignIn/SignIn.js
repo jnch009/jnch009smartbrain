@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { trackPromise } from 'react-promise-tracker';
 
 class SignIn extends Component {
   constructor(props) {
@@ -25,24 +26,26 @@ class SignIn extends Component {
 
   onSubmitSignIn = () => {
     // POST Request
-    fetch(`${process.env.REACT_APP_FETCH_API}/signin`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        email: this.state.signInEmail,
-        password: this.state.signInPassword,
-      }),
-    })
-      .then(resp => resp.json())
-      .then(data => {
-        if (data?.id) {
-          this.props.loadUser(data);
-          this.props.onRouteChange('home');
-        } else {
-          this.props.setError(data);
-        }
-      });
+    trackPromise(
+      fetch(`${process.env.REACT_APP_FETCH_API}/signin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: this.state.signInEmail,
+          password: this.state.signInPassword,
+        }),
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data?.id) {
+            this.props.loadUser(data);
+            this.props.onRouteChange('home');
+          } else {
+            this.props.setError(data);
+          }
+        }),
+    );
   };
 
   render() {
