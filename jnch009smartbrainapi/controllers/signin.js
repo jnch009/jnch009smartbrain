@@ -32,7 +32,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
                 .cookie('jwt', token, {
                   httpOnly: true,
                   sameSite: 'None',
-                  secure: true,
+                  secure: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
                   expires: new Date(Date.now() + 3.6e6),
                 })
                 .json(user[0]);
