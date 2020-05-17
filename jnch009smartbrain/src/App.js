@@ -216,6 +216,12 @@ class App extends Component {
     );
   };
 
+  onKeyEnter = (e,submit) => {
+    if (e.key === 'Enter') {
+      submit();
+    }
+  };
+
   render() {
     const {
       isSignedIn,
@@ -261,12 +267,14 @@ class App extends Component {
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
             setError={this.setError}
+            keyEnter={this.onKeyEnter}
           />
         ) : (
           <Register
             onRouteChange={this.onRouteChange}
             loadUser={this.loadUser}
             setError={this.setError}
+            keyEnter={this.onKeyEnter}
           />
         )}
       </div>

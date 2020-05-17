@@ -55,28 +55,32 @@ class Register extends Component {
   onSubmit = () => {
     if (this.validateForm()) {
       trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: this.state.name,
-          email: this.state.email,
-          password: this.state.password,
-        }),
-      })
-        .then(resp => resp.json())
-        .then(data => {
-          if (data?.id) {
-            this.props.loadUser(data);
-            this.props.onRouteChange('home');
-          } else {
-            this.props.setError(data);
-          }
-        }));
+        fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+          }),
+          credentials: 'include',
+        })
+          .then(resp => resp.json())
+          .then(data => {
+            if (data?.id) {
+              this.props.loadUser(data);
+              this.props.onRouteChange('home');
+            } else {
+              this.props.setError(data);
+            }
+          }),
+      );
     }
   };
 
   render() {
+    const { keyEnter } = this.props;
+
     return (
       <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center'>
         <main className='pa4 black-80'>
@@ -119,6 +123,7 @@ class Register extends Component {
                   pattern='.{16,}'
                   required
                   onInput={this.onPasswordChange}
+                  onKeyPress={e => keyEnter(e, this.onSubmit)}
                 />
               </div>
             </fieldset>

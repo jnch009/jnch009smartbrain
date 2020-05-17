@@ -18,12 +18,6 @@ class SignIn extends Component {
     this.setState({ signInPassword: e.target.value });
   };
 
-  onKeyPress = e => {
-    if (e.key === 'Enter') {
-      this.onSubmitSignIn();
-    }
-  };
-
   onSubmitSignIn = () => {
     // POST Request
     trackPromise(
@@ -49,7 +43,7 @@ class SignIn extends Component {
   };
 
   render() {
-    const { onRouteChange } = this.props;
+    const { onRouteChange, keyEnter } = this.props;
     return (
       <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center'>
         <main className='pa4 black-80'>
@@ -66,7 +60,7 @@ class SignIn extends Component {
                   name='email-address'
                   id='email-address'
                   onInput={this.onEmailChange}
-                  onKeyPress={this.onKeyPress}
+                  onKeyPress={e => keyEnter(e, this.onSubmitSignIn)}
                 />
               </div>
               <div className='mv3'>
@@ -79,7 +73,7 @@ class SignIn extends Component {
                   name='password'
                   id='password'
                   onInput={this.onPasswordChange}
-                  onKeyPress={this.onKeyPress}
+                  onKeyPress={e => keyEnter(e, this.onSubmitSignIn)}
                 />
               </div>
             </fieldset>

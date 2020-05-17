@@ -1,4 +1,4 @@
-const handleRegister = (req, res, db, bcrypt, saltRounds, apiError) => {
+const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
   const { email, name, password } = req.body;
 
   if (!email || !password || !name) {
@@ -22,7 +22,23 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError) => {
           return trx('users')
             .returning('*')
             .insert({ name: name, email: loginEmail[0], joined: new Date() })
-            .then(user => res.json(user[0]))
+            .then(user => {
+              const token = jwt.sign(
+                { user: user[0] },
+                process.env.JWT_SECRET,
+                {
+                  expiresIn: '1h',
+                },
+              );
+              res
+                .cookie('jwt', token, {
+                  httpOnly: true,
+                  sameSite: 'None',
+                  secure: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
+                  expires: new Date(Date.now() + 3.6e6),
+                })
+                .json(user[0]);
+            })
             .catch(() => res.status(400).json('User not registered'));
         })
         .then(trx.commit)
