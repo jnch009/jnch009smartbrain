@@ -14,8 +14,8 @@ Change text from 'your current rank is to your face count is or something simila
 Don't increment score if there are no faces (message too?)
 
 For convenience:
-Endpoint to delete all users
-Endpoint to list all users
+Endpoint to delete all users (DONE)
+Endpoint to list all users (DONE)
 
 Nice to have:
 Creating a profile page
