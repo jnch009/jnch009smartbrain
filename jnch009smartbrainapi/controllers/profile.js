@@ -30,7 +30,25 @@ const handleDeleteProfile = (req, res, db, apiError) => {
   }).catch(() => res.status(500).json(apiError));
 };
 
+const handleAllProfiles = (req, res, db, apiError) => {
+  db('users')
+    .then(profiles => res.json(profiles))
+    .catch(() => res.status(500).json(apiError));
+};
+
+const handlePurgeProfiles = (req, res, db, apiError) => {
+  db.transaction(trx => {
+    trx('users')
+      .del()
+      .then(trx('login').del().then(res.json('All profiles deleted!')))
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch(() => res.status(500).json(apiError));
+};
+
 module.exports = {
   handleGetProfile,
   handleDeleteProfile,
+  handleAllProfiles,
+  handlePurgeProfiles,
 };
