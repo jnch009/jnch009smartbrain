@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { trackPromise } from 'react-promise-tracker';
 
 class Register extends Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class Register extends Component {
 
   onSubmit = () => {
     if (this.validateForm()) {
+      trackPromise(
       fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,7 +79,7 @@ class Register extends Component {
           } else {
             this.props.setError(data);
           }
-        });
+        }));
     }
   };
 
