@@ -55,32 +55,24 @@ class Register extends Component {
   onSubmit = () => {
     if (this.validateForm()) {
       trackPromise(
-        fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password,
-          }),
-        })
-          .then(resp => resp.json())
-          .then(data => {
-            if (data?.id) {
-              localStorage.setItem(
-                'currentSession',
-                JSON.stringify({
-                  data,
-                  ...this.props.sessionExp(),
-                }),
-              );
-              this.props.loadUser(data);
-              this.props.onRouteChange('home');
-            } else {
-              this.props.setError(data);
-            }
-          }),
-      );
+      fetch(`${process.env.REACT_APP_FETCH_API}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.state.name,
+          email: this.state.email,
+          password: this.state.password,
+        }),
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data?.id) {
+            this.props.loadUser(data);
+            this.props.onRouteChange('home');
+          } else {
+            this.props.setError(data);
+          }
+        }));
     }
   };
 
