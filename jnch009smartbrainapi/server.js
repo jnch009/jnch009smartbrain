@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const signout = require('./controllers/signout');
 const image = require('./controllers/image');
 const root = require('./controllers/root');
 const profile = require('./controllers/profile');
@@ -64,6 +65,9 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) =>
   signin.handleSignIn(req, res, db, bcrypt, apiError, jwt),
 );
+
+app.post('/signout', (req,res) => signout.handleSignOut(req,res))
+
 app.post('/register', (req, res) =>
   //dependency injection
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError),
