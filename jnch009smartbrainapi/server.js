@@ -18,8 +18,8 @@ const saltRounds = 10;
 const apiError = 'Internal Server error, please try again later';
 let db;
 
-if (process.env.NODE_ENV === 'PRODUCTION') {
-  db = knex({
+const nodeEnvironments = {
+  production: knex({
     client: 'pg',
     connection: {
       connectionString: process.env.DATABASE_URL,
@@ -27,9 +27,17 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
         rejectUnauthorized: false,
       },
     },
-  });
-} else {
-  db = knex({
+  }),
+  test: knex({
+    client: 'pg',
+    connection: {
+      host: '127.0.0.1',
+      user: 'jnch009',
+      password: process.env.DB_PASS,
+      database: 'jnch009smartbraintest',
+    },
+  }),
+  development: knex({
     client: 'pg',
     connection: {
       host: '127.0.0.1',
@@ -37,8 +45,10 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
       password: process.env.DB_PASS,
       database: 'jnch009smartbrain',
     },
-  });
-}
+  }),
+};
+
+db = nodeEnvironments[process.env.NODE_ENV] || nodeEnvironments['development'];
 
 //Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -52,12 +62,12 @@ const verifyJWT = (req, res, next) => {
       req.user = decoded.user;
       next();
     } else {
-      res.status(401).json("Unauthorized, please log in");
+      res.status(401).json('Unauthorized, please log in');
     }
   });
 };
 
-app.get('/', (req, res) => {
+app.get('/', verifyJWT, (req, res) => {
   root.handleRoot(req, res, apiError);
 });
 
@@ -72,13 +82,29 @@ app.post('/register', (req, res) =>
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
 );
 
-app.get('/profile', verifyJWT, (req, res) =>
+app.get('/profile/:id', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
-app.delete('/profile/:email', verifyJWT, (req, res) =>
-  profile.handleDeleteProfile(req, res, db, apiError),
+app.get('/allProfiles', verifyJWT, (req, res) => {
+  profile.handleAllProfiles(req, res, db, apiError);
+});
+
+app.put('/profile/:id', verifyJWT, (req, res) => {
+  profile.handlePutProfile(req, res, db, apiError);
+});
+
+app.put('/profile/passwordUpdate/:id', verifyJWT, (req,res) => {
+  profile.handlePutProfilePassword(req, res, db, bcrypt, saltRounds);
+});
+
+app.delete('/profile/:id', verifyJWT, (req, res) =>
+  profile.handleDeleteProfile(req, res, db),
 );
+
+app.delete('/purgeProfiles', verifyJWT, (req, res) => {
+  profile.handlePurgeProfiles(req, res, db, apiError);
+});
 
 app.put('/image', verifyJWT, (req, res) =>
   image.handleImageUpdate(req, res, db, apiError),
@@ -91,3 +117,5 @@ app.post('/imageURL', verifyJWT, (req, res) =>
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}`);
 });
+
+module.exports = app;

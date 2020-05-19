@@ -11,8 +11,7 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
     }
 
     db.transaction(trx => {
-      trx
-        .insert({
+      trx.insert({
           hash: hash,
           email: email,
         })
@@ -42,7 +41,10 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
             .catch(() => res.status(400).json('User not registered'));
         })
         .then(trx.commit)
-        .catch(trx.rollback);
+        .catch(() => {
+          trx.rollback;
+          res.status(400).json('User not registered');
+        });
     }).catch(() => res.status(500).json(apiError));
   });
 };
