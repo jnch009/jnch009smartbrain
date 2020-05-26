@@ -1,11 +1,12 @@
 const assert = require('assert');
-const signin = require('../controllers/signin');
-const jwt = require('jsonwebtoken');
 const apiError = 'Internal Server error, please try again later';
 const bcrypt = require('bcrypt');
 const chai = require('chai');
-const sinon = require('sinon');
+const chaiHttp = require('chai-http');
 const knex = require('knex');
+
+const app = require('../server');
+
 require('dotenv').config();
 
 const expect = chai.expect;
@@ -26,6 +27,8 @@ const testUser = {
   name: 'jeremy',
   email: 'jeremy@gmail.com',
 };
+
+chai.use(chaiHttp);
 
 describe('Array', function () {
   describe('#indexOf()', function () {
@@ -70,32 +73,67 @@ describe('/signin', function () {
     });
   });
 
-  let req = { body: { email: '', password: '' } };
-  let res = {
-    cookie: sinon.spy(),
-    json: sinon.spy(),
-    status: function (resStatus) {
-      sinon.spy();
-      return this;
-    },
-  };
+  // let req = { body: { email: '', password: '' } };
+  // let res = {
+  //   cookie: sinon.spy(),
+  //   json: sinon.spy(),
+  //   status: function (resStatus) {
+  //     return this;
+  //   },
+  // };
 
-  it('sign in missing fields', function () {
-    signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
-    console.log(res);
+  it('get root', function (done) {
+    chai
+      .request(app)
+      .get('/')
+      .end(function (err, res) {
+        //console.log(res.body);
+        expect(res).to.have.status(401);
+        expect(res.body).to.equal('Unauthorized, please log in');
+        done();
+      });
   });
 
-  it('sign in missing password', function () {
-    req.body.email = 'test@gmail.com';
-    req.body.password = 'test123';
-    signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
+  it('sign in missing fields', function (done) {
+    chai
+      .request(app)
+      .post('/signin')
+      .type('application/json')
+      .send({
+        email: '',
+        password: '',
+      })
+      .end(function (err, res) {
+        console.log(res.body);
+        done();
+      });
+
+    // return new Promise((resolve) => {
+    //   signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
+    //   resolve();
+    // })
+    // signin.handleSignIn(req, res, db, bcrypt, apiError, jwt).then(console.log);
   });
 
-  it('signed in successfully', function(){
-    req.body.email = testUser.email;
-    req.body.password = testUser.password;
-    signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
-  })
+  // it('sign in missing password', function () {
+  //   req.body.email = 'test@gmail.com';
+  //   req.body.password = 'test123';
+  //   return new Promise(resolve => {
+  //     signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
+  //     resolve();
+  //   });
+  // });
+
+  // it('signed in successfully', function () {
+  //   req.body.email = testUser.email;
+  //   req.body.password = testUser.password;
+
+  //   return new Promise(resolve => {
+  //     signin.handleSignIn(req, res, db, bcrypt, apiError, jwt);
+  //     console.log(res.json.getCalls());
+  //     resolve();
+  //   });
+  // });
 
   after(() => {
     return new Promise((resolve, reject) =>
