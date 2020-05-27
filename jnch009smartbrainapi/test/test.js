@@ -3,11 +3,10 @@ process.env.NODE_ENV = 'test';
 
 const assert = require('assert');
 const chai = require('chai');
+const should = chai.should();
 const chaiHttp = require('chai-http');
 const knex = require('../db/knex');
-
 const app = require('../server');
-
 const expect = chai.expect;
 
 chai.use(chaiHttp);
@@ -50,6 +49,46 @@ describe('signin', function () {
       done();
     });
   });
+
+  it('email missing', function (done) {
+    chai
+      .request(app)
+      .post('/signin')
+      .end(function (err, res) {
+        res.should.have.status(400);
+        res.should.be.json;
+        expect(res.body).to.equal('Cannot leave fields empty');
+        done();
+      });
+  });
+  
+  it('password missing', function (done) {
+    chai
+      .request(app)
+      .post('/signin')
+      .end(function (err, res) {
+        res.should.have.status(400);
+        res.should.be.json;
+        expect(res.body).to.equal('Cannot leave fields empty');
+        done();
+      });
+  });
+  
+  it('incorrect credentials', function(done){
+    chai
+      .request(app)
+      .post('/signin')
+      .send({
+        email: 'test1@gmail.com',
+        password: 'yoyoyoma',
+      })
+      .end(function (err, res) {
+        res.should.have.status(401);
+        res.should.be.json;
+        expect(res.body).to.equal('access denied');
+        done();
+      });
+  })
 
   it('signed in successfully', function (done) {
     chai
