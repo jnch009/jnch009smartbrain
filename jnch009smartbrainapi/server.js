@@ -18,8 +18,8 @@ const saltRounds = 10;
 const apiError = 'Internal Server error, please try again later';
 let db;
 
-if (process.env.NODE_ENV === 'PRODUCTION') {
-  db = knex({
+const nodeEnvironments = {
+  production: knex({
     client: 'pg',
     connection: {
       connectionString: process.env.DATABASE_URL,
@@ -27,18 +27,19 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
         rejectUnauthorized: false,
       },
     },
-  });
-} else {
-  db = knex({
+  }),
+  test: knex({
     client: 'pg',
     connection: {
       host: '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
-      database: 'jnch009smartbrain',
+      database: 'jnch009smartbraintest',
     },
-  });
-}
+  }),
+};
+
+db = nodeEnvironments[process.env.NODE_ENV] || 'development';
 
 //Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -52,7 +53,7 @@ const verifyJWT = (req, res, next) => {
       req.user = decoded.user;
       next();
     } else {
-      res.status(401).json("Unauthorized, please log in");
+      res.status(401).json('Unauthorized, please log in');
     }
   });
 };
