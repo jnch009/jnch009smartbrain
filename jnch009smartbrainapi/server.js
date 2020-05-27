@@ -58,7 +58,7 @@ const verifyJWT = (req, res, next) => {
   });
 };
 
-app.get('/', (req, res) => {
+app.get('/', verifyJWT, (req, res) => {
   root.handleRoot(req, res, apiError);
 });
 
