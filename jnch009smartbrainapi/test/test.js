@@ -13,6 +13,7 @@ chai.use(chaiHttp);
 const signin = require('./signin/signinTests');
 const root = require('./root/rootTests');
 const register = require('./register/registerTests');
+const signout = require('./signout/signoutTests');
 
 describe('Array', function () {
   describe('#indexOf()', function () {
@@ -25,3 +26,4 @@ describe('Array', function () {
 signin();
 root();
 register();
+signout();
