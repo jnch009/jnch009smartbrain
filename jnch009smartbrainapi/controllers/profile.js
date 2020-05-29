@@ -1,5 +1,5 @@
 const handleGetProfile = (req, res, db, apiError) => {
-  const { email } = req.user;
+  const { email } = req.params;
   db('users')
     .where({ email })
     .then(user => {

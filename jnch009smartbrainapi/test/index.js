@@ -8,6 +8,7 @@ const chaiHttp = require('chai-http');
 const knex = require('../db/knex');
 const app = require('../server');
 const expect = chai.expect;
+const bcrypt = require('bcrypt');
 
 module.exports = {
   assert,
@@ -17,4 +18,5 @@ module.exports = {
   knex,
   app,
   expect,
+  bcrypt,
 };

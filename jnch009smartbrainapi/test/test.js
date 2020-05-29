@@ -14,6 +14,7 @@ const signin = require('./signin/signinTests');
 const root = require('./root/rootTests');
 const register = require('./register/registerTests');
 const signout = require('./signout/signoutTests');
+const profile = require('./profile/profileTests');
 
 describe('Array', function () {
   describe('#indexOf()', function () {
@@ -27,3 +28,4 @@ signin();
 root();
 register();
 signout();
+profile();
