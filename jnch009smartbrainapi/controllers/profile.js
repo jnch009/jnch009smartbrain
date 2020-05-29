@@ -10,6 +10,10 @@ const handleGetProfile = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
+const handlePutProfile = (req,res,db,apiError) => {
+  
+}
+
 const handleDeleteProfile = (req, res, db, apiError) => {
   const { email } = req.params;
 
