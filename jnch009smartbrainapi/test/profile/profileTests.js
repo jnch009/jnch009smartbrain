@@ -50,8 +50,11 @@ module.exports = function ProfileTests() {
               res.should.have.status(404);
               res.should.be.json;
               expect(res.body).to.equal('User not found');
-              done();
             });
+          })
+          .catch(err => console.log(err.message))
+          .finally(() => {
+            done();
           });
       });
 
@@ -74,8 +77,11 @@ module.exports = function ProfileTests() {
               res.body.should.have.property('score');
               res.body.score.should.equal(0);
               res.body.should.have.property('joined');
-              done();
             });
+          })
+          .catch(err => console.log(err.message))
+          .finally(() => {
+            done();
           });
       });
     });
