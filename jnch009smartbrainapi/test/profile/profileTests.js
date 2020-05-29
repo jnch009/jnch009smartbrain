@@ -103,7 +103,7 @@ module.exports = function ProfileTests() {
         });
       });
 
-      it('cannot find user to update', function (done) {
+      it('cannot update user', function (done) {
         agent
           .post('/signin')
           .send({
@@ -112,7 +112,7 @@ module.exports = function ProfileTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent.put('/profile/3452345243').then(function (res) {
+            return agent.put('/profile/156161').then(function (res) {
               res.should.have.status(404);
               res.should.be.json;
               expect(res.body).to.equal('User not found');
@@ -140,6 +140,69 @@ module.exports = function ProfileTests() {
                 res.should.be.json;
                 res.body.should.have.property('email');
                 res.body.email.should.equal(updatedEmail);
+              })
+              .catch(err => console.log(err.message))
+              .finally(() => {
+                //agent.close();
+                done();
+              });
+          });
+      });
+    });
+
+    describe('delete profile', function () {
+      beforeEach(function (done) {
+        knex.migrate.rollback().then(function () {
+          knex.migrate.latest().then(function () {
+            return knex.seed.run().then(function () {
+              done();
+            });
+          });
+        });
+      });
+
+      afterEach(function (done) {
+        knex.migrate.rollback().then(function () {
+          done();
+        });
+      });
+
+      it('cannot delete user', function (done) {
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent.get('/profile/156161').then(function (res) {
+              res.should.have.status(404);
+              res.should.be.json;
+              expect(res.body).to.equal('User not found');
+            });
+          })
+          .catch(err => console.log(err.message))
+          .finally(() => {
+            done();
+          });
+      });
+
+      it('success deleting account', function (done) {
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent
+              .delete(`/profile/${email}`)
+              .then(function (res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                expect(res.body).to.equal(`${email} successfully deleted`);
               })
               .catch(err => console.log(err.message))
               .finally(() => {
