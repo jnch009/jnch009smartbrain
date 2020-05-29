@@ -73,7 +73,7 @@ app.post('/register', (req, res) =>
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
 );
 
-app.get('/profile', verifyJWT, (req, res) =>
+app.get('/profile/:email', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
