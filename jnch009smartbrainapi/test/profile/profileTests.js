@@ -17,6 +17,7 @@ module.exports = function ProfileTests() {
     'jsdkfljaskdljf!@!@!@',
     'Jeremy',
   ];
+  const agent = chai.request.agent(app);
 
   describe('profile', function () {
     describe('get profile', function () {
@@ -37,8 +38,6 @@ module.exports = function ProfileTests() {
       });
 
       it('cannot get user', function (done) {
-        let agent = chai.request.agent(app);
-
         agent
           .post('/signin')
           .send({
@@ -47,19 +46,16 @@ module.exports = function ProfileTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent.get('/profile').then(function (res) {
+            return agent.get('/profile/156161').then(function (res) {
               res.should.have.status(404);
               res.should.be.json;
               expect(res.body).to.equal('User not found');
-              agent.close();
               done();
             });
           });
       });
 
       it('success getting user', function (done) {
-        let agent = chai.request.agent(app);
-
         agent
           .post('/signin')
           .send({
@@ -68,25 +64,22 @@ module.exports = function ProfileTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent
-              .get(`/profile/${email}`)
-              .then(function (res) {
-                res.should.have.status(200);
-                res.should.be.json;
-                res.body.should.have.property('name');
-                res.body.name.should.equal(name);
-                res.body.should.have.property('email');
-                res.body.email.should.equal(email);
-                res.body.should.have.property('score');
-                res.body.score.should.equal(0);
-                res.body.should.have.property('joined');
-                agent.close();
-                done();
-              });
+            return agent.get(`/profile/${email}`).then(function (res) {
+              res.should.have.status(200);
+              res.should.be.json;
+              res.body.should.have.property('name');
+              res.body.name.should.equal(name);
+              res.body.should.have.property('email');
+              res.body.email.should.equal(email);
+              res.body.should.have.property('score');
+              res.body.score.should.equal(0);
+              res.body.should.have.property('joined');
+              done();
+            });
           });
       });
     });
-    
+
     describe('update profile', function () {
       beforeEach(function (done) {
         knex.migrate.rollback().then(function () {
@@ -105,34 +98,48 @@ module.exports = function ProfileTests() {
       });
 
       it('cannot find user to update', function (done) {
-        chai
-          .request(app)
-          .put('/profile')
-          .end(function (err, res) {
-            res.should.have.status(404);
-            res.should.be.json;
-            expect(res.body).to.equal('User not found');
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent.put('/profile/3452345243').then(function (res) {
+              res.should.have.status(404);
+              res.should.be.json;
+              expect(res.body).to.equal('User not found');
+            });
+          })
+          .catch(err => console.log(err.message))
+          .finally(() => {
             done();
           });
       });
 
-      it('success updating user email', function (done) {
-        let agent = chai.request.agent(app);
-        chai
-          .request(app)
-          .put('/profile')
+      it('success updating email', function (done) {
+        agent
+          .post('/signin')
           .send({
             email: email,
-            updatedData: {
-              email: updatedEmail,
-            },
+            password: process.env.TEST_PASS,
           })
-          .end(function (err, res) {
-            res.should.have.status(200);
-            res.should.be.json;
-            res.body.should.have.property('email');
-            res.body.email.should.equal(updatedEmail);
-            done();
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent
+              .put(`/profile/${email}`)
+              .then(function (res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.have.property('email');
+                res.body.email.should.equal(updatedEmail);
+              })
+              .catch(err => console.log(err.message))
+              .finally(() => {
+                agent.close();
+                done();
+              });
           });
       });
     });
