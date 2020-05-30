@@ -25,9 +25,9 @@ describe('Array', function () {
   });
 });
 
-// signin();
-// root();
-// register();
-// signout();
-// profile();
+signin();
+root();
+register();
+signout();
+profile();
 image();
