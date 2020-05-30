@@ -37,9 +37,18 @@ const nodeEnvironments = {
       database: 'jnch009smartbraintest',
     },
   }),
+  development: knex({
+    client: 'pg',
+    connection: {
+      host: '127.0.0.1',
+      user: 'jnch009',
+      password: process.env.DB_PASS,
+      database: 'jnch009smartbrain',
+    },
+  }),
 };
 
-db = nodeEnvironments[process.env.NODE_ENV] || 'development';
+db = nodeEnvironments[process.env.NODE_ENV] || nodeEnvironments['development'];
 
 //Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -73,11 +82,11 @@ app.post('/register', (req, res) =>
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
 );
 
-app.get('/profile/:email', verifyJWT, (req, res) =>
+app.get('/profile/:id', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
-app.delete('/profile/:email', verifyJWT, (req, res) =>
+app.delete('/profile/:id', verifyJWT, (req, res) =>
   profile.handleDeleteProfile(req, res, db, apiError),
 );
 

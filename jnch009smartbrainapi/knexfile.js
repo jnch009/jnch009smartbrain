@@ -16,5 +16,18 @@ module.exports = {
     seeds: {
       directory: __dirname + '/db/seeds/test',
     },
-  }
+  },
+
+  development: {
+    client: 'pg',
+    connection: {
+      host: '127.0.0.1',
+      user: 'jnch009',
+      password: process.env.DB_PASS,
+      database: 'jnch009smartbrain',
+    },
+    migrations: {
+      directory: __dirname + '/db/migrations',
+    }
+  },
 };
