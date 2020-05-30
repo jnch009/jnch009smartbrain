@@ -15,6 +15,7 @@ const root = require('./root/rootTests');
 const register = require('./register/registerTests');
 const signout = require('./signout/signoutTests');
 const profile = require('./profile/profileTests');
+const image = require('./image/imageTests');
 
 describe('Array', function () {
   describe('#indexOf()', function () {
@@ -24,8 +25,9 @@ describe('Array', function () {
   });
 });
 
-signin();
-root();
-register();
-signout();
-profile();
+// signin();
+// root();
+// register();
+// signout();
+// profile();
+image();

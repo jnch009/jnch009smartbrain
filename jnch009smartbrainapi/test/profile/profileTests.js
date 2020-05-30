@@ -6,7 +6,6 @@ const {
   knex,
   app,
   expect,
-  bcrypt,
 } = require('../index');
 
 module.exports = function ProfileTests() {
