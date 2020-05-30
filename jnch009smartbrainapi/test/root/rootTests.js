@@ -10,6 +10,7 @@ const {
 
 //nest describe blocks to have certain tests with and without auth
 module.exports = function RootTests() {
+  const agent = chai.request.agent(app);
   describe('root', function () {
     it('get root without auth', function (done) {
       chai
@@ -39,9 +40,8 @@ module.exports = function RootTests() {
         });
       });
 
-      it('get root with auth', function (done) {
-        let agent = chai.request.agent(app);
-        agent
+      it('get root with auth', function () {
+        return agent
           .post('/signin')
           .send({
             email: 'test1@gmail.com',
@@ -52,7 +52,6 @@ module.exports = function RootTests() {
             return agent.get('/').then(function (res) {
               expect(res).to.have.status(200);
               agent.close();
-              done();
             });
           });
       });
