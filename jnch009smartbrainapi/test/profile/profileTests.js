@@ -9,7 +9,7 @@ const {
 } = require('../index');
 
 module.exports = function ProfileTests() {
-  const [id, email, name] = [3,'test3@gmail.com', 'test3'];
+  const [id, email, name] = [3, 'test3@gmail.com', 'test3'];
   const [updatedEmail, updatedPassword, updatedName] = [
     'testJeremy@gmail.com',
     'jsdkfljaskdljf!@!@!@',
@@ -75,6 +75,27 @@ module.exports = function ProfileTests() {
               res.body.should.have.property('score');
               res.body.score.should.equal(0);
               res.body.should.have.property('joined');
+            });
+          })
+          .catch(err => console.log(err.message))
+          .finally(() => {
+            done();
+          });
+      });
+
+      it('success getting all users', function (done) {
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent.get(`/allProfiles`).then(function (res) {
+              res.should.have.status(200);
+              res.should.be.json;
+              res.body.should.have.length(3);
             });
           })
           .catch(err => console.log(err.message))
@@ -294,6 +315,29 @@ module.exports = function ProfileTests() {
                 res.should.have.status(200);
                 res.should.be.json;
                 expect(res.body).to.equal(`User successfully deleted`);
+              })
+              .catch(err => console.log(err.message))
+              .finally(() => {
+                done();
+              });
+          });
+      });
+
+      it('success purging all accounts', function (done) {
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent
+              .delete(`/purgeProfiles`)
+              .then(function (res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                expect(res.body).to.equal(`All profiles deleted!`);
               })
               .catch(err => console.log(err.message))
               .finally(() => {

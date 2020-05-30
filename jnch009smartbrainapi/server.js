@@ -98,11 +98,11 @@ app.post('/imageURL', verifyJWT, (req, res) =>
   image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
 );
 
-app.get('/allProfiles', (req, res) => {
+app.get('/allProfiles', verifyJWT, (req, res) => {
   profile.handleAllProfiles(req,res,db,apiError)
 })
 
-app.delete('/purgeProfiles', (req, res) => {
+app.delete('/purgeProfiles', verifyJWT, (req, res) => {
   profile.handlePurgeProfiles(req,res,db,apiError)
 })
 
