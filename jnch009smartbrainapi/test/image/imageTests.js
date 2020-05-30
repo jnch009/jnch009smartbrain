@@ -31,8 +31,8 @@ module.exports = function ImageTests() {
         });
       });
 
-      it('invalid input', function (done) {
-        agent
+      it('invalid input', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -52,10 +52,6 @@ module.exports = function ImageTests() {
                   'Please review your input or use another image',
                 );
               })
-              .catch(err => console.log(err.message))
-              .finally(() => {
-                done();
-              });
           });
       });
     });
@@ -77,8 +73,8 @@ module.exports = function ImageTests() {
         });
       });
 
-      it('update score on invalid user', function (done) {
-        agent
+      it('update score on invalid user', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -98,15 +94,11 @@ module.exports = function ImageTests() {
                   'Cannot increment score on invalid user',
                 );
               })
-              .catch(err => console.log(err.message))
-              .finally(() => {
-                done();
-              });
           });
       });
       
-      it('update score successfully', function (done) {
-        agent
+      it('update score successfully', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -125,9 +117,7 @@ module.exports = function ImageTests() {
                 res.body.should.have.property('score');
                 res.body.score.should.equal(1);
               })
-              .catch(err => console.log(err.message))
               .finally(() => {
-                done();
                 agent.close();
               });
           });

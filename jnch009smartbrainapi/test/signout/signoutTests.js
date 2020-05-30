@@ -9,6 +9,7 @@ const {
 } = require('../index');
 
 module.exports = function SignOutTests() {
+  const agent = chai.request.agent(app);
   describe('signout', function () {
     beforeEach(function (done) {
       knex.migrate.rollback().then(function () {
@@ -38,9 +39,8 @@ module.exports = function SignOutTests() {
         });
     });
 
-    it('signed out successfully', function (done) {
-      let agent = chai.request.agent(app);
-      agent
+    it('signed out successfully', function () {
+      return agent
         .post('/signin')
         .send({
           email: 'test1@gmail.com',
@@ -54,7 +54,6 @@ module.exports = function SignOutTests() {
             expect(res.body).to.equal('Successfully signed out');
             expect(res).to.not.have.cookie('jwt');
             agent.close();
-            done();
           });
         });
     });
