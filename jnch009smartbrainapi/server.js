@@ -86,9 +86,21 @@ app.get('/profile/:id', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
 
+app.get('/allProfiles', verifyJWT, (req, res) => {
+  profile.handleAllProfiles(req, res, db, apiError);
+});
+
+app.put('/profile/:id', verifyJWT, (req, res) => {
+  profile.handlePutProfile(req, res, db, apiError);
+});
+
 app.delete('/profile/:id', verifyJWT, (req, res) =>
   profile.handleDeleteProfile(req, res, db, apiError),
 );
+
+app.delete('/purgeProfiles', verifyJWT, (req, res) => {
+  profile.handlePurgeProfiles(req, res, db, apiError);
+});
 
 app.put('/image', verifyJWT, (req, res) =>
   image.handleImageUpdate(req, res, db, apiError),
@@ -97,14 +109,6 @@ app.put('/image', verifyJWT, (req, res) =>
 app.post('/imageURL', verifyJWT, (req, res) =>
   image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
 );
-
-app.get('/allProfiles', verifyJWT, (req, res) => {
-  profile.handleAllProfiles(req,res,db,apiError)
-})
-
-app.delete('/purgeProfiles', verifyJWT, (req, res) => {
-  profile.handlePurgeProfiles(req,res,db,apiError)
-})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}`);
