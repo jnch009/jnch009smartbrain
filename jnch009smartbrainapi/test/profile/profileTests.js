@@ -9,7 +9,7 @@ const {
 } = require('../index');
 
 module.exports = function ProfileTests() {
-  const [email, name] = ['test3@gmail.com', 'test3'];
+  const [id, email, name] = [3,'test3@gmail.com', 'test3'];
   const [updatedEmail, updatedPassword, updatedName] = [
     'testJeremy@gmail.com',
     'jsdkfljaskdljf!@!@!@',
@@ -65,7 +65,7 @@ module.exports = function ProfileTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent.get(`/profile/${email}`).then(function (res) {
+            return agent.get(`/profile/${id}`).then(function (res) {
               res.should.have.status(200);
               res.should.be.json;
               res.body.should.have.property('name');
@@ -132,7 +132,7 @@ module.exports = function ProfileTests() {
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
-              .put(`/profile/${email}`)
+              .put(`/profile/${id}`)
               .send({
                 email: updatedEmail,
               })
@@ -159,7 +159,7 @@ module.exports = function ProfileTests() {
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
-              .put(`/profile/${email}`)
+              .put(`/profile/${id}`)
               .send({
                 email: updatedEmail,
                 name: updatedName,
@@ -207,7 +207,7 @@ module.exports = function ProfileTests() {
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
               return agent
-                .put(`/profile/passwordUpdate/${email}`)
+                .put(`/profile/passwordUpdate/${id}`)
                 .send({
                   password: updatedPassword,
                 })
@@ -289,11 +289,11 @@ module.exports = function ProfileTests() {
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
-              .delete(`/profile/${email}`)
+              .delete(`/profile/${id}`)
               .then(function (res) {
                 res.should.have.status(200);
                 res.should.be.json;
-                expect(res.body).to.equal(`${email} successfully deleted`);
+                expect(res.body).to.equal(`User successfully deleted`);
               })
               .catch(err => console.log(err.message))
               .finally(() => {
