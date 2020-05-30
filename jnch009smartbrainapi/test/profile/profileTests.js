@@ -11,7 +11,6 @@ const {
 
 module.exports = function ProfileTests() {
   const [email, name] = ['test3@gmail.com', 'test3'];
-  const hashedPassword = bcrypt.hashSync(process.env.TEST_PASS, 10);
   const [updatedEmail, updatedPassword, updatedName] = [
     'testJeremy@gmail.com',
     'jsdkfljaskdljf!@!@!@',
@@ -135,6 +134,9 @@ module.exports = function ProfileTests() {
             expect(res).to.have.cookie('jwt');
             return agent
               .put(`/profile/${email}`)
+              .send({
+                email: updatedEmail,
+              })
               .then(function (res) {
                 res.should.have.status(200);
                 res.should.be.json;
@@ -143,10 +145,100 @@ module.exports = function ProfileTests() {
               })
               .catch(err => console.log(err.message))
               .finally(() => {
+                done();
+              });
+          });
+      });
+
+      it('success updating multiple (username and email)', function (done) {
+        agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent
+              .put(`/profile/${email}`)
+              .send({
+                email: updatedEmail,
+                name: updatedName,
+              })
+              .then(function (res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.have.property('email');
+                res.body.email.should.equal(updatedEmail);
+                res.body.should.have.property('name');
+                res.body.name.should.equal(updatedName);
+              })
+              .catch(err => console.log(err.message))
+              .finally(() => {
                 //agent.close();
                 done();
               });
           });
+      });
+
+      describe('password update', function () {
+        before(function (done) {
+          knex.migrate.rollback().then(function () {
+            knex.migrate.latest().then(function () {
+              return knex.seed.run().then(function () {
+                done();
+              });
+            });
+          });
+        });
+
+        after(function (done) {
+          knex.migrate.rollback().then(function () {
+            done();
+          });
+        });
+
+        it('success updating password', function (done) {
+          agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put(`/profile/passwordUpdate/${email}`)
+                .send({
+                  password: updatedPassword,
+                })
+                .then(function (res) {
+                  res.should.have.status(200);
+                  res.should.be.json;
+                  expect(res.body).to.equal('Password Updated');
+                })
+                .catch(err => console.log(err.message))
+                .finally(() => {
+                  done();
+                });
+            });
+        });
+
+        it('verify sign in with new password', function (done) {
+          agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: updatedPassword,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+            })
+            .catch(err => console.log(err.message))
+            .finally(() => {
+              done();
+            });
+        });
       });
     });
 
