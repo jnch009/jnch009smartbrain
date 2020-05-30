@@ -98,6 +98,14 @@ app.post('/imageURL', verifyJWT, (req, res) =>
   image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
 );
 
+app.get('/allProfiles', (req, res) => {
+  profile.handleAllProfiles(req,res,db,apiError)
+})
+
+app.delete('/purgeProfiles', (req, res) => {
+  profile.handlePurgeProfiles(req,res,db,apiError)
+})
+
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}`);
 });
