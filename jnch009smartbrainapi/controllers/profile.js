@@ -10,7 +10,27 @@ const handleGetProfile = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
-const handlePutProfile = (req, res, db, apiError) => {};
+const handlePutProfile = (req, res, db, apiError) => {
+  const { id } = req.params;
+  const { email, name } = req.body;
+
+  if (!email && !name) {
+    res.status(400).json('Nothing to be updated');
+  } else {
+    db('users')
+      .where({ id })
+      .returning('*')
+      .update({
+        email: email !== undefined ? email : undefined,
+        name: name !== undefined ? name : undefined,
+      })
+      .then(user => {
+        user.length > 0
+          ? res.json(user[0])
+          : res.status(404).json('User to update not found');
+      });
+  }
+};
 
 const handleDeleteProfile = (req, res, db, apiError) => {
   const { id } = req.params;
@@ -53,4 +73,5 @@ module.exports = {
   handleDeleteProfile,
   handleAllProfiles,
   handlePurgeProfiles,
+  handlePutProfile,
 };

@@ -35,8 +35,8 @@ module.exports = function ProfileTests() {
         });
       });
 
-      it('cannot get user', function (done) {
-        agent
+      it('cannot get user', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -50,14 +50,10 @@ module.exports = function ProfileTests() {
               expect(res.body).to.equal('User not found');
             });
           })
-          .catch(err => console.log(err.message))
-          .finally(() => {
-            done();
-          });
       });
 
-      it('success getting user', function (done) {
-        agent
+      it('success getting user', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -77,14 +73,10 @@ module.exports = function ProfileTests() {
               res.body.should.have.property('joined');
             });
           })
-          .catch(err => console.log(err.message))
-          .finally(() => {
-            done();
-          });
       });
 
-      it('success getting all users', function (done) {
-        agent
+      it('success getting all users', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -98,10 +90,6 @@ module.exports = function ProfileTests() {
               res.body.should.have.length(3);
             });
           })
-          .catch(err => console.log(err.message))
-          .finally(() => {
-            done();
-          });
       });
     });
 
@@ -122,29 +110,8 @@ module.exports = function ProfileTests() {
         });
       });
 
-      it('cannot update user', function (done) {
-        agent
-          .post('/signin')
-          .send({
-            email: email,
-            password: process.env.TEST_PASS,
-          })
-          .then(function (res) {
-            expect(res).to.have.cookie('jwt');
-            return agent.put('/profile/156161').then(function (res) {
-              res.should.have.status(404);
-              res.should.be.json;
-              expect(res.body).to.equal('User not found');
-            });
-          })
-          .catch(err => console.log(err.message))
-          .finally(() => {
-            done();
-          });
-      });
-
-      it('success updating email', function (done) {
-        agent
+      it('cannot update user', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -153,25 +120,96 @@ module.exports = function ProfileTests() {
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
-              .put(`/profile/${id}`)
+              .put('/profile/156161')
               .send({
                 email: updatedEmail,
               })
               .then(function (res) {
-                res.should.have.status(200);
+                res.should.have.status(404);
                 res.should.be.json;
-                res.body.should.have.property('email');
-                res.body.email.should.equal(updatedEmail);
-              })
-              .catch(err => console.log(err.message))
-              .finally(() => {
-                done();
+                expect(res.body).to.equal('User to update not found');
               });
-          });
+          })
       });
 
-      it('success updating multiple (username and email)', function (done) {
-        agent
+      it('nothing to update', function () {
+        return agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent.put('/profile/156161').then(function (res) {
+              res.should.have.status(400);
+              res.should.be.json;
+              expect(res.body).to.equal('Nothing to be updated');
+            });
+          })
+      });
+
+      describe('update single field', function () {
+        before(function (done) {
+          knex.migrate.rollback().then(function () {
+            knex.migrate.latest().then(function () {
+              return knex.seed.run().then(function () {
+                done();
+              });
+            });
+          });
+        });
+
+        after(function (done) {
+          knex.migrate.rollback().then(function () {
+            done();
+          });
+        });
+
+        it('success updating email', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put(`/profile/${id}`)
+                .send({
+                  email: updatedEmail,
+                })
+                .then(function (res) {
+                  res.should.have.status(200);
+                  res.should.be.json;
+                  res.body.should.have.property('email');
+                  res.body.email.should.equal(updatedEmail);
+                })
+            });
+        });
+
+        it('ensure user profile consistency', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent.get(`/profile/${id}`).then(function (res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.have.property('name');
+                res.body.name.should.equal(name);
+              });
+            })
+        });
+      });
+
+      it('success updating multiple (username and email)', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -193,11 +231,6 @@ module.exports = function ProfileTests() {
                 res.body.should.have.property('name');
                 res.body.name.should.equal(updatedName);
               })
-              .catch(err => console.log(err.message))
-              .finally(() => {
-                //agent.close();
-                done();
-              });
           });
       });
 
@@ -218,8 +251,8 @@ module.exports = function ProfileTests() {
           });
         });
 
-        it('success updating password', function (done) {
-          agent
+        it('success updating password', function () {
+          return agent
             .post('/signin')
             .send({
               email: email,
@@ -237,15 +270,11 @@ module.exports = function ProfileTests() {
                   res.should.be.json;
                   expect(res.body).to.equal('Password Updated');
                 })
-                .catch(err => console.log(err.message))
-                .finally(() => {
-                  done();
-                });
             });
         });
 
-        it('verify sign in with new password', function (done) {
-          agent
+        it('verify sign in with new password', function () {
+          return agent
             .post('/signin')
             .send({
               email: email,
@@ -254,10 +283,6 @@ module.exports = function ProfileTests() {
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
             })
-            .catch(err => console.log(err.message))
-            .finally(() => {
-              done();
-            });
         });
       });
     });
@@ -279,8 +304,8 @@ module.exports = function ProfileTests() {
         });
       });
 
-      it('cannot delete user', function (done) {
-        agent
+      it('cannot delete user', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -294,14 +319,10 @@ module.exports = function ProfileTests() {
               expect(res.body).to.equal('User not found');
             });
           })
-          .catch(err => console.log(err.message))
-          .finally(() => {
-            done();
-          });
       });
 
-      it('success deleting account', function (done) {
-        agent
+      it('success deleting account', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -316,15 +337,11 @@ module.exports = function ProfileTests() {
                 res.should.be.json;
                 expect(res.body).to.equal(`User successfully deleted`);
               })
-              .catch(err => console.log(err.message))
-              .finally(() => {
-                done();
-              });
           });
       });
 
-      it('success purging all accounts', function (done) {
-        agent
+      it('success purging all accounts', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -339,10 +356,8 @@ module.exports = function ProfileTests() {
                 res.should.be.json;
                 expect(res.body).to.equal(`All profiles deleted!`);
               })
-              .catch(err => console.log(err.message))
               .finally(() => {
                 agent.close();
-                done();
               });
           });
       });
