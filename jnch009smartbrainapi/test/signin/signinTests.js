@@ -6,24 +6,18 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest
 } = require('../index');
 
 module.exports = function SignInTests() {
   describe('signin', function () {
     beforeEach(function (done) {
-      knex.migrate.rollback().then(function () {
-        knex.migrate.latest().then(function () {
-          return knex.seed.run().then(function () {
-            done();
-          });
-        });
-      });
+      beforeTest(done);
     });
 
     afterEach(function (done) {
-      knex.migrate.rollback().then(function () {
-        done();
-      });
+      afterTest(done);
     });
 
     it('email missing', function (done) {
