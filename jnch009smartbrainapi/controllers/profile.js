@@ -10,7 +10,7 @@ const handleGetProfile = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
-const handlePutProfile = (req, res, db, apiError) => {
+const handlePutProfile = (req, res, db) => {
   const { id } = req.params;
   const { email, name } = req.body;
 
@@ -28,6 +28,31 @@ const handlePutProfile = (req, res, db, apiError) => {
         user.length > 0
           ? res.json(user[0])
           : res.status(404).json('User to update not found');
+      });
+  }
+};
+
+const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    res.status(400).json('Nothing to be updated');
+  } else {
+    let hashedPass = bcrypt.hashSync(password, saltRounds);
+    
+    db('login')
+      .where({ id })
+      .returning('*')
+      .update({
+        hash: hashedPass,
+      })
+      .then(user => {
+        if (user.length > 0) {
+          res.json('Password Updated');
+        } else {
+          res.status(404).json('User to update not found');
+        }
       });
   }
 };
@@ -74,4 +99,5 @@ module.exports = {
   handleAllProfiles,
   handlePurgeProfiles,
   handlePutProfile,
+  handlePutProfilePassword,
 };

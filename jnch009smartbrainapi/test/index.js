@@ -10,6 +10,22 @@ const app = require('../server');
 const expect = chai.expect;
 const bcrypt = require('bcrypt');
 
+const beforeTest = (done) => {
+  knex.migrate.rollback().then(function () {
+    knex.migrate.latest().then(function () {
+      return knex.seed.run().then(function () {
+        done();
+      });
+    });
+  });
+}
+
+const afterTest = done => {
+  knex.migrate.rollback().then(function () {
+    done();
+  });
+};
+
 module.exports = {
   assert,
   chai,
@@ -19,4 +35,6 @@ module.exports = {
   app,
   expect,
   bcrypt,
+  beforeTest,
+  afterTest,
 };

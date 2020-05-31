@@ -6,6 +6,8 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest,
 } = require('../index');
 
 module.exports = function ProfileTests() {
@@ -20,19 +22,11 @@ module.exports = function ProfileTests() {
   describe('profile', function () {
     describe('get profile', function () {
       beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
-            });
-          });
-        });
+        beforeTest(done);
       });
 
       afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
+        afterTest(done);
       });
 
       it('cannot get user', function () {
@@ -49,7 +43,7 @@ module.exports = function ProfileTests() {
               res.should.be.json;
               expect(res.body).to.equal('User not found');
             });
-          })
+          });
       });
 
       it('success getting user', function () {
@@ -72,7 +66,7 @@ module.exports = function ProfileTests() {
               res.body.score.should.equal(0);
               res.body.should.have.property('joined');
             });
-          })
+          });
       });
 
       it('success getting all users', function () {
@@ -89,81 +83,66 @@ module.exports = function ProfileTests() {
               res.should.be.json;
               res.body.should.have.length(3);
             });
-          })
+          });
       });
     });
 
     describe('update profile', function () {
-      beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
+      describe('update negative tests', function () {
+        beforeEach(function (done) {
+          beforeTest(done);
+        });
+
+        afterEach(function (done) {
+          afterTest(done);
+        });
+        it('cannot update user', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put('/profile/156161')
+                .send({
+                  email: updatedEmail,
+                })
+                .then(function (res) {
+                  res.should.have.status(404);
+                  res.should.be.json;
+                  expect(res.body).to.equal('User to update not found');
+                });
             });
-          });
         });
-      });
 
-      afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
-      });
-
-      it('cannot update user', function () {
-        return agent
-          .post('/signin')
-          .send({
-            email: email,
-            password: process.env.TEST_PASS,
-          })
-          .then(function (res) {
-            expect(res).to.have.cookie('jwt');
-            return agent
-              .put('/profile/156161')
-              .send({
-                email: updatedEmail,
-              })
-              .then(function (res) {
-                res.should.have.status(404);
+        it('nothing to update', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent.put('/profile/156161').then(function (res) {
+                res.should.have.status(400);
                 res.should.be.json;
-                expect(res.body).to.equal('User to update not found');
-              });
-          })
-      });
-
-      it('nothing to update', function () {
-        return agent
-          .post('/signin')
-          .send({
-            email: email,
-            password: process.env.TEST_PASS,
-          })
-          .then(function (res) {
-            expect(res).to.have.cookie('jwt');
-            return agent.put('/profile/156161').then(function (res) {
-              res.should.have.status(400);
-              res.should.be.json;
-              expect(res.body).to.equal('Nothing to be updated');
-            });
-          })
-      });
-
-      describe('update single field', function () {
-        before(function (done) {
-          knex.migrate.rollback().then(function () {
-            knex.migrate.latest().then(function () {
-              return knex.seed.run().then(function () {
-                done();
+                expect(res.body).to.equal('Nothing to be updated');
               });
             });
-          });
+        });
+      });
+
+      describe('update profile fields', function () {
+        beforeEach(function (done) {
+          beforeTest(done);
         });
 
-        after(function (done) {
-          knex.migrate.rollback().then(function () {
-            done();
-          });
+        afterEach(function (done) {
+          afterTest(done);
         });
 
         it('success updating email', function () {
@@ -185,7 +164,7 @@ module.exports = function ProfileTests() {
                   res.should.be.json;
                   res.body.should.have.property('email');
                   res.body.email.should.equal(updatedEmail);
-                })
+                });
             });
         });
 
@@ -204,51 +183,65 @@ module.exports = function ProfileTests() {
                 res.body.should.have.property('name');
                 res.body.name.should.equal(name);
               });
+            });
+        });
+
+        it('success updating multiple (username and email)', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
             })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put(`/profile/${id}`)
+                .send({
+                  email: updatedEmail,
+                  name: updatedName,
+                })
+                .then(function (res) {
+                  res.should.have.status(200);
+                  res.should.be.json;
+                  res.body.should.have.property('email');
+                  res.body.email.should.equal(updatedEmail);
+                  res.body.should.have.property('name');
+                  res.body.name.should.equal(updatedName);
+                });
+            });
         });
       });
 
-      it('success updating multiple (username and email)', function () {
-        return agent
-          .post('/signin')
-          .send({
-            email: email,
-            password: process.env.TEST_PASS,
-          })
-          .then(function (res) {
-            expect(res).to.have.cookie('jwt');
-            return agent
-              .put(`/profile/${id}`)
-              .send({
-                email: updatedEmail,
-                name: updatedName,
-              })
-              .then(function (res) {
-                res.should.have.status(200);
-                res.should.be.json;
-                res.body.should.have.property('email');
-                res.body.email.should.equal(updatedEmail);
-                res.body.should.have.property('name');
-                res.body.name.should.equal(updatedName);
-              })
-          });
-      });
-
-      describe('password update', function () {
+      describe('update password field', function () {
         before(function (done) {
-          knex.migrate.rollback().then(function () {
-            knex.migrate.latest().then(function () {
-              return knex.seed.run().then(function () {
-                done();
-              });
-            });
-          });
+          beforeTest(done);
         });
 
         after(function (done) {
-          knex.migrate.rollback().then(function () {
-            done();
-          });
+          afterTest(done);
+        });
+
+        it('user not found for updating password', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put(`/profile/passwordUpdate/123`)
+                .send({
+                  password: updatedPassword,
+                })
+                .then(function (res) {
+                  res.should.have.status(404);
+                  res.should.be.json;
+                  expect(res.body).to.equal('User to update not found');
+                });
+            });
         });
 
         it('success updating password', function () {
@@ -269,7 +262,7 @@ module.exports = function ProfileTests() {
                   res.should.have.status(200);
                   res.should.be.json;
                   expect(res.body).to.equal('Password Updated');
-                })
+                });
             });
         });
 
@@ -282,26 +275,18 @@ module.exports = function ProfileTests() {
             })
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
-            })
+            });
         });
       });
     });
 
     describe('delete profile', function () {
       beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
-            });
-          });
-        });
+        beforeTest(done);
       });
 
       afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
+        afterTest(done);
       });
 
       it('cannot delete user', function () {
