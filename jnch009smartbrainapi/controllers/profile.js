@@ -21,26 +21,31 @@ const handleGetProfile = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
-const handlePutProfile = (req, res, db) => {
+const handlePutProfile = async (req, res, db) => {
   const { id } = req.params;
   const { email, name } = req.body;
-
-  if (!email && !name) {
-    res.status(400).json('Nothing to be updated');
-  } else {
-    db('users')
-      .where({ id })
-      .returning('*')
-      .update({
-        email: email !== undefined ? email : undefined,
-        name: name !== undefined ? name : undefined,
-      })
-      .then(user => {
-        user.length > 0
-          ? res.json(user[0])
-          : res.status(404).json('User to update not found');
-      });
+  
+  const userInfo = await db('users').where({ id });
+  if (userInfo.length === 0){
+    return res.status(404).json('User to update not found');
+  } else if (email === userInfo[0].email && name === userInfo[0].name) {
+    return res.status(400).json('Nothing to be updated');
   }
+
+  await db('users')
+    .where({ id })
+    .returning('*')
+    .update({
+      email: email !== undefined ? email : undefined,
+      name: name !== undefined ? name : undefined,
+    })
+    .then(user => {
+      if (user.length > 0) {
+        return res.json(user[0]);
+      } else {
+        return res.status(404).json('User to update not found');
+      }
+    });
 };
 
 const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
