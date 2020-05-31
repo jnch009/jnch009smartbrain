@@ -40,11 +40,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
         return res.status(401).json('access denied');
       });
     })
-<<<<<<< Updated upstream
-    .catch(() => res.status(404).json(apiError));
-=======
     .catch(() => res.status(401).json('access denied'));
->>>>>>> Stashed changes
 };
 
 module.exports = {
