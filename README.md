@@ -7,7 +7,8 @@ I have already made some tweaks to the original repo found here (https://github.
 I have plans to improve this app by:
 1) More descriptive error handling shown in the app rather than console.log (DONE)
   - follow up: success messages
-2) Creating a profile page
+1*) Adequate testing (WIP, currently working on endpoint testing with mocha/chai/chai-http. Planning to use jest for front-end testing)
+2) Creating a profile page (WIP, currently working on the endpoints)
 3) Leaderboard
 4) Incrementing score based on how many faces are in the picture rather than incrementing by 1
   - as a follow up, the ability to increment your score ONLY when you successfully identify faces (by pointer).
