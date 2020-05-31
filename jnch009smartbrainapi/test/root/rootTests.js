@@ -6,6 +6,8 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest
 } = require('../index');
 
 //nest describe blocks to have certain tests with and without auth
@@ -25,19 +27,11 @@ module.exports = function RootTests() {
 
     describe('root route with auth', function () {
       beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
-            });
-          });
-        });
+        beforeTest(done);
       });
 
       afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
+        afterTest(done);
       });
 
       it('get root with auth', function () {

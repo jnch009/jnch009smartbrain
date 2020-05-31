@@ -94,8 +94,12 @@ app.put('/profile/:id', verifyJWT, (req, res) => {
   profile.handlePutProfile(req, res, db, apiError);
 });
 
+app.put('/profile/passwordUpdate/:id', verifyJWT, (req,res) => {
+  profile.handlePutProfilePassword(req, res, db, bcrypt, saltRounds);
+});
+
 app.delete('/profile/:id', verifyJWT, (req, res) =>
-  profile.handleDeleteProfile(req, res, db, apiError),
+  profile.handleDeleteProfile(req, res, db),
 );
 
 app.delete('/purgeProfiles', verifyJWT, (req, res) => {
