@@ -6,6 +6,8 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest,
 } = require('../index');
 
 module.exports = function ImageTests() {
@@ -16,19 +18,11 @@ module.exports = function ImageTests() {
   describe('image', function () {
     describe('clarifai API call', function () {
       beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
-            });
-          });
-        });
+        beforeTest(done);
       });
 
       afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
+        afterTest(done);
       });
 
       it('invalid input', function () {
@@ -51,26 +45,18 @@ module.exports = function ImageTests() {
                 expect(res.body).to.equal(
                   'Please review your input or use another image',
                 );
-              })
+              });
           });
       });
     });
 
     describe('profile score update', function () {
       beforeEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          knex.migrate.latest().then(function () {
-            return knex.seed.run().then(function () {
-              done();
-            });
-          });
-        });
+        beforeTest(done);
       });
 
       afterEach(function (done) {
-        knex.migrate.rollback().then(function () {
-          done();
-        });
+        afterTest(done);
       });
 
       it('update score on invalid user', function () {
@@ -93,10 +79,10 @@ module.exports = function ImageTests() {
                 expect(res.body).to.equal(
                   'Cannot increment score on invalid user',
                 );
-              })
+              });
           });
       });
-      
+
       it('update score successfully', function () {
         return agent
           .post('/signin')

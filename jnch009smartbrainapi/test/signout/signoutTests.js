@@ -6,25 +6,19 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest
 } = require('../index');
 
 module.exports = function SignOutTests() {
   const agent = chai.request.agent(app);
   describe('signout', function () {
     beforeEach(function (done) {
-      knex.migrate.rollback().then(function () {
-        knex.migrate.latest().then(function () {
-          return knex.seed.run().then(function () {
-            done();
-          });
-        });
-      });
+      beforeTest(done);
     });
 
     afterEach(function (done) {
-      knex.migrate.rollback().then(function () {
-        done();
-      });
+      afterTest(done);
     });
 
     it('attempting to sign out when not signed in', function (done) {
