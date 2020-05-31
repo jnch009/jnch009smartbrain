@@ -248,8 +248,8 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
-        {/* <Profile /> */}
-        <Navigation
+        <Profile />
+        {/* <Navigation
           onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
         />
@@ -278,7 +278,7 @@ class App extends Component {
             setError={this.setError}
             keyEnter={this.onKeyEnter}
           />
-        )}
+        )} */}
       </div>
     );
   }
