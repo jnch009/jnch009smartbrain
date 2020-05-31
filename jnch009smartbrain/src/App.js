@@ -9,6 +9,7 @@ import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
+import Profile from './Components/Profile/Profile';
 import { LoadingSpinner } from './Components/LoadingSpinner/LoadingSpinner';
 import { trackPromise } from 'react-promise-tracker';
 import { CSSTransition } from 'react-transition-group';
@@ -216,7 +217,7 @@ class App extends Component {
     );
   };
 
-  onKeyEnter = (e,submit) => {
+  onKeyEnter = (e, submit) => {
     if (e.key === 'Enter') {
       submit();
     }
@@ -247,6 +248,7 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
+        {/* <Profile /> */}
         <Navigation
           onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
