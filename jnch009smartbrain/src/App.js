@@ -186,7 +186,7 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    if (this.state.isSignedIn && route === 'SignIn') {
+    if ((this.state.isSignedIn && route === 'SignIn') || route === 'Register') {
       fetch(`${process.env.REACT_APP_FETCH_API}/signout`, {
         method: 'POST',
         credentials: 'include',
@@ -202,7 +202,7 @@ class App extends Component {
         route: route,
       });
     } else {
-      this.setState({ ...initialState, route: route });
+      this.setState({ ...this.state, route: route });
     }
   };
 
@@ -233,6 +233,48 @@ class App extends Component {
       errorMsg,
     } = this.state;
 
+    const switchRoute = () => {
+      switch (route) {
+        case 'Profile':
+          return (
+            <Profile
+              onRouteChange={this.onRouteChange}
+              isSignedIn={isSignedIn}
+            />
+          );
+        case 'SignIn':
+          return (
+            <SignIn
+              onRouteChange={this.onRouteChange}
+              loadUser={this.loadUser}
+              setError={this.setError}
+              keyEnter={this.onKeyEnter}
+            />
+          );
+        case 'Register':
+          return (
+            <Register
+              onRouteChange={this.onRouteChange}
+              loadUser={this.loadUser}
+              setError={this.setError}
+              keyEnter={this.onKeyEnter}
+            />
+          );
+        default:
+          return (
+            <>
+              <Logo />
+              <Rank name={userProfile.name} score={userProfile.score} />
+              <ImageLinkForm
+                onInputChange={this.onInputChange}
+                onButtonSubmit={this.onButtonSubmit}
+              />
+              <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
+            </>
+          );
+      }
+    };
+
     return route === '' ? (
       <LoadingSpinner route={route} />
     ) : (
@@ -248,37 +290,12 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
-        <Profile />
-        {/* <Navigation
+        <Navigation
           onRouteChange={this.onRouteChange}
           isSignedIn={isSignedIn}
         />
 
-        {route === 'home' ? (
-          <>
-            <Logo />
-            <Rank name={userProfile.name} score={userProfile.score} />
-            <ImageLinkForm
-              onInputChange={this.onInputChange}
-              onButtonSubmit={this.onButtonSubmit}
-            />
-            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
-          </>
-        ) : route === 'SignIn' ? (
-          <SignIn
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-            setError={this.setError}
-            keyEnter={this.onKeyEnter}
-          />
-        ) : (
-          <Register
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-            setError={this.setError}
-            keyEnter={this.onKeyEnter}
-          />
-        )} */}
+        {switchRoute()}
       </div>
     );
   }
