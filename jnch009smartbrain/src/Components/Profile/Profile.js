@@ -1,5 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { trackPromise } from 'react-promise-tracker';
 import './Profile.css';
+
+const dateOptions = {
+  year: 'numeric',
+  day: 'numeric',
+  month: 'long',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+};
 
 const article = (title, value) => (
   <article
@@ -13,14 +23,43 @@ const article = (title, value) => (
   </article>
 );
 
-const Profile = () => {
+const Profile = ({ onRouteChange }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [score, setScore] = useState(0);
+  const [joined, setJoined] = useState(Date.now);
+
+  useEffect(() => {
+    trackPromise(
+      fetch(`${process.env.REACT_APP_FETCH_API}/profile`, {
+        credentials: 'include',
+      })
+        .then(resp => resp.json())
+        .then(user => {
+          if (user.id) {
+            const joinedDate = new Intl.DateTimeFormat(
+              'en-US',
+              dateOptions,
+            ).format(new Date(user.joined));
+            
+            setName(user.name);
+            setEmail(user.email);
+            setScore(user.score);
+            setJoined(joinedDate);
+          } else {
+            onRouteChange('SignIn');
+          }
+        }),
+    );
+  });
+
   return (
     <>
       <main class='mw6 center profileContainer'>
-        {article('Name: ', 'Jeremy Ng')}
-        {article('Email: ', 'jngchenghin@gmail.com')}
-        {article('Score: ', 0)}
-        {article('Joined: ', Date.now())}
+        {article('Name: ', name)}
+        {article('Email: ', email)}
+        {article('Score: ', score)}
+        {article('Joined: ', joined)}
       </main>
       <a
         class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
