@@ -60,9 +60,14 @@ class App extends Component {
 
   componentDidMount() {
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/profile`, {
-        credentials: 'include',
-      })
+      fetch(
+        `${process.env.REACT_APP_FETCH_API}/profile/${
+          this.state.userProfile.id !== '' ? this.state.userProfile.id : ':id'
+        }`,
+        {
+          credentials: 'include',
+        },
+      )
         .then(resp => resp.json())
         .then(user => {
           if (user.id) {
@@ -241,6 +246,7 @@ class App extends Component {
             <Profile
               onRouteChange={this.onRouteChange}
               isSignedIn={isSignedIn}
+              profileId={userProfile.id}
             />
           );
         case 'SignIn':
