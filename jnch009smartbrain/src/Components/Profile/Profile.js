@@ -61,6 +61,10 @@ const Profile = ({ profile }) => {
   //   );
   // });
 
+  const handleEditConfirmation = () => {
+    console.log('confirmed!');
+  };
+
   return (
     <>
       <main class='mw6 center profileContainer'>
@@ -79,25 +83,35 @@ const Profile = ({ profile }) => {
         <GridRow title='Score: ' value={score} />
         <GridRow title='Joined: ' value={joined} />
       </main>
-      <a
-        class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-        href='#0'
-        onClick={() => setEditProfile(true)}
-      >
-        Update Information
-      </a>
-      <a
-        class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-        href='#0'
-      >
-        Update Password
-      </a>
-      <a
-        class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-        href='#0'
-      >
-        Delete Account
-      </a>
+      {editProfile ? (
+        <a
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          href='#0'
+          onClick={() => handleEditConfirmation(true)}
+        >Finished Editing</a>
+      ) : (
+        <>
+          <a
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            href='#0'
+            onClick={() => setEditProfile(true)}
+          >
+            Update Information
+          </a>
+          <a
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            href='#0'
+          >
+            Update Password
+          </a>
+          <a
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            href='#0'
+          >
+            Delete Account
+          </a>
+        </>
+      )}
     </>
   );
 };
