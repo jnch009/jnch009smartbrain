@@ -100,8 +100,13 @@ module.exports = function RegisterTests() {
           res.should.have.status(200);
           res.should.be.json;
           expect(res).to.have.cookie('jwt');
-          res.body.should.have.property('id');
-          res.body.name.should.equal(4);
+          res.body.should.have.property('name');
+          res.body.name.should.equal(name);
+          res.body.should.have.property('email');
+          res.body.email.should.equal(email);
+          res.body.should.have.property('score');
+          res.body.score.should.equal(0);
+          res.body.should.have.property('joined');
           done();
         });
     });
