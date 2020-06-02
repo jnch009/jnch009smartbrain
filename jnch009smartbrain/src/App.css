@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-.center {
+.flexCenter {
   display: flex;
   justify-content: center;
 }
