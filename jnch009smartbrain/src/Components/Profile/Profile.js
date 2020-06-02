@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { trackPromise } from 'react-promise-tracker';
 import GridRow from '../GridRow/GridRow';
 import './Profile.css';
@@ -12,21 +12,7 @@ const dateOptions = {
   second: 'numeric',
 };
 
-const article = (title, value) => (
-  <article
-    class='flex justify-around dt w-100 bb b--black-05 pa4 mt2'
-    href='#0'
-  >
-    <div class='dtc v-mid pl3'>
-      <h1 class='f4 f5-ns fw6 lh-title black mv0'>{title}</h1>
-      <h2 class='f4 fw4 mt0 mb0 black-60'>{value}</h2>
-    </div>
-  </article>
-);
-
-// const editableArticle
-
-const Profile = ({ profile }) => {
+const Profile = ({ profile, loadUser, setError }) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined),
   );
@@ -37,32 +23,28 @@ const Profile = ({ profile }) => {
   const [joined, setJoined] = useState(joinedDate);
   const [editProfile, setEditProfile] = useState(false);
 
-  // useEffect(() => {
-  //   trackPromise(
-  //     fetch(`${process.env.REACT_APP_FETCH_API}/profile/${profileId}`, {
-  //       credentials: 'include',
-  //     })
-  //       .then(resp => resp.json())
-  //       .then(user => {
-  //         if (user.id) {
-  //           const joinedDate = new Intl.DateTimeFormat(
-  //             'en-US',
-  //             dateOptions,
-  //           ).format(new Date(user.joined));
-
-  //           setName(user.name);
-  //           setEmail(user.email);
-  //           setScore(user.score);
-  //           setJoined(joinedDate);
-  //         } else {
-  //           onRouteChange('SignIn');
-  //         }
-  //       }),
-  //   );
-  // });
-
   const handleEditConfirmation = () => {
-    console.log('confirmed!');
+    trackPromise(
+      fetch(`${process.env.REACT_APP_FETCH_API}/profile/${profile.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: name,
+          email: email,
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {
+            loadUser(data);
+            setEditProfile(false);
+          } else {
+            setError(data);
+          }
+        })
+        .catch(err => console.log(err)),
+    );
   };
 
   return (
@@ -88,7 +70,9 @@ const Profile = ({ profile }) => {
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
           href='#0'
           onClick={() => handleEditConfirmation(true)}
-        >Finished Editing</a>
+        >
+          Finished Editing
+        </a>
       ) : (
         <>
           <a
