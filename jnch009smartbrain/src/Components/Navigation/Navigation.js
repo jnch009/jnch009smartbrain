@@ -9,6 +9,18 @@ const Navigation = ({ onRouteChange, isSignedIn }) => {
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
+              onClick={() => onRouteChange('home')}
+            >
+              Home
+            </p>
+            <p
+              className='f3 link dim black underline pa3 pointer'
+              onClick={() => onRouteChange('Profile')}
+            >
+              Profile
+            </p>
+            <p
+              className='f3 link dim black underline pa3 pointer'
               onClick={() => onRouteChange('SignIn')}
             >
               Sign Out

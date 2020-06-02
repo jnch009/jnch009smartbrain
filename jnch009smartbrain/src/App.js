@@ -9,6 +9,7 @@ import Rank from './Components/Rank/Rank';
 import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
+import Profile from './Components/Profile/Profile';
 import { LoadingSpinner } from './Components/LoadingSpinner/LoadingSpinner';
 import { trackPromise } from 'react-promise-tracker';
 import { CSSTransition } from 'react-transition-group';
@@ -78,24 +79,6 @@ class App extends Component {
         }),
     );
   }
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   if (prevState.input !== this.state.input) {
-  //     if (this.compareExpDate()) {
-  //       this.setState({
-  //         isSignedIn: true,
-  //         route: 'home',
-  //         userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
-  //       });
-  //     } else {
-  //       localStorage.removeItem(currentSession);
-  //       this.setState({
-  //         isSignedIn: false,
-  //         route: 'SignIn',
-  //       });
-  //     }
-  //   }
-  // }
 
   loadUser = user => {
     this.setState({
@@ -186,7 +169,7 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    if (this.state.isSignedIn && route === 'SignIn') {
+    if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
       fetch(`${process.env.REACT_APP_FETCH_API}/signout`, {
         method: 'POST',
         credentials: 'include',
@@ -202,7 +185,7 @@ class App extends Component {
         route: route,
       });
     } else {
-      this.setState({ ...initialState, route: route });
+      this.setState({ ...this.state, route: route });
     }
   };
 
@@ -217,7 +200,7 @@ class App extends Component {
     );
   };
 
-  onKeyEnter = (e,submit) => {
+  onKeyEnter = (e, submit) => {
     if (e.key === 'Enter') {
       submit();
     }
@@ -232,6 +215,49 @@ class App extends Component {
       userProfile,
       errorMsg,
     } = this.state;
+
+    const switchRoute = () => {
+      switch (route) {
+        case 'Profile':
+          return (
+            <Profile
+              profile={userProfile}
+              loadUser={this.loadUser}
+              setError={this.setError}
+            />
+          );
+        case 'SignIn':
+          return (
+            <SignIn
+              onRouteChange={this.onRouteChange}
+              loadUser={this.loadUser}
+              setError={this.setError}
+              keyEnter={this.onKeyEnter}
+            />
+          );
+        case 'Register':
+          return (
+            <Register
+              onRouteChange={this.onRouteChange}
+              loadUser={this.loadUser}
+              setError={this.setError}
+              keyEnter={this.onKeyEnter}
+            />
+          );
+        default:
+          return (
+            <>
+              <Logo />
+              <Rank name={userProfile.name} score={userProfile.score} />
+              <ImageLinkForm
+                onInputChange={this.onInputChange}
+                onButtonSubmit={this.onButtonSubmit}
+              />
+              <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
+            </>
+          );
+      }
+    };
 
     return route === '' ? (
       <LoadingSpinner route={route} />
@@ -253,31 +279,7 @@ class App extends Component {
           isSignedIn={isSignedIn}
         />
 
-        {route === 'home' ? (
-          <>
-            <Logo />
-            <Rank name={userProfile.name} score={userProfile.score} />
-            <ImageLinkForm
-              onInputChange={this.onInputChange}
-              onButtonSubmit={this.onButtonSubmit}
-            />
-            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
-          </>
-        ) : route === 'SignIn' ? (
-          <SignIn
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-            setError={this.setError}
-            keyEnter={this.onKeyEnter}
-          />
-        ) : (
-          <Register
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-            setError={this.setError}
-            keyEnter={this.onKeyEnter}
-          />
-        )}
+        {switchRoute()}
       </div>
     );
   }
