@@ -80,24 +80,6 @@ class App extends Component {
     );
   }
 
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   if (prevState.input !== this.state.input) {
-  //     if (this.compareExpDate()) {
-  //       this.setState({
-  //         isSignedIn: true,
-  //         route: 'home',
-  //         userProfile: JSON.parse(localStorage.getItem(currentSession))?.data,
-  //       });
-  //     } else {
-  //       localStorage.removeItem(currentSession);
-  //       this.setState({
-  //         isSignedIn: false,
-  //         route: 'SignIn',
-  //       });
-  //     }
-  //   }
-  // }
-
   loadUser = user => {
     this.setState({
       userProfile: {
@@ -237,7 +219,13 @@ class App extends Component {
     const switchRoute = () => {
       switch (route) {
         case 'Profile':
-          return <Profile profile={userProfile} />;
+          return (
+            <Profile
+              profile={userProfile}
+              loadUser={this.loadUser}
+              setError={this.setError}
+            />
+          );
         case 'SignIn':
           return (
             <SignIn
