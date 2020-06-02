@@ -244,9 +244,7 @@ class App extends Component {
         case 'Profile':
           return (
             <Profile
-              onRouteChange={this.onRouteChange}
-              isSignedIn={isSignedIn}
-              profileId={userProfile.id}
+              profile={userProfile}
             />
           );
         case 'SignIn':
