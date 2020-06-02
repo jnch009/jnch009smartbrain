@@ -150,11 +150,17 @@ module.exports = function ProfileTests() {
             })
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
-              return agent.put('/profile/156161').then(function (res) {
-                res.should.have.status(400);
-                res.should.be.json;
-                expect(res.body).to.equal('Nothing to be updated');
-              });
+              return agent
+                .put(`/profile/${id}`)
+                .send({
+                  email: email,
+                  name: name,
+                })
+                .then(function (res) {
+                  res.should.have.status(400);
+                  res.should.be.json;
+                  expect(res.body).to.equal('Nothing to be updated');
+                });
             });
         });
       });
