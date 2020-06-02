@@ -68,7 +68,16 @@ class App extends Component {
           credentials: 'include',
         },
       )
-        .then(resp => resp.json())
+        .then(resp => {
+          console.log(
+            `${process.env.REACT_APP_FETCH_API}/profile/${
+              this.state.userProfile.id !== ''
+                ? this.state.userProfile.id
+                : ':id'
+            }`,
+          );
+          return resp.json();
+        })
         .then(user => {
           if (user.id) {
             this.setState({
@@ -242,11 +251,7 @@ class App extends Component {
     const switchRoute = () => {
       switch (route) {
         case 'Profile':
-          return (
-            <Profile
-              profile={userProfile}
-            />
-          );
+          return <Profile profile={userProfile} />;
         case 'SignIn':
           return (
             <SignIn
