@@ -60,24 +60,10 @@ class App extends Component {
 
   componentDidMount() {
     trackPromise(
-      fetch(
-        `${process.env.REACT_APP_FETCH_API}/profile/${
-          this.state.userProfile.id !== '' ? this.state.userProfile.id : ':id'
-        }`,
-        {
-          credentials: 'include',
-        },
-      )
-        .then(resp => {
-          console.log(
-            `${process.env.REACT_APP_FETCH_API}/profile/${
-              this.state.userProfile.id !== ''
-                ? this.state.userProfile.id
-                : ':id'
-            }`,
-          );
-          return resp.json();
-        })
+      fetch(`${process.env.REACT_APP_FETCH_API}/profile`, {
+        credentials: 'include',
+      })
+        .then(resp => resp.json())
         .then(user => {
           if (user.id) {
             this.setState({
