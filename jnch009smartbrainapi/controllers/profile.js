@@ -1,3 +1,14 @@
+const handleGetProfileByJWT = (req, res, db) => {
+  db('users')
+    .where({ id: req.user.id })
+    .then(user => {
+      user.length > 0
+        ? res.json(user[0])
+        : res.status(404).json('User not found');
+    })
+    .catch(() => res.status(500).json(apiError));
+};
+
 const handleGetProfile = (req, res, db, apiError) => {
   const { id } = req.params;
   db('users')
@@ -40,7 +51,7 @@ const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
     res.status(400).json('Nothing to be updated');
   } else {
     let hashedPass = bcrypt.hashSync(password, saltRounds);
-    
+
     db('login')
       .where({ id })
       .returning('*')
@@ -95,6 +106,7 @@ const handlePurgeProfiles = (req, res, db, apiError) => {
 
 module.exports = {
   handleGetProfile,
+  handleGetProfileByJWT,
   handleDeleteProfile,
   handleAllProfiles,
   handlePurgeProfiles,
