@@ -46,6 +46,29 @@ module.exports = function ProfileTests() {
           });
       });
 
+      it('success getting user by jwt', function () {
+        return agent
+          .post('/signin')
+          .send({
+            email: email,
+            password: process.env.TEST_PASS,
+          })
+          .then(function (res) {
+            expect(res).to.have.cookie('jwt');
+            return agent.get(`/profile`).then(function (res) {
+              res.should.have.status(200);
+              res.should.be.json;
+              res.body.should.have.property('name');
+              res.body.name.should.equal(name);
+              res.body.should.have.property('email');
+              res.body.email.should.equal(email);
+              res.body.should.have.property('score');
+              res.body.score.should.equal(0);
+              res.body.should.have.property('joined');
+            });
+          });
+      });
+
       it('success getting user', function () {
         return agent
           .post('/signin')
@@ -303,7 +326,7 @@ module.exports = function ProfileTests() {
               res.should.be.json;
               expect(res.body).to.equal('User not found');
             });
-          })
+          });
       });
 
       it('success deleting account', function () {
@@ -315,13 +338,11 @@ module.exports = function ProfileTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent
-              .delete(`/profile/${id}`)
-              .then(function (res) {
-                res.should.have.status(200);
-                res.should.be.json;
-                expect(res.body).to.equal(`User successfully deleted`);
-              })
+            return agent.delete(`/profile/${id}`).then(function (res) {
+              res.should.have.status(200);
+              res.should.be.json;
+              expect(res.body).to.equal(`User successfully deleted`);
+            });
           });
       });
 
