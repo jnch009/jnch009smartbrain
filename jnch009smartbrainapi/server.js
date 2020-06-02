@@ -82,6 +82,10 @@ app.post('/register', (req, res) =>
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
 );
 
+app.get('/profile', verifyJWT, (req, res) => {
+  profile.handleGetProfileByJWT(req, res, db);
+});
+
 app.get('/profile/:id', verifyJWT, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError),
 );
@@ -94,7 +98,7 @@ app.put('/profile/:id', verifyJWT, (req, res) => {
   profile.handlePutProfile(req, res, db, apiError);
 });
 
-app.put('/profile/passwordUpdate/:id', verifyJWT, (req,res) => {
+app.put('/profile/passwordUpdate/:id', verifyJWT, (req, res) => {
   profile.handlePutProfilePassword(req, res, db, bcrypt, saltRounds);
 });
 
