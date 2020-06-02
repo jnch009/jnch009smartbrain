@@ -1,7 +1,7 @@
 const handleGetProfile = (req, res, db, apiError) => {
-  const { email } = req.user;
+  const { id } = req.params;
   db('users')
-    .where({ email })
+    .where({ id })
     .then(user => {
       user.length > 0
         ? res.json(user[0])
@@ -10,19 +10,66 @@ const handleGetProfile = (req, res, db, apiError) => {
     .catch(() => res.status(500).json(apiError));
 };
 
+const handlePutProfile = (req, res, db) => {
+  const { id } = req.params;
+  const { email, name } = req.body;
+
+  if (!email && !name) {
+    res.status(400).json('Nothing to be updated');
+  } else {
+    db('users')
+      .where({ id })
+      .returning('*')
+      .update({
+        email: email !== undefined ? email : undefined,
+        name: name !== undefined ? name : undefined,
+      })
+      .then(user => {
+        user.length > 0
+          ? res.json(user[0])
+          : res.status(404).json('User to update not found');
+      });
+  }
+};
+
+const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    res.status(400).json('Nothing to be updated');
+  } else {
+    let hashedPass = bcrypt.hashSync(password, saltRounds);
+    
+    db('login')
+      .where({ id })
+      .returning('*')
+      .update({
+        hash: hashedPass,
+      })
+      .then(user => {
+        if (user.length > 0) {
+          res.json('Password Updated');
+        } else {
+          res.status(404).json('User to update not found');
+        }
+      });
+  }
+};
+
 const handleDeleteProfile = (req, res, db, apiError) => {
-  const { email } = req.params;
+  const { id } = req.params;
 
   db.transaction(trx => {
     trx('users')
-      .where('email', email)
+      .where({ id })
       .del()
       .then(row => {
         return row > 0
           ? trx('login')
-              .where({ email })
+              .where({ id })
               .del()
-              .then(() => res.json(`${email} successfully deleted`))
+              .then(() => res.json(`User successfully deleted`))
           : res.status(404).json('User not found');
       })
       .then(trx.commit)
@@ -51,4 +98,6 @@ module.exports = {
   handleDeleteProfile,
   handleAllProfiles,
   handlePurgeProfiles,
+  handlePutProfile,
+  handlePutProfilePassword,
 };

@@ -28,19 +28,21 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
                   expiresIn: '1h',
                 },
               );
-              res.cookie('jwt', token, {
+              res
+                .cookie('jwt', token, {
                   httpOnly: true,
                   sameSite: 'None',
                   secure: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
                   expires: new Date(Date.now() + 3.6e6),
-              }).json(user[0]);
+                })
+                .json(user[0]);
             })
             .catch(() => res.status(400).json('User not found'));
         }
         return res.status(401).json('access denied');
       });
     })
-    .catch(() => res.status(404).json(apiError));
+    .catch(() => res.status(401).json('access denied'));
 };
 
 module.exports = {

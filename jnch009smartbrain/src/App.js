@@ -174,6 +174,7 @@ class App extends Component {
                       userProfile: newProfile,
                     });
                   });
+                //TODO: calculate the box first and then fetch from image
                 this.displayBox(this.calculateBox(response));
               } else {
                 this.setError(response);
