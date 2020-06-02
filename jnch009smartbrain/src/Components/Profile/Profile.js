@@ -23,7 +23,7 @@ const article = (title, value) => (
   </article>
 );
 
-const Profile = ({ onRouteChange }) => {
+const Profile = ({ onRouteChange, profileId }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [score, setScore] = useState(0);
@@ -31,7 +31,7 @@ const Profile = ({ onRouteChange }) => {
 
   useEffect(() => {
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/profile`, {
+      fetch(`${process.env.REACT_APP_FETCH_API}/profile/${profileId}`, {
         credentials: 'include',
       })
         .then(resp => resp.json())
@@ -41,7 +41,7 @@ const Profile = ({ onRouteChange }) => {
               'en-US',
               dateOptions,
             ).format(new Date(user.joined));
-            
+
             setName(user.name);
             setEmail(user.email);
             setScore(user.score);
