@@ -192,7 +192,7 @@ class App extends Component {
   };
 
   onRouteChange = route => {
-    if ((this.state.isSignedIn && route === 'SignIn') || route === 'Register') {
+    if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
       fetch(`${process.env.REACT_APP_FETCH_API}/signout`, {
         method: 'POST',
         credentials: 'include',
