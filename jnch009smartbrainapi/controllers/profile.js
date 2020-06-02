@@ -1,12 +1,12 @@
 const handleGetProfileByJWT = (req, res, db) => {
   db('users')
-    .where({ id: req.user.id })
+    .where({ id: req.id })
     .then(user => {
       user.length > 0
         ? res.json(user[0])
         : res.status(404).json('User not found');
     })
-    .catch(() => res.status(500).json(apiError));
+    .catch(() => res.status(404).json('User not found'));
 };
 
 const handleGetProfile = (req, res, db, apiError) => {
