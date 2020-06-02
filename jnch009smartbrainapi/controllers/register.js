@@ -23,7 +23,7 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
             .insert({ name: name, email: loginEmail[0], joined: new Date() })
             .then(user => {
               const token = jwt.sign(
-                { user: user[0] },
+                { id: user[0].id },
                 process.env.JWT_SECRET,
                 {
                   expiresIn: '1h',
