@@ -59,7 +59,7 @@ app.use(cookieParser());
 const verifyJWT = (req, res, next) => {
   jwt.verify(req.cookies.jwt, process.env.JWT_SECRET, (err, decoded) => {
     if (decoded) {
-      req.user = decoded.user;
+      req.id = decoded.id;
       next();
     } else {
       res.status(401).json('Unauthorized, please log in');
