@@ -25,15 +25,20 @@ const Profile = ({ profile, loadUser, setError }) => {
 
   const handleEditConfirmation = () => {
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/profile/${profile.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: name,
-          email: email,
-        }),
-      })
+      fetch(
+        `${
+          process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+        }/profile/${profile.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: name,
+            email: email,
+          }),
+        },
+      )
         .then(res => res.json())
         .then(data => {
           if (data.id) {
