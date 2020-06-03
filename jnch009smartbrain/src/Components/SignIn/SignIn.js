@@ -21,15 +21,18 @@ class SignIn extends Component {
   onSubmitSignIn = () => {
     // POST Request
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/signin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: this.state.signInEmail,
-          password: this.state.signInPassword,
-        }),
-      })
+      fetch(
+        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signin`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: this.state.signInEmail,
+            password: this.state.signInPassword,
+          }),
+        },
+      )
         .then(resp => resp.json())
         .then(data => {
           if (data?.id) {

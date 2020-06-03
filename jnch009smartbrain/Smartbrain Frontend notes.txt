@@ -1,0 +1,79 @@
+Build the skeleton of the components first
+no need to have functionality immediately
+
+Add the component names in App.js as a 
+template for now and then implement later
+
+https://www.npmjs.com/package/react-tilt
+- tilting effect on hover
+
+Update the font-family in index.css so that
+it takes effect everywhere
+
+When you have a flexbox container, consider
+putting the code in index.css or App.css(container)
+so that it's reusable
+
+https://vincentgarreau.com/particles.js/
+https://www.npmjs.com/package/react-particles-js
+- interactive background
+
+z-index only works if you use position fixed or absolute
+
+width: 500px height: auto
+    - this will set a predefined width and the height will 
+    adjust accordingly so that it doesn't end up squished
+
+calculate bounding box with DOM manipulation
+    - take the css properties of the bounding box from the clarifai website: https://www.clarifai.com/models/face-detection-image-recognition-model-a403429f2ddf4b49b307e318f00e528b-detection 
+    
+remove horizontal scroll for mobile:
+Add the following onto the root or wrapper element
+    overflow-x: hidden;
+    position: relative;
+    height: 100vh;
+
+Logic to add bounding box to multiple faces
+let arr = [{top_row: 0.16590337, left_col: 0.18021522, bottom_row: 0.28233236, right_col: 0.27725193},
+{top_row: 0.16117582, left_col: 0.9217529, bottom_row: 0.2564872, right_col: 0.9980469},
+{top_row: 0.10452752, left_col: 0.70250773, bottom_row: 0.19964348, right_col: 0.77116454},
+{top_row: 0.1499636, left_col: 0.46600035, bottom_row: 0.25165915, right_col: 0.5459548},
+{top_row: 0.32930183, left_col: 0.2987225, bottom_row: 0.45682898, right_col: 0.41227192},
+{top_row: 0.32494336, left_col: 0.623328, bottom_row: 0.46047884, right_col: 0.7270273}]
+
+let height = 300;
+let width = 200;
+
+arr.map(box => {return ({topRow: box.top_row*height, 
+leftCol: box.left_col * width, 
+bottomRow: height - (box.bottom_row * height),
+rightCol: width - (box.right_col * width)
+})})
+
+The way the bounding box logic works is that top and left work in a top-down, left to right direction respectively. However,
+the bottom and right values work inversely from bottom to top and right to left respectively. 
+What this means is that if you increase the value of right it will move more to the left.
+If you increase the value of bottom it will move more to the top. 
+This is why we need to take the width/height and substract from the multiplication of right*width or bottom*height.
+
+tachyons mw = max-width
+
+We created two new components, a SignIn and Register component.
+These will render the SignIn and Register pages respectively
+We pass in a new function called onRouteChange that will trigger a state change in App.js of isSignedIn
+isSignedIn state will be used to render the navigation bar differently
+The navigation bar will have two props, onRouteChange and isSignedIn for click on the nav bar item and rendering the navbar accordingly
+
+We won't need the html form tag in signin and register because we'll be using JSON to send our data
+Forms try to automatically submit which we don't need to do
+
+CORS:
+trying to communicate with the outside world with http
+Chrome doesn't trust what we're accessing
+They don't know if our server is secure
+Chrome might be thinking that it's some hacker trying to access your website for malicious reasons
+
+Container components can be okay as long as the state is only directly focused on 
+itself
+
+Center fixed element: https://stackoverflow.com/questions/17069435/center-fixed-div-with-dynamic-width-css/17070034
