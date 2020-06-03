@@ -60,7 +60,7 @@ class App extends Component {
 
   componentDidMount() {
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/profile`, {
+      fetch(`${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`, {
         credentials: 'include',
       })
         .then(resp => resp.json())
@@ -131,25 +131,35 @@ class App extends Component {
       },
       () => {
         trackPromise(
-          fetch(`${process.env.REACT_APP_FETCH_API}/imageURL`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-              input: this.state.input,
-            }),
-          })
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/imageURL`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                input: this.state.input,
+              }),
+            },
+          )
             .then(response => response.json())
             .then(response => {
               if (response.outputs) {
-                fetch(`${process.env.REACT_APP_FETCH_API}/image`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
-                  body: JSON.stringify({
-                    id: this.state.userProfile.id,
-                  }),
-                })
+                fetch(
+                  `${
+                    process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+                  }/image`,
+                  {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                      id: this.state.userProfile.id,
+                    }),
+                  },
+                )
                   .then(resp => resp.json())
                   .then(newProfile => {
                     this.setState({
@@ -170,10 +180,13 @@ class App extends Component {
 
   onRouteChange = route => {
     if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
-      fetch(`${process.env.REACT_APP_FETCH_API}/signout`, {
-        method: 'POST',
-        credentials: 'include',
-      })
+      fetch(
+        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        },
+      )
         .then(resp => resp.json())
         .then(result => {
           this.setError(result);
