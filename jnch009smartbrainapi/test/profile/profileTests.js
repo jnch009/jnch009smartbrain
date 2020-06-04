@@ -174,46 +174,57 @@ module.exports = function ProfileTests() {
           afterTest(done);
         });
 
-        it('success updating email', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent
-                .put(`/profile/${id}`)
-                .send({
-                  email: updatedEmail,
-                })
-                .then(function (res) {
+        describe('email update and login', function(){
+          before(function(done){
+            beforeTest(done);
+          })
+
+          after(function(done){
+            afterTest(done);
+          })
+
+          it('success updating email', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent
+                  .put(`/profile/${id}`)
+                  .send({
+                    email: updatedEmail,
+                  })
+                  .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.have.property('email');
+                    res.body.email.should.equal(updatedEmail);
+                  });
+              });
+          });
+
+          it('ensure user profile consistency', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: updatedEmail,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent.get(`/profile/${id}`).then(function (res) {
                   res.should.have.status(200);
                   res.should.be.json;
-                  res.body.should.have.property('email');
-                  res.body.email.should.equal(updatedEmail);
+                  res.body.should.have.property('name');
+                  res.body.name.should.equal(name);
                 });
-            });
-        });
-
-        it('ensure user profile consistency', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent.get(`/profile/${id}`).then(function (res) {
-                res.should.have.status(200);
-                res.should.be.json;
-                res.body.should.have.property('name');
-                res.body.name.should.equal(name);
               });
-            });
-        });
+          });
+  
+        })
 
         it('success updating multiple (username and email)', function () {
           return agent
