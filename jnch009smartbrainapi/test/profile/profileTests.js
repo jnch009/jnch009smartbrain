@@ -141,7 +141,30 @@ module.exports = function ProfileTests() {
             });
         });
 
-        it("nothing to update", function () {
+        it("email is empty", function () {
+          return agent
+            .post("/signin")
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie("jwt");
+              return agent
+                .put(`/profile/${id}`)
+                .send({
+                  email: "",
+                  name: name,
+                })
+                .then(function (res) {
+                  res.should.have.status(400);
+                  res.should.be.json;
+                  expect(res.body).to.equal("Cannot leave fields blank");
+                });
+            });
+        });
+
+        it("name is empty", function () {
           return agent
             .post("/signin")
             .send({
@@ -154,12 +177,12 @@ module.exports = function ProfileTests() {
                 .put(`/profile/${id}`)
                 .send({
                   email: email,
-                  name: name,
+                  name: "",
                 })
                 .then(function (res) {
                   res.should.have.status(400);
                   res.should.be.json;
-                  expect(res.body).to.equal("Nothing to be updated");
+                  expect(res.body).to.equal("Cannot leave fields blank");
                 });
             });
         });
