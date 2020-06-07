@@ -7,7 +7,7 @@ const {
   app,
   expect,
   beforeTest,
-  afterTest
+  afterTest,
 } = require('../index');
 
 //nest describe blocks to have certain tests with and without auth

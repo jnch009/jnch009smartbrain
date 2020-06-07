@@ -6,6 +6,8 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest,
 } = require('./index');
 
 chai.use(chaiHttp);
