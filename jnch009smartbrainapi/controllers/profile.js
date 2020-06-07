@@ -28,8 +28,8 @@ const handlePutProfile = async (req, res, db) => {
   const userInfo = await db("users").where({ id });
   if (userInfo.length === 0) {
     return res.status(404).json("User to update not found");
-  } else if (email === userInfo[0].email && name === userInfo[0].name) {
-    return res.status(400).json("Nothing to be updated");
+  } else if (email === "" || name === "") {
+    return res.status(400).json("Cannot leave fields blank");
   }
 
   await db
