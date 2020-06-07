@@ -6,6 +6,8 @@ const {
   knex,
   app,
   expect,
+  beforeTest,
+  afterTest,
 } = require('./index');
 
 chai.use(chaiHttp);
@@ -17,17 +19,17 @@ const signout = require('./signout/signoutTests');
 const profile = require('./profile/profileTests');
 const image = require('./image/imageTests');
 
-describe('Array', function () {
-  describe('#indexOf()', function () {
-    it('should return -1 when the value is not present', function () {
-      assert.equal([1, 2, 3].indexOf(4), -1);
-    });
+describe('Endpoint tests', function () {
+  beforeEach(function (done) {
+    setTimeout(function () {
+      done();
+    }, 100);
   });
-});
 
-signin();
-root();
-register();
-signout();
-profile();
-image();
+  signin();
+  root();
+  register();
+  signout();
+  profile();
+  image();
+});
