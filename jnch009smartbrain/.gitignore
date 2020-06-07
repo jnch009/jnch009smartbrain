@@ -27,3 +27,6 @@ yarn-error.log*
 
 notes.txt
 Smartbrain Frontend notes.txt
+
+package-lock.json
+yarn.lock
