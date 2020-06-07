@@ -60,9 +60,12 @@ class App extends Component {
 
   componentDidMount() {
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`, {
-        credentials: 'include',
-      })
+      fetch(
+        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
+        {
+          credentials: 'include',
+        }
+      )
         .then(resp => resp.json())
         .then(user => {
           if (user.id) {
@@ -76,7 +79,7 @@ class App extends Component {
               route: 'SignIn',
             });
           }
-        }),
+        })
     );
   }
 
@@ -100,7 +103,7 @@ class App extends Component {
 
   calculateBox = data => {
     const clarifyArray = data.outputs[0].data.regions.map(
-      region => region.region_info.bounding_box,
+      region => region.region_info.bounding_box
     );
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
@@ -142,7 +145,7 @@ class App extends Component {
               body: JSON.stringify({
                 input: this.state.input,
               }),
-            },
+            }
           )
             .then(response => response.json())
             .then(response => {
@@ -158,7 +161,7 @@ class App extends Component {
                     body: JSON.stringify({
                       id: this.state.userProfile.id,
                     }),
-                  },
+                  }
                 )
                   .then(resp => resp.json())
                   .then(newProfile => {
@@ -172,20 +175,25 @@ class App extends Component {
                 this.setError(response);
               }
             })
-            .catch(err => console.log(err)),
+            .catch(err => console.log(err))
         );
-      },
+      }
     );
   };
 
   onRouteChange = route => {
+    this.setState({
+      imageUrl: '',
+      input: '',
+      box: [],
+    });
     if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
         {
           method: 'POST',
           credentials: 'include',
-        },
+        }
       )
         .then(resp => resp.json())
         .then(result => {
@@ -209,7 +217,7 @@ class App extends Component {
       },
       () => {
         setTimeout(() => this.setState({ errorMsg: '' }), 2000);
-      },
+      }
     );
   };
 
@@ -227,6 +235,7 @@ class App extends Component {
       box,
       userProfile,
       errorMsg,
+      input,
     } = this.state;
 
     const switchRoute = () => {
@@ -237,6 +246,7 @@ class App extends Component {
               profile={userProfile}
               loadUser={this.loadUser}
               setError={this.setError}
+              keyEnter={this.onKeyEnter}
             />
           );
         case 'SignIn':
@@ -265,6 +275,7 @@ class App extends Component {
               <ImageLinkForm
                 onInputChange={this.onInputChange}
                 onButtonSubmit={this.onButtonSubmit}
+                inputField={input}
               />
               <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
             </>
