@@ -25,8 +25,8 @@ module.exports = function ImageTests() {
         afterTest(done);
       });
 
-      it('invalid input', function () {
-        return agent
+      it('invalid input', function (done) {
+        agent
           .post('/signin')
           .send({
             email: email,
@@ -34,19 +34,21 @@ module.exports = function ImageTests() {
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent
-              .post('/imageURL')
-              .send({
-                input: mockInput,
-              })
-              .then(function (res) {
-                res.should.have.status(400);
-                res.should.be.json;
-                expect(res.body).to.equal(
-                  'Please review your input or use another image',
-                );
-              });
-          });
+          })
+          .then(function () {
+            return agent.post('/imageURL').send({
+              input: mockInput,
+            });
+          })
+          .then(function (imageRes) {
+            imageRes.should.have.status(400);
+            imageRes.should.be.json;
+            expect(imageRes.body).to.equal(
+              'Please review your input or use another image'
+            );
+            done();
+          })
+          .catch(done);
       });
     });
 
@@ -77,7 +79,7 @@ module.exports = function ImageTests() {
                 res.should.have.status(404);
                 res.should.be.json;
                 expect(res.body).to.equal(
-                  'Cannot increment score on invalid user',
+                  'Cannot increment score on invalid user'
                 );
               });
           });

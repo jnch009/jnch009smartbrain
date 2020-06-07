@@ -11,8 +11,8 @@ const handleAPICall = (req, res, apiKey) => {
       res.json(data);
     })
     .catch(() =>
-      res.status(400).json('Please review your input or use another image'),
-    )
+      res.status(400).json('Please review your input or use another image')
+    );
 };
 
 const handleImageUpdate = (req, res, db, apiError) => {
