@@ -12,16 +12,22 @@ const dateOptions = {
   second: 'numeric',
 };
 
-const Profile = ({ profile, loadUser, setError }) => {
+const Profile = ({ profile, loadUser, setError, keyEnter }) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
-    new Date(profile.joined),
+    new Date(profile.joined)
   );
 
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
-  const [score, setScore] = useState(profile.score);
-  const [joined, setJoined] = useState(joinedDate);
+  const score = profile.score;
+  const joined = joinedDate;
   const [editProfile, setEditProfile] = useState(false);
+
+  const editProfileEnterPress = e => {
+    if (editProfile) {
+      keyEnter(e, handleEditConfirmation);
+    }
+  };
 
   const handleEditConfirmation = () => {
     trackPromise(
@@ -37,7 +43,7 @@ const Profile = ({ profile, loadUser, setError }) => {
             name: name,
             email: email,
           }),
-        },
+        }
       )
         .then(res => res.json())
         .then(data => {
@@ -48,59 +54,61 @@ const Profile = ({ profile, loadUser, setError }) => {
             setError(data);
           }
         })
-        .catch(err => console.log(err)),
+        .catch(err => console.log(err))
     );
   };
 
   return (
     <>
-      <main class='mw6 center profileContainer'>
-        <GridRow
-          title='Name: '
-          value={name}
-          editable={editProfile}
-          handleChange={setName}
-        />
-        <GridRow
-          title='Email: '
-          value={email}
-          editable={editProfile}
-          handleChange={setEmail}
-        />
-        <GridRow title='Score: ' value={score} />
-        <GridRow title='Joined: ' value={joined} />
-      </main>
-      {editProfile ? (
-        <a
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-          href='#0'
-          onClick={() => handleEditConfirmation(true)}
-        >
-          Finished Editing
-        </a>
-      ) : (
-        <>
+      <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
+        <main class='mw6 center profileContainer'>
+          <GridRow
+            title='Name: '
+            value={name}
+            editable={editProfile}
+            handleChange={setName}
+          />
+          <GridRow
+            title='Email: '
+            value={email}
+            editable={editProfile}
+            handleChange={setEmail}
+          />
+          <GridRow title='Score: ' value={score} />
+          <GridRow title='Joined: ' value={joined} />
+        </main>
+        {editProfile ? (
           <a
             class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
             href='#0'
-            onClick={() => setEditProfile(true)}
+            onClick={() => handleEditConfirmation(true)}
           >
-            Update Information
+            Finished Editing
           </a>
-          <a
-            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-            href='#0'
-          >
-            Update Password
-          </a>
-          <a
-            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-            href='#0'
-          >
-            Delete Account
-          </a>
-        </>
-      )}
+        ) : (
+          <>
+            <a
+              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+              href='#0'
+              onClick={() => setEditProfile(true)}
+            >
+              Update Information
+            </a>
+            <a
+              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+              href='#0'
+            >
+              Update Password
+            </a>
+            <a
+              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+              href='#0'
+            >
+              Delete Account
+            </a>
+          </>
+        )}
+      </div>
     </>
   );
 };

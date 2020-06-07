@@ -246,6 +246,7 @@ class App extends Component {
               profile={userProfile}
               loadUser={this.loadUser}
               setError={this.setError}
+              keyEnter={this.onKeyEnter}
             />
           );
         case 'SignIn':
