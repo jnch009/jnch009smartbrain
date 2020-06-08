@@ -195,12 +195,6 @@ module.exports = function ProfileTests() {
             beforeTest(done);
           });
 
-          beforeEach(function (done) {
-            setTimeout(function () {
-              done();
-            }, 500);
-          });
-
           after(function (done) {
             afterTest(done);
           });
