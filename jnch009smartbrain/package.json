@@ -44,6 +44,7 @@
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.20.0",
-    "gh-pages": "^2.2.0"
+    "gh-pages": "^2.2.0",
+    "websocket-extensions": "^0.1.4"
   }
 }
