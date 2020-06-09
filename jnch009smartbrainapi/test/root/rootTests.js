@@ -14,14 +14,13 @@ const {
 module.exports = function RootTests() {
   const agent = chai.request.agent(app);
   describe('root', function () {
-    it('get root without auth', function (done) {
+    it('get root without auth', function () {
       chai
         .request(app)
         .get('/')
         .end(function (err, res) {
           expect(res).to.have.status(401);
           expect(res.body).to.equal('Unauthorized, please log in');
-          done();
         });
     });
 

@@ -199,8 +199,8 @@ module.exports = function ProfileTests() {
             afterTest(done);
           });
 
-          it('success updating email', function (done) {
-            agent
+          it('success updating email', function () {
+            return agent
               .post('/signin')
               .send({
                 email: email,
@@ -219,13 +219,11 @@ module.exports = function ProfileTests() {
                 putRes.should.be.json;
                 putRes.body.should.have.property('email');
                 putRes.body.email.should.equal(updatedEmail);
-                done();
-              })
-              .catch(done);
+              });
           });
 
-          it('ensure user profile consistency', function (done) {
-            agent
+          it('ensure user profile consistency', function () {
+            return agent
               .post('/signin')
               .send({
                 email: updatedEmail,
@@ -242,9 +240,7 @@ module.exports = function ProfileTests() {
                 putRes.should.be.json;
                 putRes.body.should.have.property('name');
                 putRes.body.name.should.equal(name);
-                done();
-              })
-              .catch(done);
+              });
           });
         });
 
@@ -318,8 +314,8 @@ module.exports = function ProfileTests() {
               });
           });
 
-          it('user current password incorrect', function (done) {
-            agent
+          it('user current password incorrect', function () {
+            return agent
               .post('/signin')
               .send({
                 email: email,
@@ -337,10 +333,8 @@ module.exports = function ProfileTests() {
                     res.should.have.status(400);
                     res.should.be.json;
                     expect(res.body).to.equal('Current password is incorrect');
-                    done();
                   });
-              })
-              .catch(done);
+              });
           });
         });
 
