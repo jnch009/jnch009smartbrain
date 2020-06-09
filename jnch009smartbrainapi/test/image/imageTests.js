@@ -25,8 +25,8 @@ module.exports = function ImageTests() {
         afterTest(done);
       });
 
-      it('invalid input', function (done) {
-        agent
+      it('invalid input', function () {
+        return agent
           .post('/signin')
           .send({
             email: email,
@@ -46,9 +46,7 @@ module.exports = function ImageTests() {
             expect(imageRes.body).to.equal(
               'Please review your input or use another image'
             );
-            done();
-          })
-          .catch(done);
+          });
       });
     });
 
