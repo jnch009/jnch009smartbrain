@@ -57,28 +57,30 @@ const handlePutProfile = async (req, res, db) => {
     .catch(() => res.status(500).json('DB Error'));
 };
 
-const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
+const handlePutProfilePassword = async (req, res, db, bcrypt, saltRounds) => {
   const { id } = req.params;
-  const { password } = req.body;
+  const { password, currentPassword } = req.body;
 
   if (!password) {
     res.status(400).json('Nothing to be updated');
+  }
+
+  const currentUser = await db('login').where({ id });
+  if (currentUser.length === 0) {
+    res.status(404).json('User to update not found');
+  } else if (!bcrypt.compareSync(currentPassword, currentUser[0].hash)) {
+    res.status(400).json('Current password is incorrect');
   } else {
     let hashedPass = bcrypt.hashSync(password, saltRounds);
+    const updateUser = await db('login').where({ id }).returning('*').update({
+      hash: hashedPass,
+    });
 
-    db('login')
-      .where({ id })
-      .returning('*')
-      .update({
-        hash: hashedPass,
-      })
-      .then(user => {
-        if (user.length > 0) {
-          res.json('Password Updated');
-        } else {
-          res.status(404).json('User to update not found');
-        }
-      });
+    if (updateUser.length > 0) {
+      res.json('Password Updated');
+    } else {
+      res.status(400).json('Password not updated');
+    }
   }
 };
 

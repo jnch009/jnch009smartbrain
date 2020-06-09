@@ -308,6 +308,7 @@ module.exports = function ProfileTests() {
                   .put(`/profile/passwordUpdate/123`)
                   .send({
                     password: updatedPassword,
+                    currentPassword: process.env.TEST_PASS,
                   })
                   .then(function (res) {
                     res.should.have.status(404);
@@ -365,6 +366,7 @@ module.exports = function ProfileTests() {
                   .put(`/profile/passwordUpdate/${id}`)
                   .send({
                     password: updatedPassword,
+                    currentPassword: process.env.TEST_PASS,
                   })
                   .then(function (res) {
                     res.should.have.status(200);
