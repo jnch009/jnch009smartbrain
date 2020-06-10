@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
+import { createBrowserHistory } from 'history';
 
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
@@ -52,6 +53,15 @@ const initialState = {
   errorMsg: '',
 };
 
+const history = createBrowserHistory();
+// console.log(history.location);
+
+// Listen for changes to the current location.
+const unlisten = history.listen((location, action) => {
+  // location is an object like window.location
+  console.log(action, location.pathname, location.state);
+});
+
 class App extends Component {
   constructor() {
     super();
@@ -59,6 +69,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(history.location.pathname);
     trackPromise(
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
@@ -74,6 +85,10 @@ class App extends Component {
               route: 'home',
               userProfile: user,
             });
+          } else if (history.location.pathname === '/Register') {
+            this.setState({
+              route: 'Register',
+            });
           } else {
             this.setState({
               route: 'SignIn',
@@ -81,6 +96,10 @@ class App extends Component {
           }
         })
     );
+  }
+
+  componentWillUnmount() {
+    unlisten();
   }
 
   loadUser = user => {
@@ -256,6 +275,7 @@ class App extends Component {
               loadUser={this.loadUser}
               setError={this.setError}
               keyEnter={this.onKeyEnter}
+              history={history}
             />
           );
         case 'Register':
@@ -265,6 +285,7 @@ class App extends Component {
               loadUser={this.loadUser}
               setError={this.setError}
               keyEnter={this.onKeyEnter}
+              history={history}
             />
           );
         default:

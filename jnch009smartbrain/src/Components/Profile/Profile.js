@@ -19,9 +19,10 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
 
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
-  const score = profile.score;
   const joined = joinedDate;
   const [editProfile, setEditProfile] = useState(false);
+
+  const { id, score } = profile;
 
   const editProfileEnterPress = e => {
     if (editProfile) {
@@ -80,7 +81,7 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
         {editProfile ? (
           <a
             class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-            href='#0'
+            href={`/profile/${id}`}
             onClick={() => handleEditConfirmation(true)}
           >
             Finished Editing
@@ -89,7 +90,7 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
           <>
             <a
               class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
+              href={`/profile/edit/${id}`}
               onClick={() => setEditProfile(true)}
             >
               Update Information
