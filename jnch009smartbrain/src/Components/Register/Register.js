@@ -11,6 +11,10 @@ class Register extends Component {
     };
   }
 
+  componentDidMount() {
+    this.props.history.push('/Register', { route: 'Register' });
+  }
+
   onNameChange = e => {
     this.setState({
       name: e.target.value,
@@ -68,7 +72,7 @@ class Register extends Component {
               password: this.state.password,
             }),
             credentials: 'include',
-          },
+          }
         )
           .then(resp => resp.json())
           .then(data => {
@@ -78,7 +82,7 @@ class Register extends Component {
             } else {
               this.props.setError(data);
             }
-          }),
+          })
       );
     }
   };

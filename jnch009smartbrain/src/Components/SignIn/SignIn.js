@@ -10,6 +10,10 @@ class SignIn extends Component {
     };
   }
 
+  componentDidMount() {
+    this.props.history.push('/SignIn', { some: 'state' });
+  }
+
   onEmailChange = e => {
     this.setState({ signInEmail: e.target.value });
   };
@@ -31,7 +35,7 @@ class SignIn extends Component {
             email: this.state.signInEmail,
             password: this.state.signInPassword,
           }),
-        },
+        }
       )
         .then(resp => resp.json())
         .then(data => {
@@ -41,7 +45,7 @@ class SignIn extends Component {
           } else {
             this.props.setError(data);
           }
-        }),
+        })
     );
   };
 
