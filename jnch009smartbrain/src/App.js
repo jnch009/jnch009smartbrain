@@ -60,6 +60,9 @@ const history = createBrowserHistory();
 const unlisten = history.listen((location, action) => {
   // location is an object like window.location
   console.log(action, location.pathname, location.state);
+  if (action === 'POP') {
+    history.goBack();
+  }
 });
 
 class App extends Component {
