@@ -69,7 +69,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log(history.location.pathname);
+    let urlPath = history.location.pathname;
     trackPromise(
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
@@ -79,10 +79,10 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          if (user.id) {
+          if (user.id && !(urlPath === '/Register' || urlPath === '/SignIn')) {
             this.setState({
               isSignedIn: true,
-              route: 'home',
+              route: urlPath === '/' ? `home` : urlPath,
               userProfile: user,
             });
           } else if (history.location.pathname === '/Register') {
@@ -206,6 +206,7 @@ class App extends Component {
       input: '',
       box: [],
     });
+
     if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
