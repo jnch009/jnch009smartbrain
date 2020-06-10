@@ -69,6 +69,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    //TODO: change the routes to have slashes before them
     let urlPath = history.location.pathname;
     trackPromise(
       fetch(
@@ -79,12 +80,24 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          if (user.id && !(urlPath === '/Register' || urlPath === '/SignIn')) {
-            this.setState({
-              isSignedIn: true,
-              route: urlPath === '/' ? `home` : urlPath,
-              userProfile: user,
-            });
+          if (user.id) {
+            if (urlPath === '/SignOut') {
+              this.setState({
+                initialState,
+              });
+            } else if (urlPath === '/Register' || urlPath === '/SignIn') {
+              this.setState({
+                isSignedIn: true,
+                route: 'home',
+                userProfile: user,
+              });
+            } else {
+              this.setState({
+                isSignedIn: true,
+                route: urlPath === '/' ? `home` : urlPath,
+                userProfile: user,
+              });
+            }
           } else if (history.location.pathname === '/Register') {
             this.setState({
               route: 'Register',
@@ -207,7 +220,7 @@ class App extends Component {
       box: [],
     });
 
-    if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
+    if (this.state.isSignedIn && route === 'SignOut') {
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
         {
@@ -217,8 +230,9 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(result => {
+          // TODO: change this to a success box
           this.setError(result);
-          this.setState({ isSignedIn: false, route: route });
+          this.setState({ isSignedIn: false, route: 'SignIn' });
         });
     } else if (route === 'home') {
       this.setState({
