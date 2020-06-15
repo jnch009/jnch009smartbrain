@@ -9,19 +9,19 @@ const Navigation = ({ onRouteChange, isSignedIn }) => {
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => onRouteChange('home')}
+              onClick={() => onRouteChange('/')}
             >
               Home
             </p>
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => onRouteChange('Profile')}
+              onClick={() => onRouteChange('/Profile')}
             >
               Profile
             </p>
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => onRouteChange('SignIn')}
+              onClick={() => onRouteChange('/SignOut')}
             >
               Sign Out
             </p>
@@ -33,13 +33,13 @@ const Navigation = ({ onRouteChange, isSignedIn }) => {
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => onRouteChange('SignIn')}
+              onClick={() => onRouteChange('/SignIn')}
             >
               Sign In
             </p>{' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => onRouteChange('Register')}
+              onClick={() => onRouteChange('/Register')}
             >
               Register
             </p>
