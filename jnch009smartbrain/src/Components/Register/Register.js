@@ -11,10 +11,6 @@ class Register extends Component {
     };
   }
 
-  componentDidMount() {
-    this.props.history.push('/Register', { route: 'Register' });
-  }
-
   onNameChange = e => {
     this.setState({
       name: e.target.value,

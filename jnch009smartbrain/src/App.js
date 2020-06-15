@@ -54,16 +54,6 @@ const initialState = {
 };
 
 const history = createBrowserHistory();
-// console.log(history.location);
-
-// Listen for changes to the current location.
-const unlisten = history.listen((location, action) => {
-  // location is an object like window.location
-  console.log(action, location.pathname, location.state);
-  if (action === 'POP') {
-    history.goBack();
-  }
-});
 
 class App extends Component {
   constructor() {
@@ -72,7 +62,14 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //TODO: change the routes to have slashes before them
+    history.listen((location, action) => {
+      console.log(location.pathname, action);
+      //this.onRouteChange(location.pathname);
+      this.setState({
+        route: location.pathname,
+      });
+    });
+
     let urlPath = history.location.pathname;
     trackPromise(
       fetch(
@@ -84,38 +81,40 @@ class App extends Component {
         .then(resp => resp.json())
         .then(user => {
           if (user.id) {
+            // this path may not be needed since it will redirect to login
             if (urlPath === '/SignOut') {
               this.setState({
                 initialState,
               });
+              history.push('/SignIn');
             } else if (urlPath === '/Register' || urlPath === '/SignIn') {
               this.setState({
                 isSignedIn: true,
-                route: 'home',
+                route: '/',
                 userProfile: user,
               });
+              history.push('/');
             } else {
               this.setState({
                 isSignedIn: true,
-                route: urlPath === '/' ? `home` : urlPath,
+                route: urlPath,
                 userProfile: user,
               });
+              history.push(`${urlPath}`);
             }
-          } else if (history.location.pathname === '/Register') {
+          } else if (urlPath === '/Register') {
             this.setState({
-              route: 'Register',
+              route: '/Register',
             });
+            history.push(`${urlPath}`);
           } else {
             this.setState({
-              route: 'SignIn',
+              route: '/SignIn',
             });
+            history.push(`/SignIn`);
           }
         })
     );
-  }
-
-  componentWillUnmount() {
-    unlisten();
   }
 
   loadUser = user => {
@@ -223,7 +222,7 @@ class App extends Component {
       box: [],
     });
 
-    if (this.state.isSignedIn && route === 'SignOut') {
+    if (this.state.isSignedIn && route === '/SignOut') {
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
         {
@@ -235,15 +234,18 @@ class App extends Component {
         .then(result => {
           // TODO: change this to a success box
           this.setError(result);
-          this.setState({ isSignedIn: false, route: 'SignIn' });
+          this.setState({ isSignedIn: false, route: '/SignIn' });
         });
-    } else if (route === 'home') {
+      history.push(`/SignIn`);
+    } else if (route === '/') {
       this.setState({
         isSignedIn: true,
         route: route,
       });
+      history.push(`${route}`);
     } else {
       this.setState({ ...this.state, route: route });
+      history.push(`${route}`);
     }
   };
 
@@ -264,63 +266,55 @@ class App extends Component {
     }
   };
 
-  render() {
-    const {
-      isSignedIn,
-      imageUrl,
-      route,
-      box,
-      userProfile,
-      errorMsg,
-      input,
-    } = this.state;
+  switchRoute = route => {
+    const { imageUrl, box, userProfile, input } = this.state;
 
-    const switchRoute = () => {
-      switch (route) {
-        case 'Profile':
-          return (
-            <Profile
-              profile={userProfile}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
+    switch (route) {
+      case '/Profile':
+        return (
+          <Profile
+            profile={this.state.userProfile}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+          />
+        );
+      case '/SignIn':
+        return (
+          <SignIn
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+          />
+        );
+      case '/Register':
+        return (
+          <Register
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+          />
+        );
+      default:
+        return (
+          <>
+            <Logo />
+            <Rank name={userProfile.name} score={userProfile.score} />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit}
+              inputField={input}
             />
-          );
-        case 'SignIn':
-          return (
-            <SignIn
-              onRouteChange={this.onRouteChange}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
-              history={history}
-            />
-          );
-        case 'Register':
-          return (
-            <Register
-              onRouteChange={this.onRouteChange}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
-              history={history}
-            />
-          );
-        default:
-          return (
-            <>
-              <Logo />
-              <Rank name={userProfile.name} score={userProfile.score} />
-              <ImageLinkForm
-                onInputChange={this.onInputChange}
-                onButtonSubmit={this.onButtonSubmit}
-                inputField={input}
-              />
-              <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
-            </>
-          );
-      }
-    };
+            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
+          </>
+        );
+    }
+  };
+
+  render() {
+    const { isSignedIn, route, errorMsg } = this.state;
 
     return route === '' ? (
       <LoadingSpinner route={route} />
@@ -342,7 +336,7 @@ class App extends Component {
           isSignedIn={isSignedIn}
         />
 
-        {switchRoute()}
+        {this.switchRoute(route)}
       </div>
     );
   }

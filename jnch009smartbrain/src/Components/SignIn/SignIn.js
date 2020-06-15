@@ -10,10 +10,6 @@ class SignIn extends Component {
     };
   }
 
-  componentDidMount() {
-    this.props.history.push('/SignIn', { some: 'state' });
-  }
-
   onEmailChange = e => {
     this.setState({ signInEmail: e.target.value });
   };
@@ -41,7 +37,7 @@ class SignIn extends Component {
         .then(data => {
           if (data?.id) {
             this.props.loadUser(data);
-            this.props.onRouteChange('home');
+            this.props.onRouteChange('/');
           } else {
             this.props.setError(data);
           }
