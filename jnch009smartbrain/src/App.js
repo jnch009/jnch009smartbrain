@@ -63,11 +63,10 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      console.log(location.pathname, action);
-      //this.onRouteChange(location.pathname);
-      this.setState({
-        route: location.pathname,
-      });
+      //console.log(location.pathname, action);
+      if (location.pathname !== this.state.route) {
+        this.onRouteChange(location.pathname, action);
+      }
     });
 
     let urlPath = history.location.pathname;
@@ -126,6 +125,7 @@ class App extends Component {
         score: user.score,
         joined: user.joined,
       },
+      isSignedIn: true,
     });
   };
 
@@ -215,37 +215,67 @@ class App extends Component {
     );
   };
 
-  onRouteChange = route => {
+  onRouteChange = (route, action = null) => {
+    console.log(route, this.state);
     this.setState({
       imageUrl: '',
       input: '',
       box: [],
     });
 
-    if (this.state.isSignedIn && route === '/SignOut') {
-      fetch(
-        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
-        {
-          method: 'POST',
-          credentials: 'include',
-        }
-      )
-        .then(resp => resp.json())
-        .then(result => {
-          // TODO: change this to a success box
-          this.setError(result);
-          this.setState({ isSignedIn: false, route: '/SignIn' });
-        });
-      history.push(`/SignIn`);
-    } else if (route === '/') {
-      this.setState({
-        isSignedIn: true,
-        route: route,
-      });
-      history.push(`${route}`);
+    if (this.state.isSignedIn) {
+      if (route === '/SignOut') {
+        fetch(
+          `${
+            process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+          }/signout`,
+          {
+            method: 'POST',
+            credentials: 'include',
+          }
+        )
+          .then(resp => resp.json())
+          .then(result => {
+            // TODO: change this to a success box
+            this.setError(result);
+            this.setState({ isSignedIn: false, route: '/SignIn' });
+          })
+          .then(() => {
+            history.push(`/SignIn`);
+          });
+      } else if (route !== '/Register' && route !== '/SignIn') {
+        this.setState(
+          {
+            isSignedIn: true,
+            route: route,
+          },
+          () => {
+            if (action !== 'POP') {
+              history.push(`${route}`);
+            }
+          }
+        );
+      }
     } else {
-      this.setState({ ...this.state, route: route });
-      history.push(`${route}`);
+      if (route !== '/SignIn' && route !== '/Register') {
+        this.setState(
+          {
+            isSignedIn: false,
+            route: '/SignIn',
+          },
+          () => {
+            if (action !== 'POP') {
+              history.push(`/SignIn`);
+            }
+          }
+        );
+      } else {
+        this.setState({ ...this.state, route: route }, () => {
+          if (action !== 'POP') {
+            history.push(`${route}`);
+          }
+        });
+      }
     }
   };
 
