@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { trackPromise } from 'react-promise-tracker';
 import GridRow from '../GridRow/GridRow';
+import ProfileEdit from './ProfileEdit';
+
 import './Profile.css';
 
 const dateOptions = {
@@ -12,8 +14,15 @@ const dateOptions = {
   second: 'numeric',
 };
 
-const Profile = ({ profile, loadUser, setError, keyEnter }) => {
-  console.log(profile);
+const Profile = ({
+  profile,
+  route,
+  history,
+  routingLogic,
+  loadUser,
+  setError,
+  keyEnter,
+}) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined)
   );
@@ -21,14 +30,44 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
   const joined = joinedDate;
-  const [editProfile, setEditProfile] = useState(false);
 
   const { id, score } = profile;
 
+  const profileView = (
+    <>
+      <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
+        <main class='mw6 center profileContainer'>
+          <GridRow title='Name: ' value={name} handleChange={setName} />
+          <GridRow title='Email: ' value={email} handleChange={setEmail} />
+          <GridRow title='Score: ' value={score} />
+          <GridRow title='Joined: ' value={joined} />
+        </main>
+        <>
+          <button
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            onClick={() => routingLogic('/Profile/Edit')}
+          >
+            Update Information
+          </button>
+          <button
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            onClick={() => routingLogic('/Profile/PasswordChange')}
+          >
+            Update Password
+          </button>
+          <button
+            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+            onClick={() => routingLogic('/Profile/Delete')}
+          >
+            Delete Account
+          </button>
+        </>
+      </div>
+    </>
+  );
+
   const editProfileEnterPress = e => {
-    if (editProfile) {
-      keyEnter(e, handleEditConfirmation);
-    }
+    keyEnter(e, handleEditConfirmation);
   };
 
   const handleEditConfirmation = () => {
@@ -51,7 +90,6 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
         .then(data => {
           if (data.id) {
             loadUser(data);
-            setEditProfile(false);
           } else {
             setError(data);
           }
@@ -60,59 +98,32 @@ const Profile = ({ profile, loadUser, setError, keyEnter }) => {
     );
   };
 
-  return (
-    <>
-      <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
-        <main class='mw6 center profileContainer'>
-          <GridRow
-            title='Name: '
-            value={name}
-            editable={editProfile}
-            handleChange={setName}
+  const profileRouting = () => {
+    switch (route) {
+      case '/Profile/Edit':
+        return (
+          <ProfileEdit
+            editProfileEnterPress={editProfileEnterPress}
+            handleEditConfirmation={handleEditConfirmation}
+            setName={setName}
+            setEmail={setEmail}
+            routingLogic={routingLogic}
+            name={name}
+            email={email}
+            score={score}
+            joined={joined}
           />
-          <GridRow
-            title='Email: '
-            value={email}
-            editable={editProfile}
-            handleChange={setEmail}
-          />
-          <GridRow title='Score: ' value={score} />
-          <GridRow title='Joined: ' value={joined} />
-        </main>
-        {editProfile ? (
-          <a
-            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-            href={`/profile/${id}`}
-            onClick={() => handleEditConfirmation(true)}
-          >
-            Finished Editing
-          </a>
-        ) : (
-          <>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href={`/profile/edit/${id}`}
-              onClick={() => setEditProfile(true)}
-            >
-              Update Information
-            </a>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
-            >
-              Update Password
-            </a>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
-            >
-              Delete Account
-            </a>
-          </>
-        )}
-      </div>
-    </>
-  );
+        );
+      case '/Profile/PasswordChange':
+        break;
+      case '/Profile/Delete':
+        break;
+      default:
+        return profileView;
+    }
+  };
+
+  return <>{profileRouting()}</>;
 };
 
 export default Profile;
