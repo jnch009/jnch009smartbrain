@@ -1,17 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GridRow from '../GridRow/GridRow';
+import { trackPromise } from 'react-promise-tracker';
 
 const ProfileEdit = ({
-  editProfileEnterPress,
-  handleEditConfirmation,
-  setName,
-  setEmail,
+  profile,
   routingLogic,
-  name,
-  email,
-  score,
   joined,
+  keyEnter,
+  loadUser,
+  setError,
 }) => {
+  const [name, setName] = useState(profile.name);
+  const [email, setEmail] = useState(profile.email);
+
+  const { score } = profile;
+
+  const editProfileEnterPress = e => {
+    keyEnter(e, handleEditConfirmation);
+  };
+
+  const handleEditConfirmation = () => {
+    trackPromise(
+      fetch(
+        `${
+          process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+        }/profile/${profile.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: name,
+            email: email,
+          }),
+        }
+      )
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {
+            loadUser(data);
+            routingLogic('/Profile');
+          } else {
+            setError(data);
+          }
+        })
+        .catch(err => console.log(err))
+    );
+  };
+
   return (
     <>
       <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
