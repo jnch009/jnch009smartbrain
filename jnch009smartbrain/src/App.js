@@ -96,7 +96,7 @@ class App extends Component {
   }
 
   routingLogic = (urlPath, user, action = null) => {
-    if (user.id) {
+    if (this.state.userProfile.id || user?.id) {
       switch (urlPath) {
         case '/SignIn':
         case '/Register':
@@ -104,7 +104,7 @@ class App extends Component {
             {
               isSignedIn: true,
               route: '/',
-              userProfile: user,
+              userProfile: user || this.state.userProfile,
             },
             () => {
               if (action !== 'POP') {
@@ -125,9 +125,9 @@ class App extends Component {
           )
             .then(resp => resp.json())
             .then(result => {
+              this.setState({ ...initialState, route: '/SignIn' });
               // TODO: change this to a success box
               this.setError(result);
-              this.setState({ isSignedIn: false, route: '/SignIn' });
             })
             .then(() => {
               if (action !== 'POP') {
@@ -140,7 +140,7 @@ class App extends Component {
             {
               isSignedIn: true,
               route: urlPath,
-              userProfile: user,
+              userProfile: user || this.state.userProfile,
             },
             () => {
               if (action !== 'POP') {
@@ -274,70 +274,6 @@ class App extends Component {
     );
   };
 
-  onRouteChange = (route, action = null) => {
-    //console.log(route, this.state);
-    this.setState({
-      imageUrl: '',
-      input: '',
-      box: [],
-    });
-
-    if (this.state.isSignedIn) {
-      if (route === '/SignOut') {
-        fetch(
-          `${
-            process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-          }/signout`,
-          {
-            method: 'POST',
-            credentials: 'include',
-          }
-        )
-          .then(resp => resp.json())
-          .then(result => {
-            // TODO: change this to a success box
-            this.setError(result);
-            this.setState({ isSignedIn: false, route: '/SignIn' });
-          })
-          .then(() => {
-            history.push(`/SignIn`);
-          });
-      } else if (route !== '/Register' && route !== '/SignIn') {
-        this.setState(
-          {
-            isSignedIn: true,
-            route: route,
-          },
-          () => {
-            if (action !== 'POP') {
-              history.push(`${route}`);
-            }
-          }
-        );
-      }
-    } else {
-      if (route !== '/SignIn' && route !== '/Register') {
-        this.setState(
-          {
-            isSignedIn: false,
-            route: '/SignIn',
-          },
-          () => {
-            if (action !== 'POP') {
-              history.push(`/SignIn`);
-            }
-          }
-        );
-      } else {
-        this.setState({ ...this.state, route: route }, () => {
-          if (action !== 'POP') {
-            history.push(`${route}`);
-          }
-        });
-      }
-    }
-  };
-
   setError = msg => {
     this.setState(
       {
@@ -371,7 +307,7 @@ class App extends Component {
       case '/SignIn':
         return (
           <SignIn
-            onRouteChange={this.onRouteChange}
+            routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -380,7 +316,7 @@ class App extends Component {
       case '/Register':
         return (
           <Register
-            onRouteChange={this.onRouteChange}
+            routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -420,10 +356,7 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
-        <Navigation
-          onRouteChange={this.onRouteChange}
-          isSignedIn={isSignedIn}
-        />
+        <Navigation routingLogic={this.routingLogic} isSignedIn={isSignedIn} />
 
         {this.switchRoute(route)}
       </div>
