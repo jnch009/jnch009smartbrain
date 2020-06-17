@@ -296,9 +296,14 @@ class App extends Component {
 
     switch (route) {
       case '/Profile':
+      case '/Profile/Edit':
+      case '/Profile/PasswordChange':
+      case '/Profile/Delete':
         return (
           <Profile
             profile={this.state.userProfile}
+            route={this.state.route}
+            routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
