@@ -63,13 +63,24 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      //console.log(location.pathname, action);
       if (location.pathname !== this.state.route) {
-        this.onRouteChange(location.pathname, action);
+        trackPromise(
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/profile`,
+            {
+              credentials: 'include',
+            }
+          )
+            .then(resp => resp.json())
+            .then(user => {
+              this.routingLogic(location.pathname, user, action);
+            })
+        );
       }
     });
 
-    let urlPath = history.location.pathname;
     trackPromise(
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
@@ -79,42 +90,90 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          if (user.id) {
-            // this path may not be needed since it will redirect to login
-            if (urlPath === '/SignOut') {
-              this.setState({
-                initialState,
-              });
-              history.push('/SignIn');
-            } else if (urlPath === '/Register' || urlPath === '/SignIn') {
-              this.setState({
-                isSignedIn: true,
-                route: '/',
-                userProfile: user,
-              });
-              history.push('/');
-            } else {
-              this.setState({
-                isSignedIn: true,
-                route: urlPath,
-                userProfile: user,
-              });
-              history.push(`${urlPath}`);
-            }
-          } else if (urlPath === '/Register') {
-            this.setState({
-              route: '/Register',
-            });
-            history.push(`${urlPath}`);
-          } else {
-            this.setState({
-              route: '/SignIn',
-            });
-            history.push(`/SignIn`);
-          }
+          this.routingLogic(history.location.pathname, user);
         })
     );
   }
+
+  routingLogic = (urlPath, user, action = null) => {
+    if (user.id) {
+      switch (urlPath) {
+        case '/SignIn':
+        case '/Register':
+          this.setState(
+            {
+              isSignedIn: true,
+              route: '/',
+              userProfile: user,
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push('/');
+              }
+            }
+          );
+          break;
+        case '/SignOut':
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/signout`,
+            {
+              method: 'POST',
+              credentials: 'include',
+            }
+          )
+            .then(resp => resp.json())
+            .then(result => {
+              // TODO: change this to a success box
+              this.setError(result);
+              this.setState({ isSignedIn: false, route: '/SignIn' });
+            })
+            .then(() => {
+              if (action !== 'POP') {
+                history.push(`/SignIn`);
+              }
+            });
+          break;
+        default:
+          this.setState(
+            {
+              isSignedIn: true,
+              route: urlPath,
+              userProfile: user,
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push(`${urlPath}`);
+              }
+            }
+          );
+      }
+    } else {
+      switch (urlPath) {
+        case '/SignIn':
+        case '/Register':
+          this.setState({ ...this.state, route: urlPath }, () => {
+            if (action !== 'POP') {
+              history.push(`${urlPath}`);
+            }
+          });
+          break;
+        default:
+          this.setState(
+            {
+              isSignedIn: false,
+              route: '/SignIn',
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push(`/SignIn`);
+              }
+            }
+          );
+      }
+    }
+  };
 
   loadUser = user => {
     this.setState({
@@ -216,7 +275,7 @@ class App extends Component {
   };
 
   onRouteChange = (route, action = null) => {
-    console.log(route, this.state);
+    //console.log(route, this.state);
     this.setState({
       imageUrl: '',
       input: '',
