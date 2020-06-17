@@ -13,6 +13,7 @@ const dateOptions = {
 };
 
 const Profile = ({ profile, loadUser, setError, keyEnter }) => {
+  console.log(profile);
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined)
   );

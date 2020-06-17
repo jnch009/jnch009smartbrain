@@ -37,7 +37,7 @@ class SignIn extends Component {
         .then(data => {
           if (data?.id) {
             this.props.loadUser(data);
-            this.props.onRouteChange('/');
+            this.props.routingLogic('/');
           } else {
             this.props.setError(data);
           }
@@ -46,7 +46,7 @@ class SignIn extends Component {
   };
 
   render() {
-    const { onRouteChange, keyEnter } = this.props;
+    const { routingLogic, keyEnter } = this.props;
     return (
       <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center'>
         <main className='pa4 black-80'>
@@ -90,7 +90,7 @@ class SignIn extends Component {
             </div>
             <div className='lh-copy mt3'>
               <p
-                onClick={() => onRouteChange('Register')}
+                onClick={() => routingLogic('/Register')}
                 className='f6 link dim black db pointer'
               >
                 Register

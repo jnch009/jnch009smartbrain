@@ -74,7 +74,7 @@ class Register extends Component {
           .then(data => {
             if (data?.id) {
               this.props.loadUser(data);
-              this.props.onRouteChange('home');
+              this.props.routingLogic('/');
             } else {
               this.props.setError(data);
             }
