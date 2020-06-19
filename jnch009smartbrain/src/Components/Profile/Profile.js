@@ -1,6 +1,7 @@
 import React from 'react';
 import GridRow from '../GridRow/GridRow';
 import ProfileEdit from './ProfileEdit';
+import ProfilePassword from './ProfilePassword';
 
 import './Profile.css';
 
@@ -73,7 +74,14 @@ const Profile = ({
           />
         );
       case '/Profile/PasswordChange':
-        break;
+        return (
+          <ProfilePassword
+            profile={profile}
+            routingLogic={routingLogic}
+            keyEnter={keyEnter}
+            setError={setError}
+          />
+        );
       case '/Profile/Delete':
         break;
       default:
