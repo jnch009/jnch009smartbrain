@@ -57,7 +57,7 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
           />
         </main>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
           onClick={() => {
             handlePasswordUpdate();
           }}
@@ -65,7 +65,7 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
           Update Password
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
           onClick={() => {
             routingLogic('/Profile');
           }}
