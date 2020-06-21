@@ -14,8 +14,9 @@ jobs:
           persist-credentials: false 
 
       - name: Install and Build 🔧
-        working-directory: './jnch009smartbrain'
+        working-directory: ./jnch009smartbrain
         run: |
+          npm install
           npm run deploy
         env: 
           REACT_APP_FETCH_API: ${{ secrets.REACT_APP_FETCH_API }}
