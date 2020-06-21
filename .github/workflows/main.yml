@@ -11,12 +11,7 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v2
         with:
-          persist-credentials: false 
-
-      - name: Deploy Backend
-        run: |
-          npm install
-          git subtree push --prefix jnch009smartbrainapi heroku master
+          persist-credentials: false
 
       - name: Install and Build 🔧
         working-directory: ./jnch009smartbrain
