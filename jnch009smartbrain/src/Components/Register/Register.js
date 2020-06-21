@@ -68,17 +68,17 @@ class Register extends Component {
               password: this.state.password,
             }),
             credentials: 'include',
-          },
+          }
         )
           .then(resp => resp.json())
           .then(data => {
             if (data?.id) {
               this.props.loadUser(data);
-              this.props.onRouteChange('home');
+              this.props.routingLogic('/');
             } else {
               this.props.setError(data);
             }
-          }),
+          })
       );
     }
   };

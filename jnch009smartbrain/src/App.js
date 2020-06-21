@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
+import { createBrowserHistory } from 'history';
 
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
@@ -52,6 +53,8 @@ const initialState = {
   errorMsg: '',
 };
 
+const history = createBrowserHistory();
+
 class App extends Component {
   constructor() {
     super();
@@ -59,6 +62,25 @@ class App extends Component {
   }
 
   componentDidMount() {
+    history.listen((location, action) => {
+      if (location.pathname !== this.state.route) {
+        trackPromise(
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/profile`,
+            {
+              credentials: 'include',
+            }
+          )
+            .then(resp => resp.json())
+            .then(user => {
+              this.routingLogic(location.pathname, user, action);
+            })
+        );
+      }
+    });
+
     trackPromise(
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
@@ -68,20 +90,91 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          if (user.id) {
-            this.setState({
-              isSignedIn: true,
-              route: 'home',
-              userProfile: user,
-            });
-          } else {
-            this.setState({
-              route: 'SignIn',
-            });
-          }
+          this.routingLogic(history.location.pathname, user);
         })
     );
   }
+
+  routingLogic = (urlPath, user, action = null) => {
+    console.log(this.state.userProfile, user?.id);
+    if (this.state.userProfile.id || user?.id) {
+      switch (urlPath) {
+        case '/SignIn':
+        case '/Register':
+          this.setState(
+            {
+              isSignedIn: true,
+              route: '/',
+              userProfile: user || this.state.userProfile,
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push('/');
+              }
+            }
+          );
+          break;
+        case '/SignOut':
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/signout`,
+            {
+              method: 'POST',
+              credentials: 'include',
+            }
+          )
+            .then(resp => resp.json())
+            .then(result => {
+              this.setState({ ...initialState, route: '/SignIn' });
+              // TODO: change this to a success box
+              this.setError(result);
+            })
+            .then(() => {
+              if (action !== 'POP') {
+                history.push(`/SignIn`);
+              }
+            });
+          break;
+        default:
+          this.setState(
+            {
+              isSignedIn: true,
+              route: urlPath,
+              userProfile: user || this.state.userProfile,
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push(`${urlPath}`);
+              }
+            }
+          );
+      }
+    } else {
+      switch (urlPath) {
+        case '/SignIn':
+        case '/Register':
+          this.setState({ ...this.state, route: urlPath }, () => {
+            if (action !== 'POP') {
+              history.push(`${urlPath}`);
+            }
+          });
+          break;
+        default:
+          this.setState(
+            {
+              isSignedIn: false,
+              route: '/SignIn',
+            },
+            () => {
+              if (action !== 'POP') {
+                history.push(`/SignIn`);
+              }
+            }
+          );
+      }
+    }
+  };
 
   loadUser = user => {
     this.setState({
@@ -92,7 +185,19 @@ class App extends Component {
         score: user.score,
         joined: user.joined,
       },
+      isSignedIn: true,
     });
+  };
+
+  clearUser = () => {
+    this.setState(
+      {
+        ...initialState,
+      },
+      () => {
+        this.routingLogic('/SignIn');
+      }
+    );
   };
 
   onInputChange = event => {
@@ -181,35 +286,6 @@ class App extends Component {
     );
   };
 
-  onRouteChange = route => {
-    this.setState({
-      imageUrl: '',
-      input: '',
-      box: [],
-    });
-    if (this.state.isSignedIn && (route === 'SignIn' || route === 'Register')) {
-      fetch(
-        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signout`,
-        {
-          method: 'POST',
-          credentials: 'include',
-        }
-      )
-        .then(resp => resp.json())
-        .then(result => {
-          this.setError(result);
-          this.setState({ isSignedIn: false, route: route });
-        });
-    } else if (route === 'home') {
-      this.setState({
-        isSignedIn: true,
-        route: route,
-      });
-    } else {
-      this.setState({ ...this.state, route: route });
-    }
-  };
-
   setError = msg => {
     this.setState(
       {
@@ -227,61 +303,61 @@ class App extends Component {
     }
   };
 
-  render() {
-    const {
-      isSignedIn,
-      imageUrl,
-      route,
-      box,
-      userProfile,
-      errorMsg,
-      input,
-    } = this.state;
+  switchRoute = route => {
+    const { imageUrl, box, userProfile, input } = this.state;
 
-    const switchRoute = () => {
-      switch (route) {
-        case 'Profile':
-          return (
-            <Profile
-              profile={userProfile}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
+    switch (route) {
+      case '/Profile':
+      case '/Profile/Edit':
+      case '/Profile/PasswordChange':
+      case '/Profile/Delete':
+        return (
+          <Profile
+            profile={this.state.userProfile}
+            route={this.state.route}
+            routingLogic={this.routingLogic}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+            clearUser={this.clearUser}
+          />
+        );
+      case '/SignIn':
+        return (
+          <SignIn
+            routingLogic={this.routingLogic}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+          />
+        );
+      case '/Register':
+        return (
+          <Register
+            routingLogic={this.routingLogic}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+          />
+        );
+      default:
+        return (
+          <>
+            <Logo />
+            <Rank name={userProfile.name} score={userProfile.score} />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit}
+              inputField={input}
             />
-          );
-        case 'SignIn':
-          return (
-            <SignIn
-              onRouteChange={this.onRouteChange}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
-            />
-          );
-        case 'Register':
-          return (
-            <Register
-              onRouteChange={this.onRouteChange}
-              loadUser={this.loadUser}
-              setError={this.setError}
-              keyEnter={this.onKeyEnter}
-            />
-          );
-        default:
-          return (
-            <>
-              <Logo />
-              <Rank name={userProfile.name} score={userProfile.score} />
-              <ImageLinkForm
-                onInputChange={this.onInputChange}
-                onButtonSubmit={this.onButtonSubmit}
-                inputField={input}
-              />
-              <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
-            </>
-          );
-      }
-    };
+            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
+          </>
+        );
+    }
+  };
+
+  render() {
+    const { isSignedIn, route, errorMsg } = this.state;
 
     return route === '' ? (
       <LoadingSpinner route={route} />
@@ -298,12 +374,9 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
-        <Navigation
-          onRouteChange={this.onRouteChange}
-          isSignedIn={isSignedIn}
-        />
+        <Navigation routingLogic={this.routingLogic} isSignedIn={isSignedIn} />
 
-        {switchRoute()}
+        {this.switchRoute(route)}
       </div>
     );
   }
