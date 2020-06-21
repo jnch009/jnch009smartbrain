@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { trackPromise } from 'react-promise-tracker';
+import React from 'react';
 import GridRow from '../GridRow/GridRow';
+import ProfileEdit from './ProfileEdit';
+import ProfilePassword from './ProfilePassword';
+import ProfileDelete from './ProfileDelete';
+
 import './Profile.css';
 
 const dateOptions = {
@@ -12,105 +15,90 @@ const dateOptions = {
   second: 'numeric',
 };
 
-const Profile = ({ profile, loadUser, setError, keyEnter }) => {
+const Profile = ({
+  profile,
+  route,
+  routingLogic,
+  loadUser,
+  setError,
+  keyEnter,
+  clearUser,
+}) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined)
   );
 
-  const [name, setName] = useState(profile.name);
-  const [email, setEmail] = useState(profile.email);
-  const score = profile.score;
+  const { name, email, score } = profile;
   const joined = joinedDate;
-  const [editProfile, setEditProfile] = useState(false);
 
-  const editProfileEnterPress = e => {
-    if (editProfile) {
-      keyEnter(e, handleEditConfirmation);
+  const profileView = (
+    <>
+      <main class='mw6 center profileContainer'>
+        <GridRow title='Name: ' value={name} />
+        <GridRow title='Email: ' value={email} />
+        <GridRow title='Score: ' value={score} />
+        <GridRow title='Joined: ' value={joined} />
+      </main>
+      <>
+        <button
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          onClick={() => routingLogic('/Profile/Edit')}
+        >
+          Update Information
+        </button>
+        <button
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          onClick={() => routingLogic('/Profile/PasswordChange')}
+        >
+          Update Password
+        </button>
+        <button
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          onClick={() => routingLogic('/Profile/Delete')}
+        >
+          Delete Account
+        </button>
+      </>
+    </>
+  );
+
+  const editProps = {
+    profile,
+    routingLogic,
+    joined,
+    keyEnter,
+    loadUser,
+    setError,
+  };
+
+  const passUpdateProps = {
+    profile,
+    routingLogic,
+    keyEnter,
+    setError,
+  };
+
+  const deleteProps = {
+    profile,
+    routingLogic,
+    clearUser,
+    setError,
+  };
+
+  const profileRouting = () => {
+    switch (route) {
+      case '/Profile/Edit':
+        return <ProfileEdit {...editProps} />;
+      case '/Profile/PasswordChange':
+        return <ProfilePassword {...passUpdateProps} />;
+      case '/Profile/Delete':
+        return <ProfileDelete {...deleteProps} />;
+      default:
+        return profileView;
     }
   };
 
-  const handleEditConfirmation = () => {
-    trackPromise(
-      fetch(
-        `${
-          process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-        }/profile/${profile.id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            name: name,
-            email: email,
-          }),
-        }
-      )
-        .then(res => res.json())
-        .then(data => {
-          if (data.id) {
-            loadUser(data);
-            setEditProfile(false);
-          } else {
-            setError(data);
-          }
-        })
-        .catch(err => console.log(err))
-    );
-  };
-
-  return (
-    <>
-      <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
-        <main class='mw6 center profileContainer'>
-          <GridRow
-            title='Name: '
-            value={name}
-            editable={editProfile}
-            handleChange={setName}
-          />
-          <GridRow
-            title='Email: '
-            value={email}
-            editable={editProfile}
-            handleChange={setEmail}
-          />
-          <GridRow title='Score: ' value={score} />
-          <GridRow title='Joined: ' value={joined} />
-        </main>
-        {editProfile ? (
-          <a
-            class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-            href='#0'
-            onClick={() => handleEditConfirmation(true)}
-          >
-            Finished Editing
-          </a>
-        ) : (
-          <>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
-              onClick={() => setEditProfile(true)}
-            >
-              Update Information
-            </a>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
-            >
-              Update Password
-            </a>
-            <a
-              class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
-              href='#0'
-            >
-              Delete Account
-            </a>
-          </>
-        )}
-      </div>
-    </>
-  );
+  return <>{profileRouting()}</>;
 };
 
 export default Profile;
