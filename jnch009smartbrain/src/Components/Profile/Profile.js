@@ -2,6 +2,7 @@ import React from 'react';
 import GridRow from '../GridRow/GridRow';
 import ProfileEdit from './ProfileEdit';
 import ProfilePassword from './ProfilePassword';
+import ProfileDelete from './ProfileDelete';
 
 import './Profile.css';
 
@@ -39,19 +40,19 @@ const Profile = ({
       </main>
       <>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => routingLogic('/Profile/Edit')}
         >
           Update Information
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => routingLogic('/Profile/PasswordChange')}
         >
           Update Password
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
+          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => routingLogic('/Profile/Delete')}
         >
           Delete Account
@@ -83,7 +84,7 @@ const Profile = ({
           />
         );
       case '/Profile/Delete':
-        break;
+        return <ProfileDelete />;
       default:
         return profileView;
     }
