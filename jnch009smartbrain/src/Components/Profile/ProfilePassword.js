@@ -47,12 +47,14 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
             title='Current Password: '
             value={currPassword}
             editable
+            password
             handleChange={setCurrPassword}
           />
           <GridRow
             title='New Password: '
             value={newPassword}
             editable
+            password
             handleChange={setNewPassword}
           />
         </main>
