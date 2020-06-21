@@ -13,6 +13,10 @@ jobs:
         with:
           persist-credentials: false 
 
+      - name: Deploy Backend
+        run: |
+          git subtree push --prefix jnch009smartbrainapi heroku master
+
       - name: Install and Build 🔧
         working-directory: ./jnch009smartbrain
         run: |
