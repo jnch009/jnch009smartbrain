@@ -62,6 +62,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(window.location.origin);
     history.listen((location, action) => {
       if (location.pathname !== this.state.route) {
         trackPromise(
