@@ -22,6 +22,7 @@ const Profile = ({
   loadUser,
   setError,
   keyEnter,
+  clearUser,
 }) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined)
@@ -61,30 +62,37 @@ const Profile = ({
     </>
   );
 
+  const editProps = {
+    profile,
+    routingLogic,
+    joined,
+    keyEnter,
+    loadUser,
+    setError,
+  };
+
+  const passUpdateProps = {
+    profile,
+    routingLogic,
+    keyEnter,
+    setError,
+  };
+
+  const deleteProps = {
+    profile,
+    routingLogic,
+    clearUser,
+    setError,
+  };
+
   const profileRouting = () => {
     switch (route) {
       case '/Profile/Edit':
-        return (
-          <ProfileEdit
-            profile={profile}
-            routingLogic={routingLogic}
-            joined={joined}
-            keyEnter={keyEnter}
-            loadUser={loadUser}
-            setError={setError}
-          />
-        );
+        return <ProfileEdit {...editProps} />;
       case '/Profile/PasswordChange':
-        return (
-          <ProfilePassword
-            profile={profile}
-            routingLogic={routingLogic}
-            keyEnter={keyEnter}
-            setError={setError}
-          />
-        );
+        return <ProfilePassword {...passUpdateProps} />;
       case '/Profile/Delete':
-        return <ProfileDelete />;
+        return <ProfileDelete {...deleteProps} />;
       default:
         return profileView;
     }

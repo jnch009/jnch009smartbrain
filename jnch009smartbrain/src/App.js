@@ -96,6 +96,7 @@ class App extends Component {
   }
 
   routingLogic = (urlPath, user, action = null) => {
+    console.log(this.state.userProfile, user?.id);
     if (this.state.userProfile.id || user?.id) {
       switch (urlPath) {
         case '/SignIn':
@@ -186,6 +187,17 @@ class App extends Component {
       },
       isSignedIn: true,
     });
+  };
+
+  clearUser = () => {
+    this.setState(
+      {
+        ...initialState,
+      },
+      () => {
+        this.routingLogic('/SignIn');
+      }
+    );
   };
 
   onInputChange = event => {
@@ -307,6 +319,7 @@ class App extends Component {
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
+            clearUser={this.clearUser}
           />
         );
       case '/SignIn':
