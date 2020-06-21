@@ -96,7 +96,6 @@ class App extends Component {
   }
 
   routingLogic = (urlPath, user, action = null) => {
-    console.log(this.state.userProfile, user?.id);
     if (this.state.userProfile.id || user?.id) {
       switch (urlPath) {
         case '/SignIn':
