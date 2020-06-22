@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Navigation = ({ history, isSignedIn }) => {
+const Navigation = ({ history, onRouteChange, isSignedIn }) => {
   return (
     <>
       {isSignedIn === true ? (
@@ -26,10 +26,24 @@ const Navigation = ({ history, isSignedIn }) => {
         <>
           <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
-            <p className='f3 link dim black underline pa3 pointer'>
+            <p
+              className='f3 link dim black underline pa3 pointer'
+              onClick={() => {
+                onRouteChange('/SignIn');
+                history.push('/SignIn');
+              }}
+            >
               Sign In
             </p>{' '}
-            <p className='f3 link dim black underline pa3 pointer'>Register</p>
+            <p
+              className='f3 link dim black underline pa3 pointer'
+              onClick={() => {
+                onRouteChange('/Register');
+                history.push('/Register');
+              }}
+            >
+              Register
+            </p>
           </nav>
         </>
       )}

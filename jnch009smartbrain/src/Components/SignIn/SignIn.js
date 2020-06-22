@@ -38,9 +38,13 @@ class SignIn extends Component {
           if (data?.id) {
             this.props.loadUser(data);
           } else {
-            this.props.setError(data);
+            throw data;
           }
         })
+        .then(() => {
+          this.props.history.push('/');
+        })
+        .catch(err => this.props.setError(err))
     );
   };
 
