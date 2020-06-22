@@ -53,7 +53,11 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: '/jnch009smartbrain/',
+});
+
+//history.listen((location, action) => {});
 
 class App extends Component {
   constructor() {
@@ -63,21 +67,41 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      if (location.pathname !== this.state.route) {
-        trackPromise(
-          fetch(
-            `${
-              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-            }/profile`,
-            {
-              credentials: 'include',
-            }
-          )
-            .then(resp => resp.json())
-            .then(user => {
-              this.routingLogic(location.pathname, user, action);
-            })
-        );
+      // location is an object like window.location
+      if (this.state.userProfile.id) {
+        switch (location.pathname) {
+          case '/SignIn':
+          case '/Register':
+            this.setState({
+              isSignedIn: true,
+              route: '/',
+              userProfile: this.state.userProfile,
+            });
+            break;
+          case '/SignOut':
+            fetch(
+              `${
+                process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+              }/signout`,
+              {
+                method: 'POST',
+                credentials: 'include',
+              }
+            )
+              .then(resp => resp.json())
+              .then(result => {
+                this.setState({ ...initialState, route: '/SignIn' });
+                // TODO: change this to a success box
+                this.setError(result);
+              });
+            break;
+          default:
+            this.setState({
+              isSignedIn: true,
+              route: location.pathname,
+              userProfile: this.state.userProfile,
+            });
+        }
       }
     });
 
@@ -90,102 +114,32 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          this.routingLogic(history.location.pathname, user);
+          if (user.id) {
+            this.loadUser(user);
+          } else {
+            this.switchRoute('/SignIn');
+          }
         })
     );
   }
 
-  routingLogic = (urlPath, user, action = null) => {
-    if (this.state.userProfile.id || user?.id) {
-      switch (urlPath) {
-        case '/SignIn':
-        case '/Register':
-          this.setState(
-            {
-              isSignedIn: true,
-              route: '/',
-              userProfile: user || this.state.userProfile,
-            },
-            () => {
-              if (action !== 'POP') {
-                history.push('/');
-              }
-            }
-          );
-          break;
-        case '/SignOut':
-          fetch(
-            `${
-              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-            }/signout`,
-            {
-              method: 'POST',
-              credentials: 'include',
-            }
-          )
-            .then(resp => resp.json())
-            .then(result => {
-              this.setState({ ...initialState, route: '/SignIn' });
-              // TODO: change this to a success box
-              this.setError(result);
-            })
-            .then(() => {
-              if (action !== 'POP') {
-                history.push(`/SignIn`);
-              }
-            });
-          break;
-        default:
-          this.setState(
-            {
-              isSignedIn: true,
-              route: urlPath,
-              userProfile: user || this.state.userProfile,
-            },
-            () => {
-              if (action !== 'POP') {
-                history.push(`${urlPath}`);
-              }
-            }
-          );
-      }
-    } else {
-      switch (urlPath) {
-        case '/SignIn':
-        case '/Register':
-          this.setState({ ...this.state, route: urlPath }, () => {
-            if (action !== 'POP') {
-              history.push(`${urlPath}`);
-            }
-          });
-          break;
-        default:
-          this.setState(
-            {
-              isSignedIn: false,
-              route: '/SignIn',
-            },
-            () => {
-              if (action !== 'POP') {
-                history.push(`/SignIn`);
-              }
-            }
-          );
-      }
-    }
-  };
-
   loadUser = user => {
-    this.setState({
-      userProfile: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        score: user.score,
-        joined: user.joined,
+    this.setState(
+      {
+        userProfile: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          score: user.score,
+          joined: user.joined,
+        },
+        isSignedIn: true,
+        route: `${history.location.pathname}`,
       },
-      isSignedIn: true,
-    });
+      () => {
+        this.switchRoute(history.location.pathname);
+      }
+    );
   };
 
   clearUser = () => {
@@ -194,7 +148,7 @@ class App extends Component {
         ...initialState,
       },
       () => {
-        this.routingLogic('/SignIn');
+        //this.routingLogic('/SignIn');
       }
     );
   };
@@ -314,7 +268,7 @@ class App extends Component {
           <Profile
             profile={this.state.userProfile}
             route={this.state.route}
-            routingLogic={this.routingLogic}
+            //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -324,7 +278,7 @@ class App extends Component {
       case '/SignIn':
         return (
           <SignIn
-            routingLogic={this.routingLogic}
+            //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -333,7 +287,7 @@ class App extends Component {
       case '/Register':
         return (
           <Register
-            routingLogic={this.routingLogic}
+            //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -373,7 +327,7 @@ class App extends Component {
           <Error>{errorMsg}</Error>
         </CSSTransition>
 
-        <Navigation routingLogic={this.routingLogic} isSignedIn={isSignedIn} />
+        <Navigation history={history} isSignedIn={isSignedIn} />
 
         {this.switchRoute(route)}
       </div>
