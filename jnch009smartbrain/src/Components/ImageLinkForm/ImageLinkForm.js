@@ -14,7 +14,7 @@ const ImageLinkForm = ({ onInputChange, onButtonSubmit, inputField }) => {
             className='f4 pa2 w-70 center'
             type='text'
             value={inputField}
-            onInput={e => onInputChange(e)}
+            onChange={e => onInputChange(e)}
           />
           <button
             className='tc w-30 o-90 glow f6 link ph3 pv2 dib white bg-light-purple'
