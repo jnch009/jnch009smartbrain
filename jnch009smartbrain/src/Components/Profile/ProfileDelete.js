@@ -1,7 +1,7 @@
 import React from 'react';
 import { trackPromise } from 'react-promise-tracker';
 
-const ProfileDelete = ({ profile, routingLogic, clearUser, setError }) => {
+const ProfileDelete = ({ profile, history, clearUser, setError }) => {
   const handleProfileDelete = () => {
     trackPromise(
       fetch(
@@ -41,7 +41,7 @@ const ProfileDelete = ({ profile, routingLogic, clearUser, setError }) => {
       </button>
       <button
         className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
-        onClick={() => routingLogic('/Profile')}
+        onClick={() => history.push('/Profile')}
       >
         No
       </button>

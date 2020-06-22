@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
-import { createBrowserHistory } from 'history';
+import { createHashHistory } from 'history';
 
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
@@ -53,7 +53,9 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createBrowserHistory();
+const history = createHashHistory({
+  basename: `${process.env.PUBLIC_URL}`,
+});
 
 class App extends Component {
   constructor() {
@@ -63,21 +65,10 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      if (location.pathname !== this.state.route) {
-        trackPromise(
-          fetch(
-            `${
-              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-            }/profile`,
-            {
-              credentials: 'include',
-            }
-          )
-            .then(resp => resp.json())
-            .then(user => {
-              this.routingLogic(location.pathname, user, action);
-            })
-        );
+      //TODO: need to add some logic here, most likely I will be extracting the below code into another function
+
+      if (action !== 'REPLACE') {
+        this.handleHistory(location.pathname);
       }
     });
 
@@ -90,26 +81,32 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          this.routingLogic(history.location.pathname, user);
+          if (user?.id) {
+            this.loadUser(user);
+          } else {
+            this.clearUser(history.location.pathname);
+          }
         })
+        .then(() => {
+          let path = history.location.pathname;
+          this.handleHistory(path);
+        })
+        .catch(err => this.setError(err))
     );
   }
 
-  routingLogic = (urlPath, user, action = null) => {
-    if (this.state.userProfile.id || user?.id) {
-      switch (urlPath) {
+  handleHistory = path => {
+    if (this.state.isSignedIn) {
+      switch (path) {
         case '/SignIn':
         case '/Register':
           this.setState(
             {
-              isSignedIn: true,
               route: '/',
-              userProfile: user || this.state.userProfile,
+              userProfile: this.state.userProfile,
             },
             () => {
-              if (action !== 'POP') {
-                history.push('/');
-              }
+              history.replace('/');
             }
           );
           break;
@@ -130,47 +127,31 @@ class App extends Component {
               this.setError(result);
             })
             .then(() => {
-              if (action !== 'POP') {
-                history.push(`/SignIn`);
-              }
+              history.replace('/SignIn');
             });
           break;
         default:
           this.setState(
             {
-              isSignedIn: true,
-              route: urlPath,
-              userProfile: user || this.state.userProfile,
+              route: path,
             },
             () => {
-              if (action !== 'POP') {
-                history.push(`${urlPath}`);
-              }
+              history.replace(path);
             }
           );
       }
     } else {
-      switch (urlPath) {
+      switch (path) {
         case '/SignIn':
         case '/Register':
-          this.setState({ ...this.state, route: urlPath }, () => {
-            if (action !== 'POP') {
-              history.push(`${urlPath}`);
-            }
+          this.setState({ route: path }, () => {
+            history.replace(path);
           });
           break;
         default:
-          this.setState(
-            {
-              isSignedIn: false,
-              route: '/SignIn',
-            },
-            () => {
-              if (action !== 'POP') {
-                history.push(`/SignIn`);
-              }
-            }
-          );
+          this.setState({ route: '/SignIn' }, () => {
+            history.replace('/SignIn');
+          });
       }
     }
   };
@@ -185,18 +166,18 @@ class App extends Component {
         joined: user.joined,
       },
       isSignedIn: true,
+      route: `${history.location.pathname}`,
     });
   };
 
-  clearUser = () => {
-    this.setState(
-      {
-        ...initialState,
-      },
-      () => {
-        this.routingLogic('/SignIn');
-      }
-    );
+  clearUser = URLRoute => {
+    this.setState({
+      ...initialState,
+      route:
+        URLRoute === '/SignIn' || URLRoute === '/Register'
+          ? URLRoute
+          : '/SignIn',
+    });
   };
 
   onInputChange = event => {
@@ -302,8 +283,14 @@ class App extends Component {
     }
   };
 
-  switchRoute = route => {
-    const { imageUrl, box, userProfile, input } = this.state;
+  onRouteChange = route => {
+    this.setState({
+      route,
+    });
+  };
+
+  switchRoute = () => {
+    const { imageUrl, box, userProfile, input, route } = this.state;
 
     switch (route) {
       case '/Profile':
@@ -312,9 +299,9 @@ class App extends Component {
       case '/Profile/Delete':
         return (
           <Profile
-            profile={this.state.userProfile}
-            route={this.state.route}
-            routingLogic={this.routingLogic}
+            profile={userProfile}
+            route={route}
+            history={history}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -322,23 +309,24 @@ class App extends Component {
           />
         );
       case '/SignIn':
+      case '/SignOut':
         return (
           <SignIn
-            routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
+            history={history}
           />
         );
       case '/Register':
         return (
           <Register
-            routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
           />
         );
+
       default:
         return (
           <>
@@ -358,24 +346,30 @@ class App extends Component {
   render() {
     const { isSignedIn, route, errorMsg } = this.state;
 
-    return route === '' ? (
-      <LoadingSpinner route={route} />
-    ) : (
+    return (
       <div className='App'>
-        <LoadingSpinner />
         <Particles className='particles' params={particleOptions} />
-        <CSSTransition
-          in={errorMsg !== ''}
-          timeout={300}
-          classNames='error'
-          unmountOnExit
-        >
-          <Error>{errorMsg}</Error>
-        </CSSTransition>
-
-        <Navigation routingLogic={this.routingLogic} isSignedIn={isSignedIn} />
-
-        {this.switchRoute(route)}
+        {route === '' ? (
+          <LoadingSpinner route={route} />
+        ) : (
+          <div className='App'>
+            {/* TODO: error needs to be changed to generic prompt (DRY) */}
+            <CSSTransition
+              in={errorMsg !== ''}
+              timeout={300}
+              classNames='error'
+              unmountOnExit
+            >
+              <Error>{errorMsg}</Error>
+            </CSSTransition>
+            <Navigation
+              history={history}
+              onRouteChange={this.onRouteChange}
+              isSignedIn={isSignedIn}
+            />
+            {this.switchRoute()}
+          </div>
+        )}
       </div>
     );
   }
