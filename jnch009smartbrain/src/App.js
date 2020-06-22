@@ -41,7 +41,7 @@ const initialState = {
   input: '',
   imageUrl: '',
   box: [],
-  route: '',
+  route: '/SignIn',
   isSignedIn: false,
   userProfile: {
     id: '',
@@ -114,10 +114,10 @@ class App extends Component {
       )
         .then(resp => resp.json())
         .then(user => {
-          if (user.id) {
+          if (user?.id) {
             this.loadUser(user);
           } else {
-            this.switchRoute('/SignIn');
+            this.clearUser(history.location.pathname);
           }
         })
     );
@@ -142,15 +142,14 @@ class App extends Component {
     );
   };
 
-  clearUser = () => {
-    this.setState(
-      {
-        ...initialState,
-      },
-      () => {
-        //this.routingLogic('/SignIn');
-      }
-    );
+  clearUser = URLRoute => {
+    this.setState({
+      ...initialState,
+      route:
+        URLRoute === '/SignIn' || URLRoute === '/Register'
+          ? URLRoute
+          : '/SignIn',
+    });
   };
 
   onInputChange = event => {
@@ -293,6 +292,8 @@ class App extends Component {
             keyEnter={this.onKeyEnter}
           />
         );
+      case '/SignOut':
+        this.clearUser();
       default:
         return (
           <>
@@ -312,24 +313,23 @@ class App extends Component {
   render() {
     const { isSignedIn, route, errorMsg } = this.state;
 
-    return route === '' ? (
-      <LoadingSpinner route={route} />
-    ) : (
+    return (
       <div className='App'>
-        <LoadingSpinner />
-        <Particles className='particles' params={particleOptions} />
-        <CSSTransition
-          in={errorMsg !== ''}
-          timeout={300}
-          classNames='error'
-          unmountOnExit
-        >
-          <Error>{errorMsg}</Error>
-        </CSSTransition>
+        <LoadingSpinner>
+          <Particles className='particles' params={particleOptions} />
+          <CSSTransition
+            in={errorMsg !== ''}
+            timeout={300}
+            classNames='error'
+            unmountOnExit
+          >
+            <Error>{errorMsg}</Error>
+          </CSSTransition>
 
-        <Navigation history={history} isSignedIn={isSignedIn} />
+          <Navigation history={history} isSignedIn={isSignedIn} />
 
-        {this.switchRoute(route)}
+          {this.switchRoute(route)}
+        </LoadingSpinner>
       </div>
     );
   }
