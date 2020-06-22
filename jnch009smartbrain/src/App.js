@@ -54,10 +54,8 @@ const initialState = {
 };
 
 const history = createBrowserHistory({
-  basename: '/jnch009smartbrain/',
+  basename: '/jnch009smartbrain',
 });
-
-//history.listen((location, action) => {});
 
 class App extends Component {
   constructor() {
