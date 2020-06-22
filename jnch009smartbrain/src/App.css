@@ -1,4 +1,5 @@
 .App {
+  height: inherit;
   text-align: center;
 }
 

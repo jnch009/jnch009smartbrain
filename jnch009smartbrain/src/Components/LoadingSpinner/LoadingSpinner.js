@@ -1,18 +1,18 @@
 import React from 'react';
 import { usePromiseTracker } from 'react-promise-tracker';
 
+import './LoadingSpinner.css';
+
 export const LoadingSpinner = props => {
   const { promiseInProgress } = usePromiseTracker();
 
   return (
-    <div>
-      {promiseInProgress === true ? (
-        <span className='centeringUnknown'>
+    <>
+      {promiseInProgress === true || props.route === '' ? (
+        <div className='centeringUnknown'>
           <h1>LOADING</h1>
-        </span>
-      ) : (
-        <>{props.children}</>
-      )}
-    </div>
+        </div>
+      ) : null}
+    </>
   );
 };

@@ -41,7 +41,7 @@ const initialState = {
   input: '',
   imageUrl: '',
   box: [],
-  route: '/SignIn',
+  route: '',
   isSignedIn: false,
   userProfile: {
     id: '',
@@ -65,42 +65,9 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      // location is an object like window.location
-      if (this.state.userProfile.id) {
-        switch (location.pathname) {
-          case '/SignIn':
-          case '/Register':
-            this.setState({
-              isSignedIn: true,
-              route: '/',
-              userProfile: this.state.userProfile,
-            });
-            break;
-          case '/SignOut':
-            fetch(
-              `${
-                process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-              }/signout`,
-              {
-                method: 'POST',
-                credentials: 'include',
-              }
-            )
-              .then(resp => resp.json())
-              .then(result => {
-                this.setState({ ...initialState, route: '/SignIn' });
-                // TODO: change this to a success box
-                this.setError(result);
-              });
-            break;
-          default:
-            this.setState({
-              isSignedIn: true,
-              route: location.pathname,
-              userProfile: this.state.userProfile,
-            });
-        }
-      }
+      this.setState({
+        route: location.pathname,
+      });
     });
 
     trackPromise(
@@ -118,26 +85,83 @@ class App extends Component {
             this.clearUser(history.location.pathname);
           }
         })
+        .then(() => {
+          let path = history.location.pathname;
+          if (this.state.isSignedIn) {
+            switch (path) {
+              case '/SignIn':
+              case '/Register':
+                this.setState(
+                  {
+                    route: '/',
+                    userProfile: this.state.userProfile,
+                  },
+                  () => {
+                    history.replace('/');
+                  }
+                );
+                break;
+              case '/SignOut':
+                fetch(
+                  `${
+                    process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+                  }/signout`,
+                  {
+                    method: 'POST',
+                    credentials: 'include',
+                  }
+                )
+                  .then(resp => resp.json())
+                  .then(result => {
+                    this.setState({ ...initialState });
+                    // TODO: change this to a success box
+                    this.setError(result);
+                  })
+                  .then(() => {
+                    history.replace('/SignIn');
+                  });
+                break;
+              default:
+                this.setState(
+                  {
+                    route: path,
+                  },
+                  () => {
+                    history.replace(path);
+                  }
+                );
+            }
+          } else {
+            switch (path) {
+              case '/SignIn':
+              case '/Register':
+                this.setState({ route: path }, () => {
+                  history.replace(path);
+                });
+                break;
+              default:
+                this.setState({ route: '/SignIn' }, () => {
+                  history.replace('/SignIn');
+                });
+            }
+          }
+        })
+        .catch(err => this.setError(err))
     );
   }
 
   loadUser = user => {
-    this.setState(
-      {
-        userProfile: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          score: user.score,
-          joined: user.joined,
-        },
-        isSignedIn: true,
-        route: `${history.location.pathname}`,
+    this.setState({
+      userProfile: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        score: user.score,
+        joined: user.joined,
       },
-      () => {
-        this.switchRoute(history.location.pathname);
-      }
-    );
+      isSignedIn: true,
+      route: `${history.location.pathname}`,
+    });
   };
 
   clearUser = URLRoute => {
@@ -253,8 +277,14 @@ class App extends Component {
     }
   };
 
-  switchRoute = route => {
-    const { imageUrl, box, userProfile, input } = this.state;
+  onRouteChange = route => {
+    this.setState({
+      route,
+    });
+  };
+
+  switchRoute = () => {
+    const { imageUrl, box, userProfile, input, route } = this.state;
 
     switch (route) {
       case '/Profile':
@@ -263,8 +293,8 @@ class App extends Component {
       case '/Profile/Delete':
         return (
           <Profile
-            profile={this.state.userProfile}
-            route={this.state.route}
+            profile={userProfile}
+            route={route}
             //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
@@ -279,6 +309,7 @@ class App extends Component {
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
+            history={history}
           />
         );
       case '/Register':
@@ -290,8 +321,7 @@ class App extends Component {
             keyEnter={this.onKeyEnter}
           />
         );
-      case '/SignOut':
-        this.clearUser();
+
       default:
         return (
           <>
@@ -313,21 +343,27 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <LoadingSpinner>
-          <Particles className='particles' params={particleOptions} />
-          <CSSTransition
-            in={errorMsg !== ''}
-            timeout={300}
-            classNames='error'
-            unmountOnExit
-          >
-            <Error>{errorMsg}</Error>
-          </CSSTransition>
-
-          <Navigation history={history} isSignedIn={isSignedIn} />
-
-          {this.switchRoute(route)}
-        </LoadingSpinner>
+        <Particles className='particles' params={particleOptions} />
+        {route === '' ? (
+          <LoadingSpinner route={route} />
+        ) : (
+          <div className='App'>
+            <CSSTransition
+              in={errorMsg !== ''}
+              timeout={300}
+              classNames='error'
+              unmountOnExit
+            >
+              <Error>{errorMsg}</Error>
+            </CSSTransition>
+            <Navigation
+              history={history}
+              onRouteChange={this.onRouteChange}
+              isSignedIn={isSignedIn}
+            />
+            {this.switchRoute()}
+          </div>
+        )}
       </div>
     );
   }
