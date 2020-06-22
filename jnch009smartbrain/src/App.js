@@ -53,7 +53,9 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: '/jnch009smartbrain',
+});
 
 class App extends Component {
   constructor() {
