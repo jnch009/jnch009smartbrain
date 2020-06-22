@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import GridRow from '../GridRow/GridRow';
 import { trackPromise } from 'react-promise-tracker';
 
-const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
+const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
   const [currPassword, setCurrPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
@@ -10,6 +10,7 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
     keyEnter(e, handlePasswordUpdate);
   };
 
+  //TODO: password must be at least 8 characters, /.{8,}/ Backend must be done as well
   const handlePasswordUpdate = () => {
     trackPromise(
       fetch(
@@ -30,7 +31,7 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
         .then(data => {
           if (data === 'Password Updated') {
             //TODO: success message
-            routingLogic('/Profile');
+            history.push('/Profile');
           } else {
             setError(data);
           }
@@ -69,7 +70,7 @@ const ProfilePassword = ({ profile, routingLogic, setError, keyEnter }) => {
         <button
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
           onClick={() => {
-            routingLogic('/Profile');
+            history.push('/Profile');
           }}
         >
           Cancel
