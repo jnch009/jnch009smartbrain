@@ -4,7 +4,7 @@ import { trackPromise } from 'react-promise-tracker';
 
 const ProfileEdit = ({
   profile,
-  routingLogic,
+  history,
   joined,
   keyEnter,
   loadUser,
@@ -19,6 +19,7 @@ const ProfileEdit = ({
     keyEnter(e, handleEditConfirmation);
   };
 
+  // TODO: need to validate email, backend too.
   const handleEditConfirmation = () => {
     trackPromise(
       fetch(
@@ -39,7 +40,7 @@ const ProfileEdit = ({
         .then(data => {
           if (data.id) {
             loadUser(data);
-            routingLogic('/Profile');
+            history.push('/Profile');
           } else {
             setError(data);
           }
@@ -71,7 +72,7 @@ const ProfileEdit = ({
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink'
           onClick={() => {
             handleEditConfirmation(true);
-            routingLogic('/Profile');
+            history.push('/Profile');
           }}
         >
           Finished Editing
