@@ -64,7 +64,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log(process.env.PUBLIC_URL);
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
 
@@ -146,12 +145,12 @@ class App extends Component {
         case '/SignIn':
         case '/Register':
           this.setState({ route: path }, () => {
-            history.replace(path);
+            history.replace(`${process.env.PUBLIC_URL}${path}`);
           });
           break;
         default:
           this.setState({ route: '/SignIn' }, () => {
-            history.replace('/SignIn');
+            history.replace(`${process.env.PUBLIC_URL}/SignIn`);
           });
       }
     }
