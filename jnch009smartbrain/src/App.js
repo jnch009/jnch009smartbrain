@@ -145,12 +145,12 @@ class App extends Component {
         case '/SignIn':
         case '/Register':
           this.setState({ route: path }, () => {
-            history.replace(`${process.env.PUBLIC_URL}${path}`);
+            history.replace(path);
           });
           break;
         default:
           this.setState({ route: '/SignIn' }, () => {
-            history.replace(`${process.env.PUBLIC_URL}/SignIn`);
+            history.replace('/SignIn');
           });
       }
     }
