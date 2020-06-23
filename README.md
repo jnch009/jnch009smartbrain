@@ -5,10 +5,16 @@ score counter for logged in users.
 I have already made some tweaks to the original repo found here (https://github.com/aneagoie/smart-brain), by converting bcrypt hashing and comparing into an asynchronous function rather than synchronous like he shows in the video, updating the UX with the ability to hit enter on the password field to submit instead of always having to click the submit button, the ability to persist a logged in session and adding some backend endpoints for the profile page in the future.
 
 I have plans to improve this app by:
+
 ~~More descriptive error handling shown in the app rather than console.log (DONE)~~
+
   * follow up: success messages (WIP)
+  
 * Adequate testing (WIP, Endpoint testing with mocha/chai/chai-http. Planning to use jest for front-end testing)
-~~Creating a profile page (DONE)~~
+* Validation of Forms on Front-End and Back-end
+
+~~Creating a profile page (DONE)~~ 
+
 * Incrementing score based on how many faces are in the picture rather than incrementing by 1
   * as a follow up, the ability to increment your score ONLY when you successfully identify faces (by pointer).
 * Leaderboard
