@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory, createHashHistory } from 'history';
 
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
@@ -53,7 +53,7 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createBrowserHistory({
+const history = createHashHistory({
   basename: `${process.env.PUBLIC_URL}`,
 });
 
