@@ -64,6 +64,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(process.env.PUBLIC_URL);
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
 
