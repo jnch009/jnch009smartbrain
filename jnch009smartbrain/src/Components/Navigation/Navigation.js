@@ -19,7 +19,12 @@ const Navigation = ({ history, onRouteChange, isSignedIn }) => {
             >
               Profile
             </p>
-            <p className='f3 link dim black underline pa3 pointer'>Sign Out</p>
+            <p
+              className='f3 link dim black underline pa3 pointer'
+              onClick={() => history.push('/SignOut')}
+            >
+              Sign Out
+            </p>
           </nav>
         </>
       ) : (
@@ -29,7 +34,6 @@ const Navigation = ({ history, onRouteChange, isSignedIn }) => {
             <p
               className='f3 link dim black underline pa3 pointer'
               onClick={() => {
-                onRouteChange('/SignIn');
                 history.push('/SignIn');
               }}
             >
@@ -38,7 +42,6 @@ const Navigation = ({ history, onRouteChange, isSignedIn }) => {
             <p
               className='f3 link dim black underline pa3 pointer'
               onClick={() => {
-                onRouteChange('/Register');
                 history.push('/Register');
               }}
             >

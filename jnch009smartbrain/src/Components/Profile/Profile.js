@@ -18,7 +18,7 @@ const dateOptions = {
 const Profile = ({
   profile,
   route,
-  routingLogic,
+  history,
   loadUser,
   setError,
   keyEnter,
@@ -42,19 +42,19 @@ const Profile = ({
       <>
         <button
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
-          onClick={() => routingLogic('/Profile/Edit')}
+          onClick={() => history.push('/Profile/Edit')}
         >
           Update Information
         </button>
         <button
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
-          onClick={() => routingLogic('/Profile/PasswordChange')}
+          onClick={() => history.push('/Profile/PasswordChange')}
         >
           Update Password
         </button>
         <button
           class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
-          onClick={() => routingLogic('/Profile/Delete')}
+          onClick={() => history.push('/Profile/Delete')}
         >
           Delete Account
         </button>
@@ -64,7 +64,7 @@ const Profile = ({
 
   const editProps = {
     profile,
-    routingLogic,
+    history,
     joined,
     keyEnter,
     loadUser,
@@ -73,14 +73,14 @@ const Profile = ({
 
   const passUpdateProps = {
     profile,
-    routingLogic,
+    history,
     keyEnter,
     setError,
   };
 
   const deleteProps = {
     profile,
-    routingLogic,
+    history,
     clearUser,
     setError,
   };

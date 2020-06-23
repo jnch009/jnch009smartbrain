@@ -65,9 +65,11 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      this.setState({
-        route: location.pathname,
-      });
+      //TODO: need to add some logic here, most likely I will be extracting the below code into another function
+
+      if (action !== 'REPLACE') {
+        this.handleHistory(location.pathname);
+      }
     });
 
     trackPromise(
@@ -87,68 +89,72 @@ class App extends Component {
         })
         .then(() => {
           let path = history.location.pathname;
-          if (this.state.isSignedIn) {
-            switch (path) {
-              case '/SignIn':
-              case '/Register':
-                this.setState(
-                  {
-                    route: '/',
-                    userProfile: this.state.userProfile,
-                  },
-                  () => {
-                    history.replace('/');
-                  }
-                );
-                break;
-              case '/SignOut':
-                fetch(
-                  `${
-                    process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-                  }/signout`,
-                  {
-                    method: 'POST',
-                    credentials: 'include',
-                  }
-                )
-                  .then(resp => resp.json())
-                  .then(result => {
-                    this.setState({ ...initialState });
-                    // TODO: change this to a success box
-                    this.setError(result);
-                  })
-                  .then(() => {
-                    history.replace('/SignIn');
-                  });
-                break;
-              default:
-                this.setState(
-                  {
-                    route: path,
-                  },
-                  () => {
-                    history.replace(path);
-                  }
-                );
-            }
-          } else {
-            switch (path) {
-              case '/SignIn':
-              case '/Register':
-                this.setState({ route: path }, () => {
-                  history.replace(path);
-                });
-                break;
-              default:
-                this.setState({ route: '/SignIn' }, () => {
-                  history.replace('/SignIn');
-                });
-            }
-          }
+          this.handleHistory(path);
         })
         .catch(err => this.setError(err))
     );
   }
+
+  handleHistory = path => {
+    if (this.state.isSignedIn) {
+      switch (path) {
+        case '/SignIn':
+        case '/Register':
+          this.setState(
+            {
+              route: '/',
+              userProfile: this.state.userProfile,
+            },
+            () => {
+              history.replace('/');
+            }
+          );
+          break;
+        case '/SignOut':
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/signout`,
+            {
+              method: 'POST',
+              credentials: 'include',
+            }
+          )
+            .then(resp => resp.json())
+            .then(result => {
+              this.setState({ ...initialState, route: '/SignIn' });
+              // TODO: change this to a success box
+              this.setError(result);
+            })
+            .then(() => {
+              history.replace('/SignIn');
+            });
+          break;
+        default:
+          this.setState(
+            {
+              route: path,
+            },
+            () => {
+              history.replace(path);
+            }
+          );
+      }
+    } else {
+      switch (path) {
+        case '/SignIn':
+        case '/Register':
+          this.setState({ route: path }, () => {
+            history.replace(path);
+          });
+          break;
+        default:
+          this.setState({ route: '/SignIn' }, () => {
+            history.replace('/SignIn');
+          });
+      }
+    }
+  };
 
   loadUser = user => {
     this.setState({
@@ -295,7 +301,7 @@ class App extends Component {
           <Profile
             profile={userProfile}
             route={route}
-            //routingLogic={this.routingLogic}
+            history={history}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -303,9 +309,9 @@ class App extends Component {
           />
         );
       case '/SignIn':
+      case '/SignOut':
         return (
           <SignIn
-            //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -315,7 +321,6 @@ class App extends Component {
       case '/Register':
         return (
           <Register
-            //routingLogic={this.routingLogic}
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
@@ -348,6 +353,7 @@ class App extends Component {
           <LoadingSpinner route={route} />
         ) : (
           <div className='App'>
+            {/* TODO: error needs to be changed to generic prompt (DRY) */}
             <CSSTransition
               in={errorMsg !== ''}
               timeout={300}
