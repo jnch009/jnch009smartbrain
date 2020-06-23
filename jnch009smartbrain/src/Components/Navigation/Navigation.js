@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Navigation = ({ routingLogic, isSignedIn }) => {
+const Navigation = ({ history, onRouteChange, isSignedIn }) => {
   return (
     <>
       {isSignedIn === true ? (
@@ -9,19 +9,19 @@ const Navigation = ({ routingLogic, isSignedIn }) => {
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => routingLogic('/')}
+              onClick={() => history.push('/')}
             >
               Home
             </p>
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => routingLogic('/Profile')}
+              onClick={() => history.push('/Profile')}
             >
               Profile
             </p>
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => routingLogic('/SignOut')}
+              onClick={() => history.push('/SignOut')}
             >
               Sign Out
             </p>
@@ -33,13 +33,17 @@ const Navigation = ({ routingLogic, isSignedIn }) => {
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => routingLogic('/SignIn')}
+              onClick={() => {
+                history.push('/SignIn');
+              }}
             >
               Sign In
             </p>{' '}
             <p
               className='f3 link dim black underline pa3 pointer'
-              onClick={() => routingLogic('/Register')}
+              onClick={() => {
+                history.push('/Register');
+              }}
             >
               Register
             </p>
