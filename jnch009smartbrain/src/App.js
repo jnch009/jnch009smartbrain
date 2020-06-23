@@ -54,7 +54,7 @@ const initialState = {
 };
 
 const history = createBrowserHistory({
-  basename: '/jnch009smartbrain',
+  basename: `${process.env.PUBLIC_URL}`,
 });
 
 class App extends Component {
