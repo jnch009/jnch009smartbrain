@@ -51,7 +51,7 @@ class SignIn extends Component {
   render() {
     const { keyEnter } = this.props;
     return (
-      <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center'>
+      <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center flex justify-center'>
         <main className='pa4 black-80'>
           <div className='measure'>
             <fieldset id='sign_up' className='ba b--transparent ph0 mh0'>
@@ -92,7 +92,7 @@ class SignIn extends Component {
               />
             </div>
             <div className='lh-copy mt3'>
-              <p className='f6 link dim black db pointer'>Register</p>
+              <p className='f6 link dim black db pointer' onClick={() => this.props.history.push('/Register')}>Register</p>
             </div>
           </div>
         </main>
