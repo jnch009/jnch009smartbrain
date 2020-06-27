@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
 import { createHashHistory } from 'history';
+import isEqual from 'lodash.isequal';
 
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
@@ -56,6 +57,8 @@ const initialState = {
 
 const history = createHashHistory();
 
+//TODO: find all locations where I use a fetch call and check for a string instead of the status code
+
 class App extends Component {
   constructor() {
     super();
@@ -71,10 +74,25 @@ class App extends Component {
           ? location.pathname
           : location.pathname.slice(0, location.pathname.length - 1);
 
-      console.log(parsedURL);
-
-      if (action !== 'REPLACE') {
-        this.handleHistory(parsedURL);
+      if (this.state.isSignedIn) {
+        fetch(
+          `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/`,
+          {
+            credentials: 'include',
+          }
+        ).then(resp => {
+          if (resp.status === 401) {
+            this.clearUser('/SignIn');
+          } else {
+            if (action !== 'REPLACE') {
+              this.handleHistory(parsedURL);
+            }
+          }
+        });
+      } else {
+        if (action !== 'REPLACE') {
+          this.handleHistory(parsedURL);
+        }
       }
     });
 
@@ -99,6 +117,18 @@ class App extends Component {
         })
         .catch(err => this.setError(err))
     );
+  }
+
+  componentDidUpdate(prevState) {
+    if (!isEqual(prevState, this.state) && this.state.isSignedIn) {
+      fetch(`${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/`, {
+        credentials: 'include',
+      }).then(resp => {
+        if (resp.status === 401) {
+          this.clearUser('/SignIn');
+        }
+      });
+    }
   }
 
   handleHistory = path => {
