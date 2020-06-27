@@ -66,9 +66,18 @@ class App extends Component {
   componentDidMount() {
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
+      console.log(
+        location.pathname.length >= 1 ? location.pathname.length : '0'
+      );
+
+      let parsedURL =
+        location.pathname === '/' ||
+        location.pathname[location.pathname.length - 1] !== '/'
+          ? location.pathname
+          : location.pathname.slice(0, location.pathname.length - 1);
 
       if (action !== 'REPLACE') {
-        this.handleHistory(location.pathname);
+        this.handleHistory(parsedURL);
       }
     });
 
@@ -324,6 +333,7 @@ class App extends Component {
             loadUser={this.loadUser}
             setError={this.setError}
             keyEnter={this.onKeyEnter}
+            history={history}
           />
         );
 
