@@ -65,7 +65,6 @@ class App extends Component {
 
   componentDidMount() {
     history.listen((location, action) => {
-      //TODO: need to add some logic here, most likely I will be extracting the below code into another function
       let parsedURL =
         location.pathname === '/' ||
         location.pathname[location.pathname.length - 1] !== '/'
