@@ -53,9 +53,7 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createHashHistory({
-  basename: `${process.env.PUBLIC_URL}`,
-});
+const history = createHashHistory();
 
 class App extends Component {
   constructor() {
@@ -66,9 +64,6 @@ class App extends Component {
   componentDidMount() {
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
-      console.log(
-        location.pathname.length >= 1 ? location.pathname.length : '0'
-      );
 
       let parsedURL =
         location.pathname === '/' ||
