@@ -1,4 +1,6 @@
-const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
+const constants = require('../constants/constants');
+
+const handleSignIn = (req, res, db, bcrypt, jwt) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -25,8 +27,8 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
                 { id: user[0].id },
                 process.env.JWT_SECRET,
                 {
-                  expiresIn: '1h',
-                },
+                  expiresIn: constants.expiry,
+                }
               );
               res
                 .cookie('jwt', token, {

@@ -62,7 +62,7 @@ const verifyJWT = (req, res, next) => {
       req.id = decoded.id;
       next();
     } else {
-      res.status(401).json('Unauthorized, please log in');
+      res.clearCookie('jwt').status(401).json('Unauthorized, please log in');
     }
   });
 };
@@ -72,14 +72,14 @@ app.get('/', verifyJWT, (req, res) => {
 });
 
 app.post('/signin', (req, res) =>
-  signin.handleSignIn(req, res, db, bcrypt, apiError, jwt),
+  signin.handleSignIn(req, res, db, bcrypt, jwt)
 );
 
 app.post('/signout', verifyJWT, (req, res) => signout.handleSignOut(req, res));
 
 app.post('/register', (req, res) =>
   //dependency injection
-  register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
+  register.handleRegister(req, res, db, bcrypt, jwt)
 );
 
 app.get('/profile', verifyJWT, (req, res) => {
@@ -87,7 +87,7 @@ app.get('/profile', verifyJWT, (req, res) => {
 });
 
 app.get('/profile/:id', verifyJWT, (req, res) =>
-  profile.handleGetProfile(req, res, db, apiError),
+  profile.handleGetProfile(req, res, db, apiError)
 );
 
 app.get('/allProfiles', verifyJWT, (req, res) => {
@@ -103,7 +103,7 @@ app.put('/profile/passwordUpdate/:id', verifyJWT, (req, res) => {
 });
 
 app.delete('/profile/:id', verifyJWT, (req, res) =>
-  profile.handleDeleteProfile(req, res, db),
+  profile.handleDeleteProfile(req, res, db)
 );
 
 app.delete('/purgeProfiles', verifyJWT, (req, res) => {
@@ -111,11 +111,11 @@ app.delete('/purgeProfiles', verifyJWT, (req, res) => {
 });
 
 app.put('/image', verifyJWT, (req, res) =>
-  image.handleImageUpdate(req, res, db, apiError),
+  image.handleImageUpdate(req, res, db, apiError)
 );
 
 app.post('/imageURL', verifyJWT, (req, res) =>
-  image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
+  image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API)
 );
 
 app.listen(process.env.PORT || 3000, () => {

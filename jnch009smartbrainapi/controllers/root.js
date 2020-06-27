@@ -1,9 +1,3 @@
-const handleRoot = (req, res, apiError) => {
-  if (req.id !== undefined) {
-    res.json(req.id);
-  } else {
-    res.clearCookie('jwt').status(401).json('Unauthorized, please log in');
-  }
-};
+const handleRoot = (req, res) => res.json(req.id);
 
 module.exports = { handleRoot };
