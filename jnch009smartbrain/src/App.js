@@ -11,6 +11,7 @@ import Register from './Components/Register/Register';
 import SignIn from './Components/SignIn/SignIn';
 import Error from './Components/Error/Error';
 import Profile from './Components/Profile/Profile';
+import InvalidRoute from './Components/InvalidRoute/InvalidRoute';
 import { LoadingSpinner } from './Components/LoadingSpinner/LoadingSpinner';
 import { trackPromise } from 'react-promise-tracker';
 import { CSSTransition } from 'react-transition-group';
@@ -66,15 +67,13 @@ class App extends Component {
   componentDidMount() {
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
-      console.log(
-        location.pathname.length >= 1 ? location.pathname.length : '0'
-      );
-
       let parsedURL =
         location.pathname === '/' ||
         location.pathname[location.pathname.length - 1] !== '/'
           ? location.pathname
           : location.pathname.slice(0, location.pathname.length - 1);
+
+      console.log(parsedURL);
 
       if (action !== 'REPLACE') {
         this.handleHistory(parsedURL);
@@ -157,10 +156,21 @@ class App extends Component {
             history.replace(path);
           });
           break;
-        default:
+        case '/Profile':
+        case '/Profile/Edit':
+        case '/Profile/PasswordChange':
+        case '/Profile/Delete':
+        case '/':
+        case '/SignOut':
           this.setState({ route: '/SignIn' }, () => {
             history.replace('/SignIn');
           });
+          break;
+        default:
+          this.setState({ route: path }, () => {
+            history.replace(path);
+          });
+          break;
       }
     }
   };
@@ -336,8 +346,7 @@ class App extends Component {
             history={history}
           />
         );
-
-      default:
+      case '/':
         return (
           <>
             <Logo />
@@ -350,6 +359,8 @@ class App extends Component {
             <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
           </>
         );
+      default:
+        return <InvalidRoute history={history} />;
     }
   };
 
