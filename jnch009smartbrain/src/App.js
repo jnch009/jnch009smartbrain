@@ -57,8 +57,6 @@ const initialState = {
 
 const history = createHashHistory();
 
-//TODO: find all locations where I use a fetch call and check for a string instead of the status code
-
 class App extends Component {
   constructor() {
     super();
