@@ -1,52 +1,49 @@
 import React from 'react';
 
 const Navigation = ({ history, onRouteChange, isSignedIn }) => {
+  console.log(history);
   return (
     <>
       {isSignedIn === true ? (
         <>
           <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
-            <p
-              className='f3 link dim black underline pa3 pointer'
-              onClick={() => history.push('/')}
+            <a
+              href={`#/`}
+              className='f3 link dim black underline pa3 pointer mv3'
             >
               Home
-            </p>
-            <p
-              className='f3 link dim black underline pa3 pointer'
-              onClick={() => history.push('/Profile')}
+            </a>
+            <a
+              href={`#/Profile`}
+              className='f3 link dim black underline pa3 pointer mv3'
             >
               Profile
-            </p>
-            <p
-              className='f3 link dim black underline pa3 pointer'
-              onClick={() => history.push('/SignOut')}
+            </a>
+            <a
+              href={`#/SignOut`}
+              className='f3 link dim black underline pa3 pointer mv3'
             >
               Sign Out
-            </p>
+            </a>
           </nav>
         </>
       ) : (
         <>
           <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
-            <p
-              className='f3 link dim black underline pa3 pointer'
-              onClick={() => {
-                history.push('/SignIn');
-              }}
+            <a
+              href={`#/SignIn`}
+              className='f3 link dim black underline pa3 pointer mv3'
             >
               Sign In
-            </p>{' '}
-            <p
-              className='f3 link dim black underline pa3 pointer'
-              onClick={() => {
-                history.push('/Register');
-              }}
+            </a>{' '}
+            <a
+              href={`#/Register`}
+              className='f3 link dim black underline pa3 pointer mv3'
             >
               Register
-            </p>
+            </a>
           </nav>
         </>
       )}

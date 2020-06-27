@@ -54,9 +54,7 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createHashHistory({
-  basename: `${process.env.PUBLIC_URL}`,
-});
+const history = createHashHistory();
 
 class App extends Component {
   constructor() {

@@ -92,7 +92,9 @@ class SignIn extends Component {
               />
             </div>
             <div className='lh-copy mt3'>
-              <p className='f6 link dim black db pointer' onClick={() => this.props.history.push('/Register')}>Register</p>
+              <a href={`#/Register`} className='f6 link dim black db pointer'>
+                Register
+              </a>
             </div>
           </div>
         </main>
