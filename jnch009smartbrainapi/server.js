@@ -14,8 +14,6 @@ const root = require('./controllers/root');
 const profile = require('./controllers/profile');
 require('dotenv').config();
 
-const saltRounds = 10;
-const apiError = 'Internal Server error, please try again later';
 let db;
 
 const nodeEnvironments = {
