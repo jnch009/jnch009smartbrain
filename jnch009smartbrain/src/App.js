@@ -53,9 +53,7 @@ const initialState = {
   errorMsg: '',
 };
 
-const history = createHashHistory({
-  basename: `${process.env.PUBLIC_URL}`,
-});
+const history = createHashHistory();
 
 class App extends Component {
   constructor() {
@@ -67,8 +65,14 @@ class App extends Component {
     history.listen((location, action) => {
       //TODO: need to add some logic here, most likely I will be extracting the below code into another function
 
+      let parsedURL =
+        location.pathname === '/' ||
+        location.pathname[location.pathname.length - 1] !== '/'
+          ? location.pathname
+          : location.pathname.slice(0, location.pathname.length - 1);
+
       if (action !== 'REPLACE') {
-        this.handleHistory(location.pathname);
+        this.handleHistory(parsedURL);
       }
     });
 
@@ -326,7 +330,7 @@ class App extends Component {
           keyEnter={this.onKeyEnter}
         />
       );
-
+ 
     default:
       return (
         <>
