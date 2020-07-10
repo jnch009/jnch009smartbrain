@@ -74,11 +74,14 @@ class Register extends Component {
           .then(data => {
             if (data?.id) {
               this.props.loadUser(data);
-              this.props.routingLogic('/');
             } else {
-              this.props.setError(data);
+              throw data;
             }
           })
+          .then(() => {
+            this.props.history.push('/');
+          })
+          .catch(err => this.props.setError(err))
       );
     }
   };
