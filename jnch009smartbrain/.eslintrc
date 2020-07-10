@@ -1,15 +1,22 @@
 {
-  "parser": "babel-eslint",
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "react-app"
   ],
+  "parser": "babel-eslint",
   "plugins": ["react"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
   "rules": {
       "jsx-quotes": ["error","prefer-single"],
       "indent": [2,2],
       "quotes": [2,"single"],
       "no-unused-vars": [1],
-      "no-undef":"warn"
+      "no-undef":"warn",
+      "react/prop-types": [0]
   }
 }
