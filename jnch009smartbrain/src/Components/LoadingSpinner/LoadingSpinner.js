@@ -4,6 +4,7 @@ import { usePromiseTracker } from 'react-promise-tracker';
 import './LoadingSpinner.css';
 
 export const LoadingSpinner = props => {
+  
   const { promiseInProgress } = usePromiseTracker();
 
   return (

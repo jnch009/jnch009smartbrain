@@ -43,7 +43,7 @@ const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
   return (
     <>
       <div onKeyPress={e => passwordUpdateEnterPress(e)} tabIndex='0'>
-        <main class='mw6 center profileContainer'>
+        <main className='mw6 center profileContainer'>
           <GridRow
             title='Current Password: '
             value={currPassword}
@@ -60,7 +60,7 @@ const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
           />
         </main>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
+          className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
           onClick={() => {
             handlePasswordUpdate();
           }}
@@ -68,7 +68,7 @@ const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
           Update Password
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
+          className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w-25'
           onClick={() => {
             history.push('/Profile');
           }}
