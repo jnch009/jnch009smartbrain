@@ -87,14 +87,14 @@ const Profile = ({
 
   const profileRouting = () => {
     switch (route) {
-      case '/Profile/Edit':
-        return <ProfileEdit {...editProps} />;
-      case '/Profile/PasswordChange':
-        return <ProfilePassword {...passUpdateProps} />;
-      case '/Profile/Delete':
-        return <ProfileDelete {...deleteProps} />;
-      default:
-        return profileView;
+    case '/Profile/Edit':
+      return <ProfileEdit {...editProps} />;
+    case '/Profile/PasswordChange':
+      return <ProfilePassword {...passUpdateProps} />;
+    case '/Profile/Delete':
+      return <ProfileDelete {...deleteProps} />;
+    default:
+      return profileView;
     }
   };
 
