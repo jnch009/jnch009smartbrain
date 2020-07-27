@@ -328,9 +328,10 @@ class App extends Component {
           loadUser={this.loadUser}
           setError={this.setError}
           keyEnter={this.onKeyEnter}
+          history={history}
         />
       );
-    
+
     default:
       return (
         <>
