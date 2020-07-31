@@ -83,8 +83,8 @@ class App extends Component {
           credentials: 'include',
         }
       )
-        .then(resp => resp.json())
-        .then(user => {
+        .then((resp) => resp.json())
+        .then((user) => {
           if (user?.id) {
             this.loadUser(user);
           } else {
@@ -95,11 +95,11 @@ class App extends Component {
           let path = history.location.pathname;
           this.handleHistory(path);
         })
-        .catch(err => this.setError(err))
+        .catch((err) => this.setError(err))
     );
   }
 
-  handleHistory = path => {
+  handleHistory = (path) => {
     if (this.state.isSignedIn) {
       this.setState({
         imageUrl: '',
@@ -107,65 +107,65 @@ class App extends Component {
       });
 
       switch (path) {
-      case '/SignIn':
-      case '/Register':
-        this.setState(
-          {
-            route: '/',
-            userProfile: this.state.userProfile,
-          },
-          () => {
-            history.replace('/');
-          }
-        );
-        break;
-      case '/SignOut':
-        fetch(
-          `${
-            process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
-          }/signout`,
-          {
-            method: 'POST',
-            credentials: 'include',
-          }
-        )
-          .then(resp => resp.json())
-          .then(result => {
-            this.setState({ ...initialState, route: '/SignIn' });
-            // TODO: change this to a success box
-            this.setError(result);
-          })
-          .then(() => {
-            history.replace('/SignIn');
-          });
-        break;
-      default:
-        this.setState(
-          {
-            route: path,
-          },
-          () => {
-            history.replace(path);
-          }
-        );
+        case '/SignIn':
+        case '/Register':
+          this.setState(
+            {
+              route: '/',
+              userProfile: this.state.userProfile,
+            },
+            () => {
+              history.replace('/');
+            }
+          );
+          break;
+        case '/SignOut':
+          fetch(
+            `${
+              process.env.REACT_APP_FETCH_API || 'http://localhost:3000'
+            }/signout`,
+            {
+              method: 'POST',
+              credentials: 'include',
+            }
+          )
+            .then((resp) => resp.json())
+            .then((result) => {
+              this.setState({ ...initialState, route: '/SignIn' });
+              // TODO: change this to a success box
+              this.setError(result);
+            })
+            .then(() => {
+              history.replace('/SignIn');
+            });
+          break;
+        default:
+          this.setState(
+            {
+              route: path,
+            },
+            () => {
+              history.replace(path);
+            }
+          );
       }
     } else {
       switch (path) {
-      case '/SignIn':
-      case '/Register':
-        this.setState({ route: path }, () => {
-          history.replace(path);
-        });
-        break;
-      default:
-        this.setState({ route: '/SignIn' }, () => {
-          history.replace('/SignIn');
-        });
+        case '/SignIn':
+        case '/Register':
+          this.setState({ route: path }, () => {
+            history.replace(path);
+          });
+          break;
+        default:
+          this.setState({ route: '/SignIn' }, () => {
+            history.replace('/SignIn');
+          });
       }
     }
   };
 
-  loadUser = user => {
+  loadUser = (user) => {
     this.setState({
       userProfile: {
         id: user.id,
@@ -179,7 +179,7 @@ class App extends Component {
     });
   };
 
-  clearUser = URLRoute => {
+  clearUser = (URLRoute) => {
     this.setState({
       ...initialState,
       route:
@@ -189,21 +189,21 @@ class App extends Component {
     });
   };
 
-  onInputChange = event => {
+  onInputChange = (event) => {
     this.setState({
       input: event.target.value,
     });
   };
 
-  calculateBox = data => {
+  calculateBox = (data) => {
     const clarifyArray = data.outputs[0].data.regions.map(
-      region => region.region_info.bounding_box
+      (region) => region.region_info.bounding_box
     );
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
 
-    let boundingBoxes = clarifyArray.map(box => {
+    let boundingBoxes = clarifyArray.map((box) => {
       return {
         topRow: box.top_row * height,
         leftCol: box.left_col * width,
@@ -214,7 +214,7 @@ class App extends Component {
     return boundingBoxes;
   };
 
-  displayBox = boxes => {
+  displayBox = (boxes) => {
     this.setState({
       box: [...this.state.box, ...boxes],
     });
@@ -241,8 +241,8 @@ class App extends Component {
               }),
             }
           )
-            .then(response => response.json())
-            .then(response => {
+            .then((response) => response.json())
+            .then((response) => {
               if (response.outputs) {
                 fetch(
                   `${
@@ -257,8 +257,8 @@ class App extends Component {
                     }),
                   }
                 )
-                  .then(resp => resp.json())
-                  .then(newProfile => {
+                  .then((resp) => resp.json())
+                  .then((newProfile) => {
                     this.setState({
                       userProfile: newProfile,
                     });
@@ -269,13 +269,13 @@ class App extends Component {
                 this.setError(response);
               }
             })
-            .catch(err => console.log(err))
+            .catch((err) => console.log(err))
         );
       }
     );
   };
 
-  setError = msg => {
+  setError = (msg) => {
     this.setState(
       {
         errorMsg: msg,
@@ -296,54 +296,54 @@ class App extends Component {
     const { imageUrl, box, userProfile, input, route } = this.state;
 
     switch (route) {
-    case '/Profile':
-    case '/Profile/Edit':
-    case '/Profile/PasswordChange':
-    case '/Profile/Delete':
-      return (
-        <Profile
-          profile={userProfile}
-          route={route}
-          history={history}
-          loadUser={this.loadUser}
-          setError={this.setError}
-          keyEnter={this.onKeyEnter}
-          clearUser={this.clearUser}
-        />
-      );
-    case '/SignIn':
-    case '/SignOut':
-      return (
-        <SignIn
-          loadUser={this.loadUser}
-          setError={this.setError}
-          keyEnter={this.onKeyEnter}
-          history={history}
-        />
-      );
-    case '/Register':
-      return (
-        <Register
-          loadUser={this.loadUser}
-          setError={this.setError}
-          keyEnter={this.onKeyEnter}
-          history={history}
-        />
-      );
-
-    default:
-      return (
-        <>
-          <Logo />
-          <Rank name={userProfile.name} score={userProfile.score} />
-          <ImageLinkForm
-            onInputChange={this.onInputChange}
-            onButtonSubmit={this.onButtonSubmit}
-            inputField={input}
+      case '/Profile':
+      case '/Profile/Edit':
+      case '/Profile/PasswordChange':
+      case '/Profile/Delete':
+        return (
+          <Profile
+            profile={userProfile}
+            route={route}
+            history={history}
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+            clearUser={this.clearUser}
           />
-          <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
-        </>
-      );
+        );
+      case '/SignIn':
+      case '/SignOut':
+        return (
+          <SignIn
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+            history={history}
+          />
+        );
+      case '/Register':
+        return (
+          <Register
+            loadUser={this.loadUser}
+            setError={this.setError}
+            keyEnter={this.onKeyEnter}
+            history={history}
+          />
+        );
+
+      default:
+        return (
+          <>
+            <Logo />
+            <Rank name={userProfile.name} score={userProfile.score} />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit}
+              inputField={input}
+            />
+            <FaceRecognition imageUrl={imageUrl} boundingBox={box} />
+          </>
+        );
     }
   };
 
@@ -366,10 +366,7 @@ class App extends Component {
             >
               <Error>{errorMsg}</Error>
             </CSSTransition>
-            <Navigation
-              history={history}
-              isSignedIn={isSignedIn}
-            />
+            <Navigation history={history} isSignedIn={isSignedIn} />
             {this.switchRoute()}
           </div>
         )}
