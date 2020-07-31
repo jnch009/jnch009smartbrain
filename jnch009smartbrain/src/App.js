@@ -101,6 +101,11 @@ class App extends Component {
 
   handleHistory = path => {
     if (this.state.isSignedIn) {
+      this.setState({
+        imageUrl: '',
+        box: [],
+      });
+
       switch (path) {
       case '/SignIn':
       case '/Register':
@@ -287,12 +292,6 @@ class App extends Component {
     }
   };
 
-  onRouteChange = route => {
-    this.setState({
-      route,
-    });
-  };
-
   switchRoute = () => {
     const { imageUrl, box, userProfile, input, route } = this.state;
 
@@ -328,9 +327,10 @@ class App extends Component {
           loadUser={this.loadUser}
           setError={this.setError}
           keyEnter={this.onKeyEnter}
+          history={history}
         />
       );
- 
+
     default:
       return (
         <>
@@ -368,7 +368,6 @@ class App extends Component {
             </CSSTransition>
             <Navigation
               history={history}
-              onRouteChange={this.onRouteChange}
               isSignedIn={isSignedIn}
             />
             {this.switchRoute()}

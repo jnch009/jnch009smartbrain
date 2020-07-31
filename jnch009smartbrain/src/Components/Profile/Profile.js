@@ -33,7 +33,7 @@ const Profile = ({
 
   const profileView = (
     <>
-      <main class='mw6 center profileContainer'>
+      <main className='mw6 center profileContainer'>
         <GridRow title='Name: ' value={name} />
         <GridRow title='Email: ' value={email} />
         <GridRow title='Score: ' value={score} />
@@ -41,19 +41,19 @@ const Profile = ({
       </main>
       <>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => history.push('/Profile/Edit')}
         >
           Update Information
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => history.push('/Profile/PasswordChange')}
         >
           Update Password
         </button>
         <button
-          class='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
+          className='f6 link dim br-pill ph3 pv2 ma3 dib white bg-hot-pink w5'
           onClick={() => history.push('/Profile/Delete')}
         >
           Delete Account
