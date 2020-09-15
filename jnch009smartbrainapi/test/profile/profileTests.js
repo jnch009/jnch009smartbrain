@@ -17,7 +17,8 @@ module.exports = function ProfileTests() {
     'jsdkfljaskdljf!@!@!@',
     'Jeremy',
   ];
-  const agent = chai.request.agent(app);
+  const currentPasswordIncorrect = 'wieuwioefjwiojfiojewofj';
+  let agent = chai.request.agent(app);
 
   describe('profile', function () {
     describe('get profile', function () {
@@ -141,7 +142,30 @@ module.exports = function ProfileTests() {
             });
         });
 
-        it('nothing to update', function () {
+        it('email is empty', function () {
+          return agent
+            .post('/signin')
+            .send({
+              email: email,
+              password: process.env.TEST_PASS,
+            })
+            .then(function (res) {
+              expect(res).to.have.cookie('jwt');
+              return agent
+                .put(`/profile/${id}`)
+                .send({
+                  email: '',
+                  name: name,
+                })
+                .then(function (res) {
+                  res.should.have.status(400);
+                  res.should.be.json;
+                  expect(res.body).to.equal('Cannot leave fields blank');
+                });
+            });
+        });
+
+        it('name is empty', function () {
           return agent
             .post('/signin')
             .send({
@@ -154,157 +178,209 @@ module.exports = function ProfileTests() {
                 .put(`/profile/${id}`)
                 .send({
                   email: email,
-                  name: name,
+                  name: '',
                 })
                 .then(function (res) {
                   res.should.have.status(400);
                   res.should.be.json;
-                  expect(res.body).to.equal('Nothing to be updated');
+                  expect(res.body).to.equal('Cannot leave fields blank');
                 });
             });
         });
       });
 
       describe('update profile fields', function () {
-        beforeEach(function (done) {
-          beforeTest(done);
-        });
+        describe('email update and login', function () {
+          before(function (done) {
+            beforeTest(done);
+          });
 
-        afterEach(function (done) {
-          afterTest(done);
-        });
+          after(function (done) {
+            afterTest(done);
+          });
 
-        it('success updating email', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent
-                .put(`/profile/${id}`)
-                .send({
+          it('success updating email', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (signInRes) {
+                expect(signInRes).to.have.cookie('jwt');
+              })
+              .then(function () {
+                return agent.put(`/profile/${id}`).send({
                   email: updatedEmail,
-                })
-                .then(function (res) {
-                  res.should.have.status(200);
-                  res.should.be.json;
-                  res.body.should.have.property('email');
-                  res.body.email.should.equal(updatedEmail);
                 });
-            });
-        });
-
-        it('ensure user profile consistency', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent.get(`/profile/${id}`).then(function (res) {
-                res.should.have.status(200);
-                res.should.be.json;
-                res.body.should.have.property('name');
-                res.body.name.should.equal(name);
+              })
+              .then(function (putRes) {
+                putRes.should.have.status(200);
+                putRes.should.be.json;
+                putRes.body.should.have.property('email');
+                putRes.body.email.should.equal(updatedEmail);
               });
-            });
+          });
+
+          it('ensure user profile consistency', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: updatedEmail,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (signInRes) {
+                expect(signInRes).to.have.cookie('jwt');
+              })
+              .then(function () {
+                return agent.get(`/profile/${id}`);
+              })
+              .then(function (putRes) {
+                putRes.should.have.status(200);
+                putRes.should.be.json;
+                putRes.body.should.have.property('name');
+                putRes.body.name.should.equal(name);
+              });
+          });
         });
 
-        it('success updating multiple (username and email)', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent
-                .put(`/profile/${id}`)
-                .send({
-                  email: updatedEmail,
-                  name: updatedName,
-                })
-                .then(function (res) {
-                  res.should.have.status(200);
-                  res.should.be.json;
-                  res.body.should.have.property('email');
-                  res.body.email.should.equal(updatedEmail);
-                  res.body.should.have.property('name');
-                  res.body.name.should.equal(updatedName);
-                });
-            });
+        describe('update multiple fields', function () {
+          before(function (done) {
+            beforeTest(done);
+          });
+
+          after(function (done) {
+            afterTest(done);
+          });
+
+          it('success updating multiple (username and email)', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent
+                  .put(`/profile/${id}`)
+                  .send({
+                    email: updatedEmail,
+                    name: updatedName,
+                  })
+                  .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.have.property('email');
+                    res.body.email.should.equal(updatedEmail);
+                    res.body.should.have.property('name');
+                    res.body.name.should.equal(updatedName);
+                  });
+              });
+          });
         });
       });
 
       describe('update password field', function () {
-        before(function (done) {
-          beforeTest(done);
+        describe('negative password tests', function () {
+          beforeEach(function (done) {
+            beforeTest(done);
+          });
+
+          afterEach(function (done) {
+            afterTest(done);
+          });
+
+          it('user not found for updating password', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent
+                  .put(`/profile/passwordUpdate/123`)
+                  .send({
+                    password: updatedPassword,
+                    currentPassword: process.env.TEST_PASS,
+                  })
+                  .then(function (res) {
+                    res.should.have.status(404);
+                    res.should.be.json;
+                    expect(res.body).to.equal('User to update not found');
+                  });
+              });
+          });
+
+          it('user current password incorrect', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent
+                  .put(`/profile/passwordUpdate/${id}`)
+                  .send({
+                    currentPassword: currentPasswordIncorrect,
+                    password: updatedPassword,
+                  })
+                  .then(function (res) {
+                    res.should.have.status(400);
+                    res.should.be.json;
+                    expect(res.body).to.equal('Current password is incorrect');
+                  });
+              });
+          });
         });
 
-        after(function (done) {
-          afterTest(done);
-        });
+        describe('password update with signin', function () {
+          before(function (done) {
+            beforeTest(done);
+          });
 
-        it('user not found for updating password', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent
-                .put(`/profile/passwordUpdate/123`)
-                .send({
-                  password: updatedPassword,
-                })
-                .then(function (res) {
-                  res.should.have.status(404);
-                  res.should.be.json;
-                  expect(res.body).to.equal('User to update not found');
-                });
-            });
-        });
+          after(function (done) {
+            afterTest(done);
+          });
 
-        it('success updating password', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: process.env.TEST_PASS,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-              return agent
-                .put(`/profile/passwordUpdate/${id}`)
-                .send({
-                  password: updatedPassword,
-                })
-                .then(function (res) {
-                  res.should.have.status(200);
-                  res.should.be.json;
-                  expect(res.body).to.equal('Password Updated');
-                });
-            });
-        });
+          it('success updating password', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: process.env.TEST_PASS,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+                return agent
+                  .put(`/profile/passwordUpdate/${id}`)
+                  .send({
+                    password: updatedPassword,
+                    currentPassword: process.env.TEST_PASS,
+                  })
+                  .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    expect(res.body).to.equal('Password Updated');
+                  });
+              });
+          });
 
-        it('verify sign in with new password', function () {
-          return agent
-            .post('/signin')
-            .send({
-              email: email,
-              password: updatedPassword,
-            })
-            .then(function (res) {
-              expect(res).to.have.cookie('jwt');
-            });
+          it('verify sign in with new password', function () {
+            return agent
+              .post('/signin')
+              .send({
+                email: email,
+                password: updatedPassword,
+              })
+              .then(function (res) {
+                expect(res).to.have.cookie('jwt');
+              });
+          });
         });
       });
     });

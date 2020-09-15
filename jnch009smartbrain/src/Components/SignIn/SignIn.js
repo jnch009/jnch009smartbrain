@@ -21,31 +21,37 @@ class SignIn extends Component {
   onSubmitSignIn = () => {
     // POST Request
     trackPromise(
-      fetch(`${process.env.REACT_APP_FETCH_API}/signin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: this.state.signInEmail,
-          password: this.state.signInPassword,
-        }),
-      })
+      fetch(
+        `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/signin`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: this.state.signInEmail,
+            password: this.state.signInPassword,
+          }),
+        }
+      )
         .then(resp => resp.json())
         .then(data => {
           if (data?.id) {
             this.props.loadUser(data);
-            this.props.onRouteChange('home');
           } else {
-            this.props.setError(data);
+            throw data;
           }
-        }),
+        })
+        .then(() => {
+          this.props.history.push('/');
+        })
+        .catch(err => this.props.setError(err))
     );
   };
 
   render() {
-    const { onRouteChange, keyEnter } = this.props;
+    const { keyEnter } = this.props;
     return (
-      <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center'>
+      <article className='br3 shadow-5 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw7 center flex justify-center'>
         <main className='pa4 black-80'>
           <div className='measure'>
             <fieldset id='sign_up' className='ba b--transparent ph0 mh0'>
@@ -86,12 +92,7 @@ class SignIn extends Component {
               />
             </div>
             <div className='lh-copy mt3'>
-              <p
-                onClick={() => onRouteChange('Register')}
-                className='f6 link dim black db pointer'
-              >
-                Register
-              </p>
+              <p className='f6 link dim black db pointer' onClick={() => this.props.history.push('/Register')}>Register</p>
             </div>
           </div>
         </main>

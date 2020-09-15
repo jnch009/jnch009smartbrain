@@ -6,13 +6,13 @@ const handleAPICall = (req, res, apiKey) => {
   });
 
   app.models
-    .predict(Clarifai.FACE_DETECT_MODEL, req.body.input)
+    .predict(Clarifai.CELEBRITY_MODEL, req.body.input)
     .then(data => {
       res.json(data);
     })
-    .catch(() =>
-      res.status(400).json('Please review your input or use another image'),
-    )
+    .catch(err => {
+      res.status(400).json('Please review your input or use another image');
+    });
 };
 
 const handleImageUpdate = (req, res, db, apiError) => {
