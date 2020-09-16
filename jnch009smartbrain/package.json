@@ -20,7 +20,6 @@
   "scripts": {
     "start": "set PORT=3010 && react-scripts start",
     "startlinux": "PORT=3010 react-scripts start",
-    "startdocker": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll",
     "eject": "react-scripts eject",
