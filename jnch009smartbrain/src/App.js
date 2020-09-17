@@ -23,18 +23,18 @@ const particleOptions = {
       value: 100,
       density: {
         enable: true,
-        area: 800,
-      },
-    },
+        area: 800
+      }
+    }
   },
   interactivity: {
     events: {
       onHover: {
         enable: true,
-        mode: 'repulse',
-      },
-    },
-  },
+        mode: 'repulse'
+      }
+    }
+  }
 };
 
 const initialState = {
@@ -48,9 +48,9 @@ const initialState = {
     name: '',
     email: '',
     score: 0,
-    joined: '',
+    joined: ''
   },
-  errorMsg: '',
+  errorMsg: ''
 };
 
 const history = createHashHistory();
@@ -80,11 +80,11 @@ class App extends Component {
       fetch(
         `${process.env.REACT_APP_FETCH_API || 'http://localhost:3000'}/profile`,
         {
-          credentials: 'include',
+          credentials: 'include'
         }
       )
-        .then((resp) => resp.json())
-        .then((user) => {
+        .then(resp => resp.json())
+        .then(user => {
           if (user?.id) {
             this.loadUser(user);
           } else {
@@ -95,15 +95,15 @@ class App extends Component {
           let path = history.location.pathname;
           this.handleHistory(path);
         })
-        .catch((err) => this.setError(err))
+        .catch(err => this.setError(err))
     );
   }
 
-  handleHistory = (path) => {
+  handleHistory = path => {
     if (this.state.isSignedIn) {
       this.setState({
         imageUrl: '',
-        box: [],
+        box: []
       });
 
       switch (path) {
@@ -112,7 +112,7 @@ class App extends Component {
         this.setState(
           {
             route: '/',
-            userProfile: this.state.userProfile,
+            userProfile: this.state.userProfile
           },
           () => {
             history.replace('/');
@@ -126,11 +126,11 @@ class App extends Component {
           }/signout`,
           {
             method: 'POST',
-            credentials: 'include',
+            credentials: 'include'
           }
         )
-          .then((resp) => resp.json())
-          .then((result) => {
+          .then(resp => resp.json())
+          .then(result => {
             this.setState({ ...initialState, route: '/SignIn' });
             // TODO: change this to a success box
             this.setError(result);
@@ -142,7 +142,7 @@ class App extends Component {
       default:
         this.setState(
           {
-            route: path,
+            route: path
           },
           () => {
             history.replace(path);
@@ -165,58 +165,58 @@ class App extends Component {
     }
   };
 
-  loadUser = (user) => {
+  loadUser = user => {
     this.setState({
       userProfile: {
         id: user.id,
         name: user.name,
         email: user.email,
         score: user.score,
-        joined: user.joined,
+        joined: user.joined
       },
       isSignedIn: true,
-      route: `${history.location.pathname}`,
+      route: `${history.location.pathname}`
     });
   };
 
-  clearUser = (URLRoute) => {
+  clearUser = URLRoute => {
     this.setState({
       ...initialState,
       route:
         URLRoute === '/SignIn' || URLRoute === '/Register'
           ? URLRoute
-          : '/SignIn',
+          : '/SignIn'
     });
   };
 
-  onInputChange = (event) => {
+  onInputChange = event => {
     this.setState({
-      input: event.target.value,
+      input: event.target.value
     });
   };
 
-  calculateBox = (data) => {
+  calculateBox = data => {
     const clarifyArray = data.outputs[0].data.regions.map(
-      (region) => region.region_info.bounding_box
+      region => region.region_info.bounding_box
     );
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
 
-    let boundingBoxes = clarifyArray.map((box) => {
+    let boundingBoxes = clarifyArray.map(box => {
       return {
         topRow: box.top_row * height,
         leftCol: box.left_col * width,
         bottomRow: height - box.bottom_row * height,
-        rightCol: width - box.right_col * width,
+        rightCol: width - box.right_col * width
       };
     });
     return boundingBoxes;
   };
 
-  displayBox = (boxes) => {
+  displayBox = boxes => {
     this.setState({
-      box: [...this.state.box, ...boxes],
+      box: [...this.state.box, ...boxes]
     });
   };
 
@@ -224,7 +224,7 @@ class App extends Component {
     this.setState(
       {
         imageUrl: this.state.input,
-        box: [],
+        box: []
       },
       () => {
         trackPromise(
@@ -237,12 +237,12 @@ class App extends Component {
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include',
               body: JSON.stringify({
-                input: this.state.input,
-              }),
+                input: this.state.input
+              })
             }
           )
-            .then((response) => response.json())
-            .then((response) => {
+            .then(response => response.json())
+            .then(response => {
               if (response.outputs) {
                 fetch(
                   `${
@@ -253,14 +253,14 @@ class App extends Component {
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({
-                      id: this.state.userProfile.id,
-                    }),
+                      id: this.state.userProfile.id
+                    })
                   }
                 )
-                  .then((resp) => resp.json())
-                  .then((newProfile) => {
+                  .then(resp => resp.json())
+                  .then(newProfile => {
                     this.setState({
-                      userProfile: newProfile,
+                      userProfile: newProfile
                     });
                   });
                 //TODO: calculate the box first and then fetch from image
@@ -269,16 +269,16 @@ class App extends Component {
                 this.setError(response);
               }
             })
-            .catch((err) => console.log(err))
+            .catch(err => console.log(err))
         );
       }
     );
   };
 
-  setError = (msg) => {
+  setError = msg => {
     this.setState(
       {
-        errorMsg: msg,
+        errorMsg: msg
       },
       () => {
         setTimeout(() => this.setState({ errorMsg: '' }), 2000);

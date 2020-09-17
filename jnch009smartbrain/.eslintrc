@@ -1,23 +1,22 @@
 {
-    "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "react-app"
-    ],
-    "parser": "babel-eslint",
-    "plugins": ["react"],
-    "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "rules": {
-        "jsx-quotes": ["error","prefer-single"],
-        "indent": [2,2],
-        "quotes": [2,"single"],
-        "no-unused-vars": [1],
-        "no-undef":"warn",
-        "react/prop-types": [0],
-        "no-multiple-empty-lines": ["error", {"max": 1}]
+  "extends": ["eslint:recommended", "plugin:react/recommended", "react-app"],
+  "parser": "babel-eslint",
+  "plugins": ["react"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     }
+  },
+  "rules": {
+    "jsx-quotes": ["error", "prefer-single"],
+    "indent": [2, 2],
+    "object-curly-spacing": ["error", "always", { "objectsInObjects": true }],
+    "quotes": [2, "single"],
+    "no-unused-vars": [1],
+    "no-undef": "warn",
+    "react/prop-types": [0],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
+    "arrow-parens": ["error", "as-needed"],
+    "comma-dangle": ["warn", "never"]
   }
+}

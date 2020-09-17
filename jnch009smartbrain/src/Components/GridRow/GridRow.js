@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GridRow = ({title, value, editable, password, handleChange}) => (
+const GridRow = ({ title, value, editable, password, handleChange }) => (
   <article
     className='flex justify-around dt w-100 bb b--black-05 pa4 mt2'
     href='#0'
@@ -12,7 +12,7 @@ const GridRow = ({title, value, editable, password, handleChange}) => (
           type={password ? 'password' : 'text'}
           className='f4 fw4 mt0 mb0 black-60'
           value={value}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={e => handleChange(e.target.value)}
         />
       ) : (
         <h2 className='f4 fw4 mt0 mb0 black-60'>{value}</h2>

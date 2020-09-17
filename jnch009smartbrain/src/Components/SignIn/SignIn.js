@@ -6,7 +6,7 @@ class SignIn extends Component {
     super(props);
     this.state = {
       signInEmail: '',
-      signInPassword: '',
+      signInPassword: ''
     };
   }
 
@@ -29,8 +29,8 @@ class SignIn extends Component {
           credentials: 'include',
           body: JSON.stringify({
             email: this.state.signInEmail,
-            password: this.state.signInPassword,
-          }),
+            password: this.state.signInPassword
+          })
         }
       )
         .then(resp => resp.json())

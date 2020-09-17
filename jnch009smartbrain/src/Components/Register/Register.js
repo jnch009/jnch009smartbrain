@@ -7,25 +7,25 @@ class Register extends Component {
     this.state = {
       name: '',
       email: '',
-      password: '',
+      password: ''
     };
   }
 
   onNameChange = e => {
     this.setState({
-      name: e.target.value,
+      name: e.target.value
     });
   };
 
   onEmailChange = e => {
     this.setState({
-      email: e.target.value,
+      email: e.target.value
     });
   };
 
   onPasswordChange = e => {
     this.setState({
-      password: e.target.value,
+      password: e.target.value
     });
   };
 
@@ -65,9 +65,9 @@ class Register extends Component {
             body: JSON.stringify({
               name: this.state.name,
               email: this.state.email,
-              password: this.state.password,
+              password: this.state.password
             }),
-            credentials: 'include',
+            credentials: 'include'
           }
         )
           .then(resp => resp.json())

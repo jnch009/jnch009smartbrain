@@ -1,7 +1,7 @@
 import React from 'react';
-import {trackPromise} from 'react-promise-tracker';
+import { trackPromise } from 'react-promise-tracker';
 
-const ProfileDelete = ({profile, history, clearUser, setError}) => {
+const ProfileDelete = ({ profile, history, clearUser, setError }) => {
   const handleProfileDelete = () => {
     trackPromise(
       fetch(
@@ -10,20 +10,20 @@ const ProfileDelete = ({profile, history, clearUser, setError}) => {
         }/profile/${profile.id}`,
         {
           method: 'DELETE',
-          headers: {'Content-Type': 'application/json'},
-          credentials: 'include',
-        },
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        }
       )
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (data === 'User successfully deleted') {
-            // TODO: success message
+            //TODO: success message
             clearUser();
           } else {
             setError(data);
           }
         })
-        .catch((err) => console.log(err)),
+        .catch(err => console.log(err))
     );
   };
 

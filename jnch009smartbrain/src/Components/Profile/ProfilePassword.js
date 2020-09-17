@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import GridRow from '../GridRow/GridRow';
-import {trackPromise} from 'react-promise-tracker';
+import { trackPromise } from 'react-promise-tracker';
 
-const ProfilePassword = ({profile, history, setError, keyEnter}) => {
+const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
   const [currPassword, setCurrPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  const passwordUpdateEnterPress = (e) => {
+  const passwordUpdateEnterPress = e => {
     keyEnter(e, handlePasswordUpdate);
   };
 
@@ -19,16 +19,16 @@ const ProfilePassword = ({profile, history, setError, keyEnter}) => {
         }/profile/passwordUpdate/${profile.id}`,
         {
           method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({
             password: newPassword,
-            currentPassword: currPassword,
-          }),
-        },
+            currentPassword: currPassword
+          })
+        }
       )
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (data === 'Password Updated') {
             // TODO: success message
             history.push('/Profile');
@@ -36,13 +36,13 @@ const ProfilePassword = ({profile, history, setError, keyEnter}) => {
             setError(data);
           }
         })
-        .catch((err) => console.log(err)),
+        .catch(err => console.log(err))
     );
   };
 
   return (
     <>
-      <div onKeyPress={(e) => passwordUpdateEnterPress(e)} tabIndex='0'>
+      <div onKeyPress={e => passwordUpdateEnterPress(e)} tabIndex='0'>
         <main className='mw6 center profileContainer'>
           <GridRow
             title='Current Password: '

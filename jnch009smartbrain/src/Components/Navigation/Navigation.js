@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Navigation = ({history, isSignedIn}) => {
+const Navigation = ({ history, isSignedIn }) => {
   return (
     <>
       {isSignedIn === true ? (
         <>
-          <nav style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'
@@ -29,7 +29,7 @@ const Navigation = ({history, isSignedIn}) => {
         </>
       ) : (
         <>
-          <nav style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
             {' '}
             <p
               className='f3 link dim black underline pa3 pointer'

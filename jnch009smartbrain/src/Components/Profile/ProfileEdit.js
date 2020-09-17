@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import GridRow from '../GridRow/GridRow';
-import {trackPromise} from 'react-promise-tracker';
+import { trackPromise } from 'react-promise-tracker';
 
 const ProfileEdit = ({
   profile,
@@ -8,14 +8,14 @@ const ProfileEdit = ({
   joined,
   keyEnter,
   loadUser,
-  setError,
+  setError
 }) => {
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
 
-  const {score} = profile;
+  const { score } = profile;
 
-  const editProfileEnterPress = (e) => {
+  const editProfileEnterPress = e => {
     keyEnter(e, handleEditConfirmation);
   };
 
@@ -28,16 +28,16 @@ const ProfileEdit = ({
         }/profile/${profile.id}`,
         {
           method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({
             name: name,
-            email: email,
-          }),
-        },
+            email: email
+          })
+        }
       )
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (data.id) {
             loadUser(data);
             history.push('/Profile');
@@ -45,13 +45,13 @@ const ProfileEdit = ({
             setError(data);
           }
         })
-        .catch((err) => console.log(err)),
+        .catch(err => console.log(err))
     );
   };
 
   return (
     <>
-      <div onKeyPress={(e) => editProfileEnterPress(e)} tabIndex='0'>
+      <div onKeyPress={e => editProfileEnterPress(e)} tabIndex='0'>
         <main className='mw6 center profileContainer'>
           <GridRow
             title='Name: '
