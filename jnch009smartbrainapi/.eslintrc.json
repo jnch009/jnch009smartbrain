@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 12
+  },
+  "rules": {
+    "jsx-quotes": ["error", "prefer-single"],
+    "indent": [2, 2],
+    "object-curly-spacing": ["error", "always", { "objectsInObjects": true }],
+    "quotes": [2, "single"],
+    "no-unused-vars": [1],
+    "no-undef": "warn",
+    "react/prop-types": [0],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
+    "arrow-parens": ["error", "as-needed"],
+    "comma-dangle": ["warn", "never"],
+    "eol-last": ["error", "always"]
+  }
+}

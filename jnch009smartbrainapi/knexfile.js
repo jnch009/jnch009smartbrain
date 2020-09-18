@@ -8,14 +8,14 @@ module.exports = {
       host: '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
-      database: 'jnch009smartbraintest',
+      database: 'jnch009smartbraintest'
     },
     migrations: {
-      directory: __dirname + '/db/migrations',
+      directory: __dirname + '/db/migrations'
     },
     seeds: {
-      directory: __dirname + '/db/seeds/test',
-    },
+      directory: __dirname + '/db/seeds/test'
+    }
   },
 
   development: {
@@ -24,10 +24,10 @@ module.exports = {
       host: '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
-      database: 'jnch009smartbrain',
+      database: 'jnch009smartbrain'
     },
     migrations: {
-      directory: __dirname + '/db/migrations',
+      directory: __dirname + '/db/migrations'
     }
-  },
+  }
 };

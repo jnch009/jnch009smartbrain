@@ -1,21 +1,18 @@
 const {
-  assert,
   chai,
-  should,
-  chaiHttp,
-  knex,
   app,
   expect,
   beforeTest,
-  afterTest,
+  afterTest
 } = require('../index');
 
+/* eslint-disable no-undef */
 module.exports = function ProfileTests() {
   const [id, email, name] = [3, 'test3@gmail.com', 'test3'];
   const [updatedEmail, updatedPassword, updatedName] = [
     'testJeremy@gmail.com',
     'jsdkfljaskdljf!@!@!@',
-    'Jeremy',
+    'Jeremy'
   ];
   const currentPasswordIncorrect = 'wieuwioefjwiojfiojewofj';
   let agent = chai.request.agent(app);
@@ -35,7 +32,7 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
@@ -52,11 +49,11 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent.get(`/profile`).then(function (res) {
+            return agent.get('/profile').then(function (res) {
               res.should.have.status(200);
               res.should.be.json;
               res.body.should.have.property('name');
@@ -75,7 +72,7 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
@@ -98,11 +95,11 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
-            return agent.get(`/allProfiles`).then(function (res) {
+            return agent.get('/allProfiles').then(function (res) {
               res.should.have.status(200);
               res.should.be.json;
               res.body.should.have.length(3);
@@ -125,14 +122,14 @@ module.exports = function ProfileTests() {
             .post('/signin')
             .send({
               email: email,
-              password: process.env.TEST_PASS,
+              password: process.env.TEST_PASS
             })
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
               return agent
                 .put('/profile/156161')
                 .send({
-                  email: updatedEmail,
+                  email: updatedEmail
                 })
                 .then(function (res) {
                   res.should.have.status(404);
@@ -147,7 +144,7 @@ module.exports = function ProfileTests() {
             .post('/signin')
             .send({
               email: email,
-              password: process.env.TEST_PASS,
+              password: process.env.TEST_PASS
             })
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
@@ -155,7 +152,7 @@ module.exports = function ProfileTests() {
                 .put(`/profile/${id}`)
                 .send({
                   email: '',
-                  name: name,
+                  name: name
                 })
                 .then(function (res) {
                   res.should.have.status(400);
@@ -170,7 +167,7 @@ module.exports = function ProfileTests() {
             .post('/signin')
             .send({
               email: email,
-              password: process.env.TEST_PASS,
+              password: process.env.TEST_PASS
             })
             .then(function (res) {
               expect(res).to.have.cookie('jwt');
@@ -178,7 +175,7 @@ module.exports = function ProfileTests() {
                 .put(`/profile/${id}`)
                 .send({
                   email: email,
-                  name: '',
+                  name: ''
                 })
                 .then(function (res) {
                   res.should.have.status(400);
@@ -204,14 +201,14 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (signInRes) {
                 expect(signInRes).to.have.cookie('jwt');
               })
               .then(function () {
                 return agent.put(`/profile/${id}`).send({
-                  email: updatedEmail,
+                  email: updatedEmail
                 });
               })
               .then(function (putRes) {
@@ -227,7 +224,7 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: updatedEmail,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (signInRes) {
                 expect(signInRes).to.have.cookie('jwt');
@@ -258,7 +255,7 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (res) {
                 expect(res).to.have.cookie('jwt');
@@ -266,7 +263,7 @@ module.exports = function ProfileTests() {
                   .put(`/profile/${id}`)
                   .send({
                     email: updatedEmail,
-                    name: updatedName,
+                    name: updatedName
                   })
                   .then(function (res) {
                     res.should.have.status(200);
@@ -296,15 +293,15 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (res) {
                 expect(res).to.have.cookie('jwt');
                 return agent
-                  .put(`/profile/passwordUpdate/123`)
+                  .put('/profile/passwordUpdate/123')
                   .send({
                     password: updatedPassword,
-                    currentPassword: process.env.TEST_PASS,
+                    currentPassword: process.env.TEST_PASS
                   })
                   .then(function (res) {
                     res.should.have.status(404);
@@ -319,7 +316,7 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (res) {
                 expect(res).to.have.cookie('jwt');
@@ -327,7 +324,7 @@ module.exports = function ProfileTests() {
                   .put(`/profile/passwordUpdate/${id}`)
                   .send({
                     currentPassword: currentPasswordIncorrect,
-                    password: updatedPassword,
+                    password: updatedPassword
                   })
                   .then(function (res) {
                     res.should.have.status(400);
@@ -352,7 +349,7 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: process.env.TEST_PASS,
+                password: process.env.TEST_PASS
               })
               .then(function (res) {
                 expect(res).to.have.cookie('jwt');
@@ -360,7 +357,7 @@ module.exports = function ProfileTests() {
                   .put(`/profile/passwordUpdate/${id}`)
                   .send({
                     password: updatedPassword,
-                    currentPassword: process.env.TEST_PASS,
+                    currentPassword: process.env.TEST_PASS
                   })
                   .then(function (res) {
                     res.should.have.status(200);
@@ -375,7 +372,7 @@ module.exports = function ProfileTests() {
               .post('/signin')
               .send({
                 email: email,
-                password: updatedPassword,
+                password: updatedPassword
               })
               .then(function (res) {
                 expect(res).to.have.cookie('jwt');
@@ -399,7 +396,7 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
@@ -416,14 +413,14 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent.delete(`/profile/${id}`).then(function (res) {
               res.should.have.status(200);
               res.should.be.json;
-              expect(res.body).to.equal(`User successfully deleted`);
+              expect(res.body).to.equal('User successfully deleted');
             });
           });
       });
@@ -433,16 +430,16 @@ module.exports = function ProfileTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
-              .delete(`/purgeProfiles`)
+              .delete('/purgeProfiles')
               .then(function (res) {
                 res.should.have.status(200);
                 res.should.be.json;
-                expect(res.body).to.equal(`All profiles deleted!`);
+                expect(res.body).to.equal('All profiles deleted!');
               })
               .finally(() => {
                 agent.close();
