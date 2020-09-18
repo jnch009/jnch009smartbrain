@@ -17,6 +17,7 @@
     "react/prop-types": [0],
     "no-multiple-empty-lines": ["error", { "max": 1 }],
     "arrow-parens": ["error", "as-needed"],
-    "comma-dangle": ["warn", "never"]
+    "comma-dangle": ["warn", "never"],
+    "eol-last": ["error", "always"]
   }
 }
