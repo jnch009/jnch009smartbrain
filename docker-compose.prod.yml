@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+    smartbrain-frontend-prod:
+        tty: true
+        image: jonch009/smartbrain-frontend:prod
+        container_name: smartbrain-frontend-prod
+        ports:
+            - '3010:80'
