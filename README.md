@@ -1,3 +1,5 @@
+***IMPORTANT: Currently having an issue on Chrome where cookies are not being sent and therefore login/registration is broken too, please use on firefox or edge for the time being. Thank you!***
+
 Smartbrain Application Final Project in the Complete Web Developer 2020 ZTM taught by Andrei Neagoie
 The main attraction of this application is utilizing Clarifai's API for facial recognition and incrementing a 
 score counter for logged in users.

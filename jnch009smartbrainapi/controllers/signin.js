@@ -31,8 +31,8 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: 'None',
-                  secure: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
+                  sameSite: 'none',
+                  secure: process.env.NODE_ENV === 'production' ? true : false,
                   expires: new Date(Date.now() + 3.6e6),
                 })
                 .json(user[0]);
