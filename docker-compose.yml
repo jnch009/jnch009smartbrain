@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+    smartbrain-frontend:
+        tty: true
+        image: jonch009/smartbrain-frontend:develop
+        container_name: smartbrain-frontend
+        volumes: 
+            # here we are mapping the jnch009smartbrain folder to the app folder in the container
+            - './jnch009smartbrain:/app'
+            - '/app/node_modules'
+        ports:
+            - 3010:3010
+        environment: 
+            - CHOKIDAR_USEPOLLING=true
+        networks:
+            - smartbrain-frontend
+
+networks:
+    smartbrain-frontend:

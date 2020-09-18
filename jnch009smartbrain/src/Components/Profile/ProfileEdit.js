@@ -8,7 +8,7 @@ const ProfileEdit = ({
   joined,
   keyEnter,
   loadUser,
-  setError,
+  setError
 }) => {
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
@@ -32,8 +32,8 @@ const ProfileEdit = ({
           credentials: 'include',
           body: JSON.stringify({
             name: name,
-            email: email,
-          }),
+            email: email
+          })
         }
       )
         .then(res => res.json())

@@ -10,7 +10,7 @@ const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
     keyEnter(e, handlePasswordUpdate);
   };
 
-  //TODO: password must be at least 8 characters, /.{8,}/ Backend must be done as well
+  // TODO: password must be at least 8 characters, /.{8,}/ Backend must be done as well
   const handlePasswordUpdate = () => {
     trackPromise(
       fetch(
@@ -23,14 +23,14 @@ const ProfilePassword = ({ profile, history, setError, keyEnter }) => {
           credentials: 'include',
           body: JSON.stringify({
             password: newPassword,
-            currentPassword: currPassword,
-          }),
+            currentPassword: currPassword
+          })
         }
       )
         .then(res => res.json())
         .then(data => {
           if (data === 'Password Updated') {
-            //TODO: success message
+            // TODO: success message
             history.push('/Profile');
           } else {
             setError(data);

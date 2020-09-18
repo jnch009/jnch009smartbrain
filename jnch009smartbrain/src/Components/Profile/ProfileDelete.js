@@ -11,7 +11,7 @@ const ProfileDelete = ({ profile, history, clearUser, setError }) => {
         {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          credentials: 'include'
         }
       )
         .then(res => res.json())

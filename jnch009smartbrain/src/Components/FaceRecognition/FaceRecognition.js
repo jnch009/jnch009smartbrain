@@ -2,7 +2,7 @@ import React from 'react';
 
 import './FaceRecognition.css';
 
-const FaceRecognition = ({imageUrl, boundingBox}) => {
+const FaceRecognition = ({ imageUrl, boundingBox }) => {
   return (
     <div className='flexCenter'>
       <div className='absolute mt2 mb4'>
@@ -22,7 +22,7 @@ const FaceRecognition = ({imageUrl, boundingBox}) => {
               top: box.topRow,
               right: box.rightCol,
               bottom: box.bottomRow,
-              left: box.leftCol,
+              left: box.leftCol
             }}
           />
         ))}

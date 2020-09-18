@@ -12,7 +12,7 @@ const dateOptions = {
   month: 'long',
   hour: 'numeric',
   minute: 'numeric',
-  second: 'numeric',
+  second: 'numeric'
 };
 
 const Profile = ({
@@ -22,7 +22,7 @@ const Profile = ({
   loadUser,
   setError,
   keyEnter,
-  clearUser,
+  clearUser
 }) => {
   const joinedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(
     new Date(profile.joined)
@@ -68,21 +68,21 @@ const Profile = ({
     joined,
     keyEnter,
     loadUser,
-    setError,
+    setError
   };
 
   const passUpdateProps = {
     profile,
     history,
     keyEnter,
-    setError,
+    setError
   };
 
   const deleteProps = {
     profile,
     history,
     clearUser,
-    setError,
+    setError
   };
 
   const profileRouting = () => {
