@@ -51,6 +51,7 @@ const nodeEnvironments = {
 db = nodeEnvironments[process.env.NODE_ENV] || nodeEnvironments['development'];
 
 //Middleware
+app.set('trust proxy',true);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));

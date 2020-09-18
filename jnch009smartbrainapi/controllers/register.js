@@ -33,6 +33,7 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
+                  sameSite: 'none',
                   secure: process.env.NODE_ENV === 'production' ? true : false,
                   expires: new Date(Date.now() + 3.6e6),
                 })
