@@ -25,15 +25,15 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
                 { id: user[0].id },
                 process.env.JWT_SECRET,
                 {
-                  expiresIn: '1h',
-                },
+                  expiresIn: '1h'
+                }
               );
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: 'none',
+                  sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
                   secure: process.env.NODE_ENV === 'production' ? true : false,
-                  expires: new Date(Date.now() + 3.6e6),
+                  expires: new Date(Date.now() + 3.6e6)
                 })
                 .json(user[0]);
             })
@@ -46,5 +46,5 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
 };
 
 module.exports = {
-  handleSignIn,
+  handleSignIn
 };

@@ -11,7 +11,7 @@ exports.seed = function(knex) {
       return knex('login').insert([
         { email: 'test1@gmail.com', hash: hash },
         { email: 'test2@gmail.com', hash: hash },
-        { email: 'test3@gmail.com', hash: hash },
+        { email: 'test3@gmail.com', hash: hash }
       ]);
     })
 };

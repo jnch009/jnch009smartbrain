@@ -10,32 +10,32 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
       console.log(err);
     }
 
-    db.transaction((trx) => {
+    db.transaction(trx => {
       trx
         .insert({
           hash: hash,
-          email: email,
+          email: email
         })
         .into('login')
         .returning('email')
-        .then((loginEmail) => {
+        .then(loginEmail => {
           return trx('users')
             .returning('*')
             .insert({ name: name, email: loginEmail[0], joined: new Date() })
-            .then((user) => {
+            .then(user => {
               const token = jwt.sign(
                 { id: user[0].id },
                 process.env.JWT_SECRET,
                 {
-                  expiresIn: '1h',
+                  expiresIn: '1h'
                 }
               );
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: 'none',
+                  sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
                   secure: process.env.NODE_ENV === 'production' ? true : false,
-                  expires: new Date(Date.now() + 3.6e6),
+                  expires: new Date(Date.now() + 3.6e6)
                 })
                 .json(user[0]);
             })
@@ -51,5 +51,5 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
 };
 
 module.exports = {
-  handleRegister,
+  handleRegister
 };

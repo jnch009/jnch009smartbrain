@@ -1,15 +1,12 @@
 const {
-  assert,
   chai,
-  should,
-  chaiHttp,
-  knex,
   app,
   expect,
   beforeTest,
   afterTest
 } = require('../index');
 
+/* eslint-disable no-undef */
 module.exports = function SignOutTests() {
   const agent = chai.request.agent(app);
   describe('signout', function () {
@@ -38,7 +35,7 @@ module.exports = function SignOutTests() {
         .post('/signin')
         .send({
           email: 'test1@gmail.com',
-          password: process.env.TEST_PASS,
+          password: process.env.TEST_PASS
         })
         .then(function (res) {
           expect(res).to.have.cookie('jwt');

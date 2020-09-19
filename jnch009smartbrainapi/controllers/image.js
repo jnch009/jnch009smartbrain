@@ -2,7 +2,7 @@ const Clarifai = require('clarifai');
 
 const handleAPICall = (req, res, apiKey) => {
   const app = new Clarifai.App({
-    apiKey: apiKey,
+    apiKey: apiKey
   });
 
   app.models
@@ -10,7 +10,7 @@ const handleAPICall = (req, res, apiKey) => {
     .then(data => {
       res.json(data);
     })
-    .catch(err => {
+    .catch(() => {
       res.status(400).json('Please review your input or use another image');
     });
 };
@@ -20,7 +20,7 @@ const handleImageUpdate = (req, res, db, apiError) => {
   db('users')
     .where({ id })
     .increment({
-      score: 1,
+      score: 1
     })
     .returning('*')
     .then(score => {

@@ -44,16 +44,16 @@ const handlePutProfile = async (req, res, db) => {
           .returning('*')
           .update({
             email: email !== undefined ? email : undefined,
-            name: name !== undefined ? name : undefined,
+            name: name !== undefined ? name : undefined
           })
           .then(update => {
             return update[0].email !== undefined
               ? trx('login')
-                  .where({ id })
-                  .update({ email: update[0].email })
-                  .then(() => {
-                    res.json(update[0]);
-                  })
+                .where({ id })
+                .update({ email: update[0].email })
+                .then(() => {
+                  res.json(update[0]);
+                })
               : res.status(400).json('Failed to update user');
           })
           .then(trx.commit)
@@ -171,9 +171,9 @@ const handleDeleteProfile = async (req, res, db, apiError) => {
       .clearCookie('jwt', {
         httpOnly: true,
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
+        secure: process.env.NODE_ENV === 'production' ? true : false
       })
-      .json(`User successfully deleted`);
+      .json('User successfully deleted');
   } catch (err) {
     trx.rollback();
     res.status(500).json(err);
@@ -203,5 +203,5 @@ module.exports = {
   handleAllProfiles,
   handlePurgeProfiles,
   handlePutProfile,
-  handlePutProfilePassword,
+  handlePutProfilePassword
 };

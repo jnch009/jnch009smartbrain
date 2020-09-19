@@ -1,15 +1,12 @@
 const {
-  assert,
   chai,
-  should,
-  chaiHttp,
-  knex,
   app,
   expect,
   beforeTest,
-  afterTest,
+  afterTest
 } = require('../index');
 
+/* eslint-disable no-undef */
 module.exports = function ImageTests() {
   const mockInput = 'akjhdfkjsldjfalksdfasdfjklasdf';
   const email = 'test3@gmail.com';
@@ -30,14 +27,14 @@ module.exports = function ImageTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
           })
           .then(function () {
             return agent.post('/imageURL').send({
-              input: mockInput,
+              input: mockInput
             });
           })
           .then(function (imageRes) {
@@ -64,14 +61,14 @@ module.exports = function ImageTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
               .put('/image')
               .send({
-                id: 123,
+                id: 123
               })
               .then(function (res) {
                 res.should.have.status(404);
@@ -88,14 +85,14 @@ module.exports = function ImageTests() {
           .post('/signin')
           .send({
             email: email,
-            password: process.env.TEST_PASS,
+            password: process.env.TEST_PASS
           })
           .then(function (res) {
             expect(res).to.have.cookie('jwt');
             return agent
               .put('/image')
               .send({
-                id: 3,
+                id: 3
               })
               .then(function (res) {
                 res.should.have.status(200);
