@@ -151,24 +151,33 @@ const handlePutProfilePassword = (req, res, db, bcrypt, saltRounds) => {
   // }
 };
 
-const handleDeleteProfile = (req, res, db, apiError) => {
+const handleDeleteProfile = async (req, res, db, apiError) => {
   const { id } = req.params;
+  const trx = await db.transaction();
+  try {
+    const usersResult = await trx('users').where({ id }).del();
+    const loginResult = await trx('login').where({ id }).del();
 
-  db.transaction(trx => {
-    trx('users')
-      .where({ id })
-      .del()
-      .then(row => {
-        return row > 0
-          ? trx('login')
-            .where({ id })
-            .del()
-            .then(() => res.json('User successfully deleted'))
-          : res.status(404).json('User not found');
+    if (usersResult !== 1 && loginResult !== 1) {
+      trx.rollback();
+      res.status(404).json('User not found');
+    } else if (usersResult !== 1 || loginResult !== 1) {
+      throw apiError;
+    } else {
+      trx.commit();
+    }
+
+    res
+      .clearCookie('jwt', {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+        secure: process.env.NODE_ENV === 'production' ? true : false
       })
-      .then(trx.commit)
-      .catch(trx.rollback);
-  }).catch(() => res.status(500).json(apiError));
+      .json('User successfully deleted');
+  } catch (err) {
+    trx.rollback();
+    res.status(500).json(err);
+  }
 };
 
 const handleAllProfiles = (req, res, db, apiError) => {
