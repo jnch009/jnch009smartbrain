@@ -1,15 +1,12 @@
 const {
-  assert,
   chai,
-  should,
-  chaiHttp,
-  knex,
   app,
   expect,
   beforeTest,
   afterTest
 } = require('../index');
 
+/* eslint-disable no-undef */
 module.exports = function SignInTests() {
   describe('signin', function () {
     beforeEach(function (done) {
@@ -50,7 +47,7 @@ module.exports = function SignInTests() {
         .post('/signin')
         .send({
           email: 'test1@gmail.com',
-          password: 'yoyoyoma',
+          password: 'yoyoyoma'
         })
         .end(function (err, res) {
           res.should.have.status(401);
@@ -66,7 +63,7 @@ module.exports = function SignInTests() {
         .post('/signin')
         .send({
           email: 'test1@gmail.com',
-          password: process.env.TEST_PASS,
+          password: process.env.TEST_PASS
         })
         .end(function (err, res) {
           res.should.have.status(200);

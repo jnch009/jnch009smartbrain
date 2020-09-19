@@ -1,4 +1,4 @@
-const handleRoot = (req, res, apiError) => {
+const handleRoot = (req, res) => {
   if (req.id !== undefined) {
     res.json(req.id);
   } else {

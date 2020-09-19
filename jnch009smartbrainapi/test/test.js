@@ -1,13 +1,6 @@
 const {
-  assert,
   chai,
-  should,
-  chaiHttp,
-  knex,
-  app,
-  expect,
-  beforeTest,
-  afterTest,
+  chaiHttp
 } = require('./index');
 
 chai.use(chaiHttp);
@@ -19,6 +12,7 @@ const signout = require('./signout/signoutTests');
 const profile = require('./profile/profileTests');
 const image = require('./image/imageTests');
 
+/* eslint-disable no-undef */
 describe('Endpoint tests', function () {
   beforeEach(function (done) {
     setTimeout(function () {

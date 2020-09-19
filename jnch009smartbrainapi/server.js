@@ -24,9 +24,9 @@ const nodeEnvironments = {
     connection: {
       connectionString: process.env.DATABASE_URL,
       ssl: {
-        rejectUnauthorized: false,
-      },
-    },
+        rejectUnauthorized: false
+      }
+    }
   }),
   test: knex({
     client: 'pg',
@@ -34,8 +34,8 @@ const nodeEnvironments = {
       host: '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
-      database: 'jnch009smartbraintest',
-    },
+      database: 'jnch009smartbraintest'
+    }
   }),
   development: knex({
     client: 'pg',
@@ -43,9 +43,9 @@ const nodeEnvironments = {
       host: '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
-      database: 'jnch009smartbrain',
-    },
-  }),
+      database: 'jnch009smartbrain'
+    }
+  })
 };
 
 db = nodeEnvironments[process.env.NODE_ENV] || nodeEnvironments['development'];
@@ -73,14 +73,14 @@ app.get('/', verifyJWT, (req, res) => {
 });
 
 app.post('/signin', (req, res) =>
-  signin.handleSignIn(req, res, db, bcrypt, apiError, jwt),
+  signin.handleSignIn(req, res, db, bcrypt, apiError, jwt)
 );
 
 app.post('/signout', verifyJWT, (req, res) => signout.handleSignOut(req, res));
 
 app.post('/register', (req, res) =>
   //dependency injection
-  register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt),
+  register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt)
 );
 
 app.get('/profile', verifyJWT, (req, res) => {
@@ -88,7 +88,7 @@ app.get('/profile', verifyJWT, (req, res) => {
 });
 
 app.get('/profile/:id', verifyJWT, (req, res) =>
-  profile.handleGetProfile(req, res, db, apiError),
+  profile.handleGetProfile(req, res, db, apiError)
 );
 
 app.get('/allProfiles', verifyJWT, (req, res) => {
@@ -104,7 +104,7 @@ app.put('/profile/passwordUpdate/:id', verifyJWT, (req, res) => {
 });
 
 app.delete('/profile/:id', verifyJWT, (req, res) =>
-  profile.handleDeleteProfile(req, res, db),
+  profile.handleDeleteProfile(req, res, db)
 );
 
 app.delete('/purgeProfiles', verifyJWT, (req, res) => {
@@ -112,11 +112,11 @@ app.delete('/purgeProfiles', verifyJWT, (req, res) => {
 });
 
 app.put('/image', verifyJWT, (req, res) =>
-  image.handleImageUpdate(req, res, db, apiError),
+  image.handleImageUpdate(req, res, db, apiError)
 );
 
 app.post('/imageURL', verifyJWT, (req, res) =>
-  image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API),
+  image.handleAPICall(req, res, process.env.REACT_APP_CLARIFAI_API)
 );
 
 app.listen(process.env.PORT || 3000, () => {
