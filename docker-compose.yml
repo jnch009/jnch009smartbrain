@@ -1,10 +1,11 @@
-version: '3.8'
+version: '2.4'
 
 services:
     smartbrain-frontend:
         tty: true
         image: jonch009/smartbrain-frontend:develop
         container_name: smartbrain-frontend
+        mem_limit: 2048m
         volumes: 
             # here we are mapping the jnch009smartbrain folder to the app folder in the container
             - './jnch009smartbrain:/app'
@@ -14,7 +15,38 @@ services:
         environment: 
             - CHOKIDAR_USEPOLLING=true
         networks:
-            - smartbrain-frontend
+            - smartbrain
+
+    smartbrain-api:
+        container_name: smartbrain-api
+        mem_limit: 2048m
+        image: jonch009/smartbrain-backend:develop
+        volumes:
+            - './jnch009smartbrainapi:/usr/src/app'
+            - '/usr/src/app/node_modules'
+        ports:
+            - 3000:3000
+        env_file: 
+            - ./jnch009smartbrainapi/docker.env
+        environment: 
+            - DB_HOST=smartbrain-db
+        networks:
+            - smartbrain
+            
+    smartbrain-db:
+        container_name: smartbrain-db
+        mem_limit: 2048m
+        image: jonch009/smartbrain-db:develop
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        env_file: 
+            - ./jnch009smartbrainapi/docker.env
+        environment:
+            - POSTGRES_USER=jnch009
+        networks:
+            - smartbrain
 
 networks:
-    smartbrain-frontend:
+    smartbrain:
+volumes:
+    db-data:

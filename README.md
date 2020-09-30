@@ -1,4 +1,16 @@
-***IMPORTANT: Currently having an issue on Chrome where cookies are not being sent and therefore login/registration is broken too, please use on firefox or edge for the time being. Thank you!***
+~~IMPORTANT: Currently having an issue on Chrome where cookies are not being sent and therefore login/registration is broken too, please use on firefox or edge for the time being. Thank you!~~ 
+## This has now been fixed!
+
+### IMPORTANT 2: With the inclusion of docker to the project, you have to perform one extra step in order to run the containers.
+1. Create a file named, docker.env, in the jnch009smartbrainapi folder
+2. In this file you have to create the following environment variables:
+  * DB_PASS (This can be whatever value you want it to be, **AS LONG AS** it matches POSTGRES_PASSWORD)
+  * POSTGRES_PASSWORD (This can be whatever value you want it to be, **AS LONG AS** it matches DB_PASS)
+  * JWT_SECRET (This can be whatever you want it to be. It is required in order to sign the JWT)
+  * REACT_APP_CLARIFAI_API (You will need to create an account on clarifai as well as a new application and use that API key here. The application name/info does not matter, you just need the API key.)
+3. When that is done, simply run the command *docker-compose -f docker-compose.yml up -d* from the top level folder to spin up the containers! To stop the containers, simply issue the command *docker-compose down*.
+
+## Enjoy!
 
 Smartbrain Application Final Project in the Complete Web Developer 2020 ZTM taught by Andrei Neagoie
 The main attraction of this application is utilizing Clarifai's API for facial recognition and incrementing a 
