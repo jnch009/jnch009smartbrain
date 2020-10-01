@@ -10,6 +10,17 @@ module.exports = {
       password: process.env.DB_PASS,
       database: 'jnch009smartbraintest'
     },
+    log: {
+      warn(message){
+        if (
+          message ===
+          'FS-related option specified for migration configuration. This resets migrationSource to default FsMigrations'
+        ) {
+          return;
+        }
+        console.log(message);
+      }
+    },
     migrations: {
       directory: __dirname + '/db/migrations'
     },

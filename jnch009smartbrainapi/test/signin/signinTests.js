@@ -52,7 +52,7 @@ module.exports = function SignInTests() {
         .end(function (err, res) {
           res.should.have.status(401);
           res.should.be.json;
-          expect(res.body).to.equal('access denied');
+          expect(res.body).to.equal('Access Denied');
           done();
         });
     });

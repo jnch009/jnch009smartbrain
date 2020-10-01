@@ -68,50 +68,58 @@ const verifyJWT = (req, res, next) => {
   });
 };
 
+const verifyConnectionString = (req, res, next) => {
+  db.raw('SELECT 1').then(() => {
+    next();
+  }).catch(() => {
+    res.status(500).json(apiError);
+  })
+}
+
 app.get('/', verifyJWT, (req, res) => {
   root.handleRoot(req, res, apiError);
 });
 
-app.post('/signin', (req, res) =>
+app.post('/signin', verifyConnectionString, (req, res) =>
   signin.handleSignIn(req, res, db, bcrypt, apiError, jwt)
 );
 
 app.post('/signout', verifyJWT, (req, res) => signout.handleSignOut(req, res));
 
-app.post('/register', (req, res) =>
+app.post('/register', verifyConnectionString, (req, res) =>
   //dependency injection
   register.handleRegister(req, res, db, bcrypt, saltRounds, apiError, jwt)
 );
 
-app.get('/profile', verifyJWT, (req, res) => {
+app.get('/profile', verifyJWT, verifyConnectionString, (req, res) => {
   profile.handleGetProfileByJWT(req, res, db);
 });
 
-app.get('/profile/:id', verifyJWT, (req, res) =>
+app.get('/profile/:id', verifyJWT, verifyConnectionString, (req, res) =>
   profile.handleGetProfile(req, res, db, apiError)
 );
 
-app.get('/allProfiles', verifyJWT, (req, res) => {
+app.get('/allProfiles', verifyJWT, verifyConnectionString, (req, res) => {
   profile.handleAllProfiles(req, res, db, apiError);
 });
 
-app.put('/profile/:id', verifyJWT, (req, res) => {
+app.put('/profile/:id', verifyJWT, verifyConnectionString, (req, res) => {
   profile.handlePutProfile(req, res, db, apiError);
 });
 
-app.put('/profile/passwordUpdate/:id', verifyJWT, (req, res) => {
+app.put('/profile/passwordUpdate/:id', verifyJWT, verifyConnectionString, (req, res) => {
   profile.handlePutProfilePassword(req, res, db, bcrypt, saltRounds);
 });
 
-app.delete('/profile/:id', verifyJWT, (req, res) =>
+app.delete('/profile/:id', verifyJWT, verifyConnectionString, (req, res) =>
   profile.handleDeleteProfile(req, res, db)
 );
 
-app.delete('/purgeProfiles', verifyJWT, (req, res) => {
+app.delete('/purgeProfiles', verifyJWT, verifyConnectionString, (req, res) => {
   profile.handlePurgeProfiles(req, res, db, apiError);
 });
 
-app.put('/image', verifyJWT, (req, res) =>
+app.put('/image', verifyJWT, verifyConnectionString, (req, res) =>
   image.handleImageUpdate(req, res, db, apiError)
 );
 
