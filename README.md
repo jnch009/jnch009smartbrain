@@ -6,6 +6,8 @@
 2. In this file you have to create the following environment variables:
   * DB_PASS (This can be whatever value you want it to be, **AS LONG AS** it matches POSTGRES_PASSWORD)
   * POSTGRES_PASSWORD (This can be whatever value you want it to be, **AS LONG AS** it matches DB_PASS)
+     #### Important note about the passwords, you must remember it otherwise you won't be able to perform any database operations (ie. sign in, registration, etc...) because there is a volume that will persist the data. Because of this persistence, the password is also persisted. If you forget the password, you can either update the volume name or perform this hackaround https://www.postgresqltutorial.com/postgresql-reset-password/. If you know the password but want to change it, then you can simply issue an ALTER USER command.
+     
   * JWT_SECRET (This can be whatever you want it to be. It is required in order to sign the JWT)
   * REACT_APP_CLARIFAI_API (You will need to create an account on clarifai as well as a new application and use that API key here. The application name/info does not matter, you just need the API key.)
 3. When that is done, simply run the command *docker-compose -f docker-compose.yml up -d* from the top level folder to spin up the containers! To stop the containers, simply issue the command *docker-compose down*.
