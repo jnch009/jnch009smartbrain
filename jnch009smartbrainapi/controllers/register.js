@@ -41,13 +41,13 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
                 .json(user[0]);
             })
             .catch(() => {
-              throw 'Issues with Registration';
+              throw err;
             });
         })
         .then(trx.commit)
-        .catch(err => {
+        .catch(() => {
           trx.rollback;
-          res.status(400).json(err);
+          res.status(400).json('Issues with Registration');
         });
     }).catch(() => res.status(500).json(apiError));
   });

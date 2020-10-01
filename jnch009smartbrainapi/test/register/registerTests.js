@@ -80,7 +80,7 @@ module.exports = function RegisterTests() {
           res.should.have.status(400);
           res.should.be.json;
           expect(res.body).to.equal(
-            'Email already in use, please use another one'
+            'Issues with Registration'
           );
           done();
         });

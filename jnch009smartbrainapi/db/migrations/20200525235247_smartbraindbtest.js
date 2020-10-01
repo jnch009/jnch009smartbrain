@@ -9,7 +9,7 @@ exports.up = function (knex) {
     })
     .createTable('login', function (table) {
       table.increments('id');
-      table.string('hash',100).notNullable();
+      table.string('hash', 100).notNullable();
       table.text('email').notNullable().unique();
     });
 };

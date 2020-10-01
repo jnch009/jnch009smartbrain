@@ -7,6 +7,7 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
 
   //Transaction is NOT required here, because you are retrieving items
   //You are NOT modifying the database directly
+
   db('login')
     .select('hash')
     .where({ email: email })
@@ -31,18 +32,21 @@ const handleSignIn = (req, res, db, bcrypt, apiError, jwt) => {
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+                  sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : false,
                   secure: process.env.NODE_ENV === 'production' ? true : false,
                   expires: new Date(Date.now() + 3.6e6)
                 })
                 .json(user[0]);
             })
-            .catch(() => res.status(400).json('User not found'));
+            .catch(() => res.status(404).json('User Not Found'));
         }
-        return res.status(401).json('access denied');
+        return res.status(401).json('Access Denied');
       });
     })
-    .catch(() => res.status(500).json(apiError));
+    .catch(() => {
+      res.status(404).json('User Not Found');
+    });
 };
 
 module.exports = {
