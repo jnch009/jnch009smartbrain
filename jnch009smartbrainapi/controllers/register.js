@@ -33,18 +33,21 @@ const handleRegister = (req, res, db, bcrypt, saltRounds, apiError, jwt) => {
               res
                 .cookie('jwt', token, {
                   httpOnly: true,
-                  sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+                  sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : false,
                   secure: process.env.NODE_ENV === 'production' ? true : false,
                   expires: new Date(Date.now() + 3.6e6)
                 })
                 .json(user[0]);
             })
-            .catch(() => res.status(400).json('User not registered'));
+            .catch(() => {
+              throw 'Issues with Registration';
+            });
         })
         .then(trx.commit)
-        .catch(() => {
+        .catch(err => {
           trx.rollback;
-          res.status(400).json('Email already in use, please use another one');
+          res.status(400).json(err);
         });
     }).catch(() => res.status(500).json(apiError));
   });
