@@ -40,7 +40,7 @@ const nodeEnvironments = {
   development: knex({
     client: 'pg',
     connection: {
-      host: '127.0.0.1',
+      host: process.env.DB_HOST || '127.0.0.1',
       user: 'jnch009',
       password: process.env.DB_PASS,
       database: 'jnch009smartbrain'

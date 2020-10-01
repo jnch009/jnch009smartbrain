@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "start:dev": "nodemon server.js",
+    "start:dev": "nodemon -L server.js",
     "test": "SET PORT=3020 && mocha --recursive './test/*.js' --exit",
     "testlinux": "PORT=3020 mocha --recursive './test/*.js' --exit",
     "knex": "knex",
